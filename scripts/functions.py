@@ -4,11 +4,18 @@
 
 import os
 
+"""
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
+"""
+
+folderName = "design"
+fileName = "design"
+os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
+
 
 """"    Classes    """
 
