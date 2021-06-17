@@ -105,7 +105,7 @@ class Net:
     def append_node(self, node):
         self.net_nodes.append(node)
 
-    def find_coordinates_of_net(self, node_list):
+    def find_coordinates_of_net(self):
         start = 0
         for node in self.net_nodes:
             start += 1
@@ -431,11 +431,12 @@ def parser():  # parsing the whole circuit
                 next_line = lines[i + j].split()  # contains node name & more
                 current_node = str(next_line[0])  # parse only the node name
 
+                # match the node name, to the node object
                 for node in node_list:
                     if node.node_name == current_node:
                         new_net.append_node(node)
 
-                # new_net.append_node(current_node)   #TODO object node,not name
+                # new_net.append_node(current_node)   #it appends node name
 
                 # find on which nets, the current_node belongs to
                 # and then updating the net_list of the current_node
