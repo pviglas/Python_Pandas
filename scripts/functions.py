@@ -39,15 +39,15 @@ class Node:
         self.upper_right_corner = Point(None, None)
 
         self.node_nets = []  # net_names that this node are part of #TODO net objects
-        self.node_row_name = None  # row that this node is placed in #TODO object row
+        self.node_row = Row(None, None, None, None, None)  # row that this node is placed in
 
     # update the Coordinates x & y
     def set_x_y(self, node_x, node_y):
         self.node_x = node_x
         self.node_y = node_y
 
-    def set_row(self, row_name):
-        self.node_row_name = str(row_name)
+    def set_row(self, row):
+        self.node_row = row
 
     # update the list of nets
     def append_net(self, net_name):
@@ -73,7 +73,7 @@ class Node:
 
     def display_node_row(self):
         print("\nNode " + str(self.node_name)
-              + " is placed in row: " + str(self.node_row_name))
+              + " is placed in row: " + str(self.node_row.row_name))
 
     def display_node_nets(self):
         print("\nNode " + str(self.node_name)
@@ -92,7 +92,7 @@ class Net:
     def __init__(self, net_name, net_degree):
         self.net_name = net_name
         self.net_degree = net_degree
-        self.net_nodes = []  # list of node name for the current net #TODO node objects
+        self.net_nodes = []  # list of nodes for the current net
         self.net_rows = []  # list of rows that this net belongs to # TODO on parser()
         self.x_min = None
         self.x_max = None
@@ -107,44 +107,41 @@ class Net:
 
     def find_coordinates_of_net(self, node_list):
         start = 0
-        for net_node_name in self.net_nodes:
-            for node in node_list:
-                if net_node_name == node.node_name:
-                    start += 1
+        for node in self.net_nodes:
+            start += 1
 
-                    if start == 1 and node.node_type == "Non_Terminal":
+            if start == 1 and node.node_type == "Non_Terminal":
+                self.x_min = node.lower_left_corner.x
+                self.x_max = node.lower_right_corner.x
+                self.y_min = node.lower_left_corner.y
+                self.y_max = node.upper_right_corner.y
+            elif start == 1 and node.node_type == "Terminal":
+                self.x_min = node.node_x
+                self.x_max = node.node_x
+                self.y_min = node.node_y
+                self.y_max = node.node_y
+            else:
+                if node.node_type == "Non_Terminal":
+                    if node.lower_left_corner.x < self.x_min:
                         self.x_min = node.lower_left_corner.x
+                    if node.lower_right_corner.x > self.x_max:
                         self.x_max = node.lower_right_corner.x
+                    if node.lower_left_corner.y < self.y_min:
                         self.y_min = node.lower_left_corner.y
+                    if node.upper_right_corner.y > self.y_max:
                         self.y_max = node.upper_right_corner.y
-                    elif start == 1 and node.node_type == "Terminal":
+                else:
+                    if node.node_x < self.x_min:
                         self.x_min = node.node_x
+                    if node.node_x > self.x_max:
                         self.x_max = node.node_x
+                    if node.node_y < self.y_min:
                         self.y_min = node.node_y
+                    if node.node_y > self.y_max:
                         self.y_max = node.node_y
-                    else:
-                        if node.node_type == "Non_Terminal":
-                            if node.lower_left_corner.x < self.x_min:
-                                self.x_min = node.lower_left_corner.x
-                            if node.lower_right_corner.x > self.x_max:
-                                self.x_max = node.lower_right_corner.x
-                            if node.lower_left_corner.y < self.y_min:
-                                self.y_min = node.lower_left_corner.y
-                            if node.upper_right_corner.y > self.y_max:
-                                self.y_max = node.upper_right_corner.y
-                        else:
-                            if node.node_x < self.x_min:
-                                self.x_min = node.node_x
-                            if node.node_x > self.x_max:
-                                self.x_max = node.node_x
-                            if node.node_y < self.y_min:
-                                self.y_min = node.node_y
-                            if node.node_y > self.y_max:
-                                self.y_max = node.node_y
 
     def calculate_net_wirelength(self):
-        self.wirelength = ((2 * (self.x_max - self.x_min))
-                           + (2 * (self.y_max - self.y_min))) / 2
+        self.wirelength = (self.x_max - self.x_min) + (self.y_max - self.y_min)
 
     def calculate_net_size(self):
         self.net_size = (self.x_max - self.x_min) * (self.y_max - self.y_min)
@@ -153,8 +150,8 @@ class Net:
         print("\n" + str(self.net_name)
               + " - netDegree =  " + str(self.net_degree))
         print("Nodes of this net: ")
-        for i in self.net_nodes:
-            print(i, end=" ")
+        for node in self.net_nodes:
+            print(node.node_name, end=" ")
 
     def display_net_size(self):
         print(str(self.net_name) + " size = " + str(self.net_size))
@@ -434,7 +431,11 @@ def parser():  # parsing the whole circuit
                 next_line = lines[i + j].split()  # contains node name & more
                 current_node = str(next_line[0])  # parse only the node name
 
-                new_net.append_node(current_node)   #TODO object node, not name
+                for node in node_list:
+                    if node.node_name == current_node:
+                        new_net.append_node(node)
+
+                # new_net.append_node(current_node)   #TODO object node,not name
 
                 # find on which nets, the current_node belongs to
                 # and then updating the net_list of the current_node
@@ -565,9 +566,18 @@ def parser():  # parsing the whole circuit
         for node in node_list:
             if (node.lower_left_corner.y == row.lower_left_corner.y and
                     node.upper_left_corner.y == row.upper_left_corner.y):
-                node.set_row(row.row_name)  #TODO row object or row name?
-                row.append_node(node)  # TODO pass node Object or node name?
+                node.set_row(row)
+                row.append_node(node)
 
+
+
+
+
+
+
+
+
+    # TESTING PRINTS:
     """
     for net in net_list:
         for node in node_list:
@@ -598,13 +608,17 @@ def parser():  # parsing the whole circuit
         if a == 20:
             break
         """
+
     a = 0
     for i in net_list:
-        i.find_coordinates_of_net(node_list)
+        a += 1
+        i.display_net()
+        i.find_coordinates_of_net()
         i.calculate_net_wirelength()
         i.calculate_net_size()
-        a = a + 1
+
         print("\n")
+
         i.display_net_size()
         i.display_net_wirelength()
         if a == 15:
