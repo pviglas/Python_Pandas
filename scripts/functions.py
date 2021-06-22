@@ -214,6 +214,20 @@ class Row:
                 + str(self.x_min) + " - x_max: " + str(self.x_max))
 
 
+class Design:
+
+    def __init__(self, density, num_of_cells, num_of_terminals, num_of_nets,
+                 width, height, total_area, total_cell_area):
+        self.density = density
+        self.num_of_cells = num_of_cells
+        self.num_of_terminals = num_of_terminals
+        self.num_of_nets = num_of_nets
+        self.width = width
+        self.height = height
+        self.total_area = total_area
+        self.total_cell_area = total_cell_area
+
+
 """"    Functions   """
 
 
@@ -583,19 +597,19 @@ def parser():  # parsing the whole circuit
     """ Find the row(s), each Net belongs to and reverse"""
     for row in row_list:
         for net in net_list:
-            #elif 2
+            # elif 2
             if row.y_max < net.y_max and row.y_min > net.y_min:
                 if row.x_max <= net.x_max and row.x_min <= net.x_min:
-                    #todo append
+                    # todo append
                     pass
                 elif row.x_max >= net.x_max and row.x_min >= net.x_min:
-                    #todo append
+                    # todo append
                     pass
                 elif row.x_max >= net.x_max and row.x_min <= net.x_min:
-                    #todo append
+                    # todo append
                     pass
                 elif row.x_max < net.x_max and row.x_min > net.x_min:
-                    #todo append
+                    # todo append
                     pass
 
             elif row.y_max == net.y_max and row.y_min > net.y_min:
@@ -604,10 +618,6 @@ def parser():  # parsing the whole circuit
                 pass
             elif row.y_max == net.y_max and row.y_min == net.y_min:
                 pass
-
-
-
-
 
     # TESTING PRINTS:
 
