@@ -577,15 +577,37 @@ def parser():  # parsing the whole circuit
                 node.set_row(row)
                 row.append_node(node)
 
+    """ Find the row(s), each Net belongs to and reverse"""
+    for row in row_list:
+        for net in net_list:
+            #elif 2
+            if row.y_max < net.y_max and row.y_min > net.y_min:
+                if row.x_max <= net.x_max and row.x_min <= net.x_min:
+                    #todo append
+                    pass
+                elif row.x_max >= net.x_max and row.x_min >= net.x_min:
+                    #todo append
+                    pass
+                elif row.x_max >= net.x_max and row.x_min <= net.x_min:
+                    #todo append
+                    pass
+                elif row.x_max < net.x_max and row.x_min > net.x_min:
+                    #todo append
+                    pass
 
-
-
+            elif row.y_max == net.y_max and row.y_min > net.y_min:
+                pass
+            elif row.y_min == net.y_min and row.y_max < net.y_max:
+                pass
+            elif row.y_max == net.y_max and row.y_min == net.y_min:
+                pass
 
 
 
 
 
     # TESTING PRINTS:
+
     """
     for net in net_list:
         for node in node_list:
