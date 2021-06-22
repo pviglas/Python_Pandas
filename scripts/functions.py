@@ -100,7 +100,7 @@ class Net:
         self.net_name = net_name
         self.net_degree = net_degree
         self.net_nodes = []  # list of nodes for the current net
-        self.net_rows = []  # list of rows that this net belongs to # TODO on parser()
+        self.net_rows = []  # list of rows that this net belongs to
         self.x_min = None
         self.x_max = None
         self.y_min = None
@@ -111,6 +111,9 @@ class Net:
     # update the list of nodes of this net
     def append_node(self, node):
         self.net_nodes.append(node)
+
+    def append_row(self, row):
+        self.net_rows.append(row)
 
     def find_coordinates_of_net(self):
         start = 0
@@ -180,7 +183,7 @@ class Row:
         self.x_min = x_min
         self.x_max = x_max
         self.row_nodes = []  # list of nodes that are placed in this row
-        self.row_nets = []  # list of nets that are part of this row # TODO on parser()
+        self.row_nets = []   # list of nets that are part of this row
         self.lower_left_corner = Point(x_min, y_min)
         self.lower_right_corner = Point(x_max, y_min)
         self.upper_left_corner = Point(x_min, y_max)
@@ -194,7 +197,7 @@ class Row:
             self.row_nodes.append(node)
 
     # update the list of nets of this row
-    def append_net(self, net):  # TODO on parser()
+    def append_net(self, net):
         self.row_nets.append(net)
 
     # display row name and nodes of this row
