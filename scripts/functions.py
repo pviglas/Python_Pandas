@@ -103,6 +103,8 @@ class Net:
         self.y_max = None
         self.wirelength = None
         self.net_size = None
+        self.internal_nodes = []
+        self.external_nodes = []
 
     def append_node(self, node):
         self.net_nodes.append(node)
@@ -188,6 +190,15 @@ class Row:
         self.lower_right_corner = Point(x_max, y_min)
         self.upper_left_corner = Point(x_min, y_max)
         self.upper_right_corner = Point(x_max, y_max)
+        self.density = None
+
+    def calculate_row_density(self):
+        nodes_area = 0
+        row_area = (self.x_max - self.x_min) * (self.y_max - self.y_min)
+        for node in self.row_nodes:
+            nodes_area += (node.node_height * node.node_width)
+
+        self.density = int((nodes_area / row_area) * 100)
 
     def append_node(self, node):
         if node.node_type == "Non_Terminal":
@@ -205,6 +216,10 @@ class Row:
         print("\nNode(s) of " + str(self.row_name) + ":")
         for node in self.row_nodes:
             print(node.node_name + " " + node.node_type, end=" ")
+
+    def display_row_density(self):
+        print("\n" + str(self.row_name) + " has density = "
+              + str(self.density) + "%")
 
     def __str__(self):
         return (str(self.row_name) + " - y_min: "
@@ -590,7 +605,9 @@ def parser():  # parsing the whole circuit
                 node.node_row.append_net(net)
         net.net_rows = list(dict.fromkeys(net.net_rows))    # remove duplicates
 
-
+    for row in row_list:
+        row.calculate_row_density()
+        row.display_row_density()
     # TESTING PRINTS:
     """
     for net in net_list:
