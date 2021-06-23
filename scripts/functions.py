@@ -587,27 +587,27 @@ def parser():  # parsing the whole circuit
     file.close()  # Close .scl file
     """               End of Parse .scl              """
 
-    """   Find the row, each node is placed in   """
-    # check for both lower_y and upper_y to avoid Terminal nodes
-    # Terminals nodes, are outside of the rows.
+    # Find the row, each node is placed in
     for row in row_list:
         for node in node_list:
+            # check for both lower_y and upper_y to avoid Terminal nodes
             if (node.lower_left_corner.y == row.lower_left_corner.y and
                     node.upper_left_corner.y == row.upper_left_corner.y):
                 node.set_row(row)
                 row.append_node(node)
 
-    """ Find the row(s), each Net belongs to and the opposite """
+    # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
         for node in net.net_nodes:
             if node.node_type == "Non_Terminal":
                 net.append_row(node.node_row)
                 node.node_row.append_net(net)
-        net.net_rows = list(dict.fromkeys(net.net_rows))    # remove duplicates
+        net.net_rows = list(dict.fromkeys(net.net_rows))   # remove duplicates
 
+    # Update each row, with its density
     for row in row_list:
         row.calculate_row_density()
-        row.display_row_density()
+
     # TESTING PRINTS:
     """
     for net in net_list:
