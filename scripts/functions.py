@@ -1,4 +1,4 @@
-# 3rd try - parsing whole bookshelf in 1 file - creating functions & classes
+# Parsing bookshelf formatted file
 
 """"   Set the current working dir infos   """
 
