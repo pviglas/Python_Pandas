@@ -114,6 +114,11 @@ class Net:
 
     def find_coordinates_of_net(self):
         start = 0
+        temp_internal_node_0 = Node(None, None, None, None)
+        temp_internal_node_1 = Node(None, None, None, None)
+        temp_internal_node_2 = Node(None, None, None, None)
+        temp_internal_node_3 = Node(None, None, None, None)
+
         for node in self.net_nodes:
             start += 1
 
@@ -122,30 +127,50 @@ class Net:
                 self.x_max = node.lower_right_corner.x
                 self.y_min = node.lower_left_corner.y
                 self.y_max = node.upper_right_corner.y
+
+                temp_internal_node_0 = node
+                temp_internal_node_1 = node
+                temp_internal_node_2 = node
+                temp_internal_node_3 = node
+
             elif start == 1 and node.node_type == "Terminal":
                 self.x_min = node.node_x
                 self.x_max = node.node_x
                 self.y_min = node.node_y
                 self.y_max = node.node_y
+
+                temp_internal_node_0 = node
+                temp_internal_node_1 = node
+                temp_internal_node_2 = node
+                temp_internal_node_3 = node
+
             else:
                 if node.node_type == "Non_Terminal":
                     if node.lower_left_corner.x < self.x_min:
                         self.x_min = node.lower_left_corner.x
+                        temp_internal_node_0 = node
                     if node.lower_right_corner.x > self.x_max:
                         self.x_max = node.lower_right_corner.x
+                        temp_internal_node_1 = node
                     if node.lower_left_corner.y < self.y_min:
                         self.y_min = node.lower_left_corner.y
+                        temp_internal_node_2 = node
                     if node.upper_right_corner.y > self.y_max:
                         self.y_max = node.upper_right_corner.y
+                        temp_internal_node_3 = node
                 else:
                     if node.node_x < self.x_min:
                         self.x_min = node.node_x
+                        temp_internal_node_0 = node
                     if node.node_x > self.x_max:
                         self.x_max = node.node_x
+                        temp_internal_node_1 = node
                     if node.node_y < self.y_min:
                         self.y_min = node.node_y
+                        temp_internal_node_2 = node
                     if node.node_y > self.y_max:
                         self.y_max = node.node_y
+                        temp_internal_node_3 = node
 
     def calculate_net_wirelength(self):
         self.wirelength = (self.x_max - self.x_min) + (self.y_max - self.y_min)
@@ -249,10 +274,10 @@ class Design:
     def calculate_design_total_area(self):
         pass
 
-    def calculate_design_total_cell_area(self,node_list):
+    def calculate_design_total_cell_area(self, node_list):
         total_cell_area = 0
         for node in node_list:
-
+            pass
 
     def __str__(self):
         return (str(self.density) + " " + str(self.num_of_cells)
