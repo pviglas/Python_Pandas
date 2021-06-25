@@ -547,6 +547,9 @@ def parser():  # parsing the whole circuit
                     if node.node_name == current_node:
                         node.append_net(new_net.net_name)
 
+            new_net.find_coordinates_of_net()
+            new_net.calculate_net_wirelength()
+            new_net.calculate_net_size()
             net_list.append(new_net)  # add every net on the list of nets
 
     file.close()  # Close .nets file
@@ -652,7 +655,6 @@ def parser():  # parsing the whole circuit
 
     file.close()  # Close .scl file
     """               End of Parse .scl              """
-
     # Find the row, each node is placed in
     for row in row_list:
         for node in node_list:
@@ -681,16 +683,15 @@ def parser():  # parsing the whole circuit
 
 
 
-
-
-
     # TESTING PRINTS:
-    """
-    for net in net_list:
-        net.display_net_rows()
 
+    for net in net_list:
+        # net.display_net_rows()
+        net.display_net_external_nodes()
+        net.display_net_internal_nodes()
     print("\n\n**")
 
+    """
     for row in row_list:
         print("\n\n**")
         row.display_row_nets()
