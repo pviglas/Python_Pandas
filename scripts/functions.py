@@ -230,16 +230,34 @@ class Row:
 
 class Design:
 
-    def __init__(self, density, num_of_cells, num_of_terminals, num_of_nets,
-                 width, height, total_area, total_cell_area):
-        self.density = density
+    def __init__(self, num_of_cells, num_of_terminals, num_of_nets):
+        self.density = None
         self.num_of_cells = num_of_cells
         self.num_of_terminals = num_of_terminals
         self.num_of_nets = num_of_nets
-        self.width = width
-        self.height = height
-        self.total_area = total_area
-        self.total_cell_area = total_cell_area
+        self.width = None
+        self.height = None
+        self.total_area = None
+        self.total_cell_area = None
+
+    def calculate_design_width_height(self):
+        pass
+
+    def calculate_design_density(self):
+        pass
+
+    def calculate_design_total_area(self):
+        pass
+
+    def calculate_design_total_cell_area(self):
+        pass
+
+    def __str__(self):
+        return (str(self.density) + " " + str(self.num_of_cells)
+                + " " + str(self.num_of_terminals)
+                + " " + str(self.num_of_nets)
+                + " " + str(self.width) + " " + str(self.height)
+                + " " + str(self.total_area) + " " + str(self.total_cell_area))
 
 
 """"    Functions   """
@@ -332,6 +350,9 @@ def parser():  # parsing the whole circuit
 
     saved = 0
     node_list = []  # List of all nodes for the current circuit
+    number_of_nodes = None
+    number_of_terminals = None
+    number_of_nets = None
 
     # Locate NumNodes + NumTerminals
     for i in range(len(lines)):
@@ -607,6 +628,16 @@ def parser():  # parsing the whole circuit
     # Update each row, with its density
     for row in row_list:
         row.calculate_row_density()
+
+    # Design calculations
+    design_infos = Design(number_of_nodes, number_of_terminals, number_of_nets)
+
+
+
+
+
+
+
 
     # TESTING PRINTS:
     """
