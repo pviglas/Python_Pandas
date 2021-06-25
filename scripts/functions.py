@@ -188,23 +188,26 @@ class Net:
 
     def display_net_nodes(self):
         print("\n" + str(self.net_name)
-              + " - netDegree =  " + str(self.net_degree))
+              + " has net_degree =  " + str(self.net_degree))
         print("Node(s) of this net: ")
         for node in self.net_nodes:
             print(node.node_name, end=" ")
 
     def display_net_internal_nodes(self):
-        print("\nInternal Nodes of " + str(self.net_name) + ":")
-        for node in self.internal_nodes:
-            print(node.node_name)
+        print("\nInternal Node(s) of " + str(self.net_name) + ":")
+        if self.internal_nodes:
+            for node in self.internal_nodes:
+                print(node.node_name)
+        else:
+            print("None")
 
     def display_net_external_nodes(self):
-        print("\nExternal Nodes of " + str(self.net_name) + ":")
+        print("\nExternal Node(s) of " + str(self.net_name) + ":")
         for node in self.external_nodes:
             print(node.node_name)
 
     def display_net_rows(self):
-        print("\n\nRow(s) of " + str(self.net_name) + ":")
+        print("\nRow(s) of " + str(self.net_name) + ":")
         for row in self.net_rows:
             print(row.row_name, end=" ")
 
@@ -235,6 +238,13 @@ class Row:
         self.upper_right_corner = Point(x_max, y_max)
         self.density = None
 
+    def append_node(self, node):
+        if node.node_type == "Non_Terminal":
+            self.row_nodes.append(node)
+
+    def append_net(self, net):
+        self.row_nets.add(net)
+
     def calculate_row_density(self):
         nodes_area = 0
         row_area = (self.x_max - self.x_min) * (self.y_max - self.y_min)
@@ -242,13 +252,6 @@ class Row:
             nodes_area += (node.node_height * node.node_width)
 
         self.density = int((nodes_area / row_area) * 100)
-
-    def append_node(self, node):
-        if node.node_type == "Non_Terminal":
-            self.row_nodes.append(node)
-
-    def append_net(self, net):
-        self.row_nets.add(net)
 
     def display_row_nets(self):
         print("\nNet(s) of " + str(self.row_name) + ":")
@@ -685,12 +688,13 @@ def parser():  # parsing the whole circuit
 
     # TESTING PRINTS:
 
+    """
     for net in net_list:
-        # net.display_net_rows()
+        net.display_net_rows()
         net.display_net_external_nodes()
         net.display_net_internal_nodes()
     print("\n\n**")
-
+    """
     """
     for row in row_list:
         print("\n\n**")
