@@ -104,7 +104,7 @@ class Net:
         self.wirelength = None
         self.net_size = None
         self.internal_nodes = []
-        self.external_nodes = []
+        self.external_nodes = set()
 
     def append_node(self, node):
         self.net_nodes.append(node)
@@ -172,6 +172,14 @@ class Net:
                         self.y_max = node.node_y
                         temp_internal_node_3 = node
 
+        for node in self.net_nodes:
+            if (node != temp_internal_node_0 and node != temp_internal_node_1
+                and node != temp_internal_node_2
+                    and node != temp_internal_node_3):
+                self.internal_nodes.append(node)
+            else:
+                self.external_nodes.add(node)
+
     def calculate_net_wirelength(self):
         self.wirelength = (self.x_max - self.x_min) + (self.y_max - self.y_min)
 
@@ -184,6 +192,16 @@ class Net:
         print("Node(s) of this net: ")
         for node in self.net_nodes:
             print(node.node_name, end=" ")
+
+    def display_net_internal_nodes(self):
+        print("\nInternal Nodes of " + str(self.net_name) + ":")
+        for node in self.internal_nodes:
+            print(node.node_name)
+
+    def display_net_external_nodes(self):
+        print("\nExternal Nodes of " + str(self.net_name) + ":")
+        for node in self.external_nodes:
+            print(node.node_name)
 
     def display_net_rows(self):
         print("\n\nRow(s) of " + str(self.net_name) + ":")
