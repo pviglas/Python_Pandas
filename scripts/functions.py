@@ -249,8 +249,10 @@ class Design:
     def calculate_design_total_area(self):
         pass
 
-    def calculate_design_total_cell_area(self):
-        pass
+    def calculate_design_total_cell_area(self,node_list):
+        total_cell_area = 0
+        for node in node_list:
+
 
     def __str__(self):
         return (str(self.density) + " " + str(self.num_of_cells)
