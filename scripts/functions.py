@@ -3,6 +3,7 @@
 """"   Set the current working dir infos   """
 
 import os
+import pandas as pd
 
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
@@ -45,7 +46,7 @@ class Node:
         self.upper_left_corner = Point(None, None)
         self.upper_right_corner = Point(None, None)
 
-        self.node_nets = []  # net_names that this node are part of #TODO net objects if needed
+        self.node_nets = []  # net_names that this node are part of #todo net object if needed
         self.node_row = Row(None, None, None, None, None)
 
     # update the Coordinates x & y
@@ -83,6 +84,18 @@ class Node:
         print("\nNode " + str(self.node_name) + " belongs to the net(s):  ")
         for net in self.node_nets:
             print(net, end=" ")
+
+    def to_dict(self):
+        return{
+            'Node_name': self.node_name,
+            'Width': self.node_width,
+            'Height': self.node_height,
+            'Coordinate_x': self.node_x,
+            'Coordinate_y': self.node_y,
+            'Row_number': self.node_row.row_name,
+            'Nets': self.node_nets,
+            'Type': self.node_type,
+        }
 
     def __str__(self):
         return (str(self.node_name) + " " + str(self.node_width) + " " +
@@ -217,6 +230,16 @@ class Net:
     def display_net_wirelength(self):
         print(str(self.net_name) + " wirelength = " + str(self.wirelength))
 
+    def to_dict(self):
+        return{
+            'Net_name': self.net_name,
+            'Nodes': [node.node_name for node in self.net_nodes],
+            'Half_Perimeter_Wirelength': self.wirelength,
+            'Rows': [row.row_name for row in self.net_rows],
+            'Internal_nodes': [node.node_name for node in self.internal_nodes],
+            'External_nodes': [node.node_name for node in self.external_nodes]
+        }
+
     # not displaying the nodes that are part of the net
     def __str__(self):
         return str(self.net_name) + " " + str(self.net_degree)
@@ -266,6 +289,16 @@ class Row:
     def display_row_density(self):
         print("\n" + str(self.row_name) + " has density = "
               + str(self.density) + "%")
+
+    def to_dict(self):
+        return{
+            'Row_name': self.row_name,
+            'Density': self.density,
+            'Cells': [node.node_name for node in self.row_nodes],
+            'Nets': [net.net_name for net in self.row_nets],
+            'Coordinate_x': self.x_min,
+            'Coordinate_y': self.y_min,
+        }
 
     def __str__(self):
         return (str(self.row_name) + " - y_min: "
@@ -682,8 +715,20 @@ def parser():  # parsing the whole circuit
     # Design calculations
     design_infos = Design(number_of_nodes, number_of_terminals, number_of_nets)
 
+    pd.set_option('display.width', 320)
+    pd.set_option('display.max_columns',20)
 
+    print("\nDisplay Nodes Dataframe: \n")
+    nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
+    print(nodes_df)
 
+    print("\nDisplay Rows Dataframe: \n")
+    rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
+    print(rows_df.head(10))
+
+    print("\nDisplay Nets Dataframe: \n")
+    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
+    print(nets_df.head(10))
 
 
     # TESTING PRINTS:
