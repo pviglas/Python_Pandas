@@ -718,50 +718,44 @@ def parser():  # parsing the whole circuit
     return node_list, net_list, row_list
 
 
-    # TESTING PRINTS:
-
-    """
+# TESTING PRINTS:
+"""
+    
     for net in net_list:
         net.display_net_rows()
         net.display_net_external_nodes()
         net.display_net_internal_nodes()
     print("\n\n**")
-    """
-    """
+    
+    
     for row in row_list:
         print("\n\n**")
         row.display_row_nets()
         row.display_row_nodes()
-    """
-
-    """
+    
+    
     for net in net_list:
         for row in net.net_rows:
             print(type(row.net_rows))
-    """
+    
 
-    """
     for net in net_list:
         for node in node_list:
             if node.node_name == net.net
-    """
-
-    """
+    
+  
     for node in node_list:
         node.display_node_row()
-    """
+    
 
-    """
     for row in row_list:
         row.display_row()
-    """
-
-    """
+    
+ 
     for i in row_list:
         print(i)
-    """
-
-    """
+    
+    
     a = 0
     for i in node_list:
         a = a + 1
@@ -770,9 +764,7 @@ def parser():  # parsing the whole circuit
         if a == 20:
             break
 
-    """
 
-    """
     a = 0
     for i in net_list:
         a += 1
@@ -787,7 +779,7 @@ def parser():  # parsing the whole circuit
         i.display_net_wirelength()
         if a == 15:
             break
-    """
+"""
 
 
 def lists_to_dataframes(node_list, net_list, row_list):
