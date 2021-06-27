@@ -11,8 +11,8 @@ fileName = "ibm01"
 
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
-"""
 
+"""
 folderName = "design"
 fileName = "design"
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
@@ -715,20 +715,7 @@ def parser():  # parsing the whole circuit
     # Design calculations
     design_infos = Design(number_of_nodes, number_of_terminals, number_of_nets)
 
-    pd.set_option('display.width', 320)
-    pd.set_option('display.max_columns',20)
-
-    print("\nDisplay Nodes Dataframe: \n")
-    nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
-    print(nodes_df)
-
-    print("\nDisplay Rows Dataframe: \n")
-    rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
-    print(rows_df.head(10))
-
-    print("\nDisplay Nets Dataframe: \n")
-    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
-    print(nets_df.head(10))
+    return node_list, net_list, row_list
 
 
     # TESTING PRINTS:
@@ -779,10 +766,10 @@ def parser():  # parsing the whole circuit
     for i in node_list:
         a = a + 1
         i.display_node_corners()
-        
+
         if a == 20:
             break
-        
+
     """
 
     """
@@ -801,3 +788,20 @@ def parser():  # parsing the whole circuit
         if a == 15:
             break
     """
+
+
+def lists_to_dataframes(node_list, net_list, row_list):
+    pd.set_option('display.width', 800)
+    pd.set_option('display.max_columns',20)
+
+    print("\nDisplay Nodes Dataframe: \n")
+    nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
+    print(nodes_df)
+
+    print("\nDisplay Rows Dataframe: \n")
+    rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
+    print(rows_df)
+
+    print("\nDisplay Nets Dataframe: \n")
+    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
+    print(nets_df)
