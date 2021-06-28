@@ -776,8 +776,11 @@ def lists_to_dataframes(node_list, net_list, row_list):
         'Total_Cell_Area': design_total_cell_area
     }
 
+    # 1 way to create DF Design
     # design_df = pd.DataFrame(design_dict, index=[0])
 
+    # 2 way to create DF design
+    print("\nDisplay Designs Dataframe: \n")
     design_df = pd.DataFrame.from_records([design_dict])
     print(design_df)
 
