@@ -15,8 +15,8 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
 """
 folderName = "design"
 fileName = "design"
-os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-
+os.chdir(
+    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 """"    Classes    """
 
@@ -86,10 +86,11 @@ class Node:
             print(net, end=" ")
 
     def to_dict(self):
-        return{
+        return {
             'Node_name': self.node_name,
             'Width': self.node_width,
             'Height': self.node_height,
+            'Size': self.node_width * self.node_height,
             'Coordinate_x': self.node_x,
             'Coordinate_y': self.node_y,
             'Row_number': self.node_row.row_name,
@@ -187,7 +188,7 @@ class Net:
 
         for node in self.net_nodes:
             if (node != temp_internal_node_0 and node != temp_internal_node_1
-                and node != temp_internal_node_2
+                    and node != temp_internal_node_2
                     and node != temp_internal_node_3):
                 self.internal_nodes.append(node)
             else:
@@ -231,7 +232,7 @@ class Net:
         print(str(self.net_name) + " wirelength = " + str(self.wirelength))
 
     def to_dict(self):
-        return{
+        return {
             'Net_name': self.net_name,
             'Nodes': [node.node_name for node in self.net_nodes],
             'Half_Perimeter_Wirelength': self.wirelength,
@@ -254,7 +255,7 @@ class Row:
         self.x_min = x_min
         self.x_max = x_max
         self.row_nodes = []  # list of nodes that are placed in this row
-        self.row_nets = set()   # set of nets that are part of this row
+        self.row_nets = set()  # set of nets that are part of this row
         self.lower_left_corner = Point(x_min, y_min)
         self.lower_right_corner = Point(x_max, y_min)
         self.upper_left_corner = Point(x_min, y_max)
@@ -291,13 +292,15 @@ class Row:
               + str(self.density) + "%")
 
     def to_dict(self):
-        return{
+        return {
             'Row_name': self.row_name,
             'Density': self.density,
             'Cells': [node.node_name for node in self.row_nodes],
             'Nets': [net.net_name for net in self.row_nets],
-            'Coordinate_x': self.x_min,
-            'Coordinate_y': self.y_min,
+            'Coordinate_x_min': self.x_min,
+            'Coordinate_x_max': self.x_max,
+            'Coordinate_y_min': self.y_min,
+            'Coordinate_y_max': self.y_max,
         }
 
     def __str__(self):
@@ -706,7 +709,7 @@ def parser():  # parsing the whole circuit
             if node.node_type == "Non_Terminal":
                 net.append_row(node.node_row)
                 node.node_row.append_net(net)
-        net.net_rows = list(dict.fromkeys(net.net_rows))   # remove duplicates
+        net.net_rows = list(dict.fromkeys(net.net_rows))  # remove duplicates
 
     # Update each row, with its density
     for row in row_list:
@@ -720,19 +723,65 @@ def parser():  # parsing the whole circuit
 
 def lists_to_dataframes(node_list, net_list, row_list):
     pd.set_option('display.width', 800)
-    pd.set_option('display.max_columns',20)
+    pd.set_option('display.max_columns', 20)
 
     print("\nDisplay Nodes Dataframe: \n")
-    nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
+    nodes_df = pd.DataFrame.from_records(
+        [node.to_dict() for node in node_list])
     print(nodes_df)
+
+    print("\nDisplay Nets Dataframe: \n")
+    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
+    print(nets_df)
 
     print("\nDisplay Rows Dataframe: \n")
     rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
     print(rows_df)
 
-    print("\nDisplay Nets Dataframe: \n")
-    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
-    print(nets_df)
+    # calculations for DF Design
+    design_cells = nodes_df.shape[0]
+    print("\nDesign num of cells: ", design_cells)
+
+    design_nets = nets_df.shape[0]
+    print("Design num of nets: ", design_nets)
+
+    design_height = (rows_df['Coordinate_y_max'].max()
+                     - rows_df['Coordinate_y_min'].min())
+    print("Design Height: ", design_height)
+
+    design_width = (rows_df['Coordinate_x_max'].max()
+                    - rows_df['Coordinate_x_min'].min())
+    print("Design Width: ", design_width)
+
+    design_terminals = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
+    print("Design Terminals: ", design_terminals)
+
+    design_total_area = design_height * design_width
+    print("Design Total Area: ", design_total_area)
+
+    design_total_cell_area = nodes_df['Size'].sum()
+    print("Design Total Cell Area: ", design_total_cell_area)
+
+    design_density = (design_total_cell_area / design_total_area) * 100
+    print("Design Density: " + str(design_density) + "%")
+
+    design_dict = {
+        'Density (%)': design_density,
+        'Number_of_cells': design_cells,
+        'Number_of_terminals': design_terminals,
+        'Number_of_nets': design_nets,
+        'Width': design_width,
+        'Height': design_height,
+        'Total_Area': design_total_area,
+        'Total_Cell_Area': design_total_cell_area
+    }
+
+    # design_df = pd.DataFrame(design_dict, index=[0])
+
+    design_df = pd.DataFrame.from_records([design_dict])
+    print(design_df)
+
+    return nodes_df, nets_df, rows_df, design_df
 
 
 # TESTING PRINTS:
