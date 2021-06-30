@@ -796,22 +796,32 @@ def number_of_non_terminal_nodes(nodes_df):
 
 def biggest_non_terminal_node(nodes_df):
 
-    df_max = int(nodes_df['Size'].max())
-    max_list = {}
+    max_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
+    max_node_size = int(max_df['Size'].max())
 
-    """
-    # .iterrows -> not good at time? #TODO check it
-    for index, row in nodes_df.iterrows():
-        print(row['Node_name'], row['Size'])
-        if
-    """
+    max_df = max_df[max_df.Size == max_node_size]
 
-    for row in nodes_df.itertuples():
-        print(row)
+    # print(max_df)
+
+    print("\n Maximum Non Terminal Node(s): ")
+    print(max_df.get(["Node_name", "Size"]))
+
+    # todo create list with maxes -> iterrows or itertuples
+
 
 def smallest_non_terminal_node(nodes_df):
-    # todo
-    pass
+
+    min_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
+    min_node_size = int(min_df['Size'].min())
+
+    min_df = min_df[min_df.Size == min_node_size]
+
+    # print(min_df)
+
+    print("\n Minimum Non Terminal Nodes: ")
+    print(min_df.get(["Node_name", "Size"]))
+
+    # todo create list with mins -> iterrows or itertuples
 
 
 def median_size_non_terminal_nodes(nodes_df):
@@ -819,26 +829,11 @@ def median_size_non_terminal_nodes(nodes_df):
     pass
 
 
-# 7 - 10
+# 7 - 10 --- terminal are dots --> they have no size
 def number_of_terminal_nodes(nodes_df):
 
     terminal_nodes = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
     print("Terminals nodes: ", terminal_nodes)
-
-
-def biggest_terminal_node(nodes_df):
-    #  todo
-    pass
-
-
-def smallest_terminal_node(nodes_df):
-    # todo
-    pass
-
-
-def median_size_of_terminal_nodes(nodes_df):
-    # todo
-    pass
 
 
 # 12 - 15

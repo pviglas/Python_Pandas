@@ -17,6 +17,7 @@ if __name__ == "__main__":
         number_of_non_terminal_nodes(dfs[0])
         number_of_terminal_nodes(dfs[0])
         biggest_non_terminal_node(dfs[0])
+        smallest_non_terminal_node(dfs[0])
 
     else:
         pass
