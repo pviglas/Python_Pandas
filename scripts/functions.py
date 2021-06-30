@@ -789,14 +789,25 @@ def lists_to_dataframes(node_list, net_list, row_list):
 
 # 2 - 5
 def number_of_non_terminal_nodes(nodes_df):
-    # todo
-    pass
+
+    non_terminal_nodes = len(nodes_df[nodes_df['Type'].str.match('Non_Terminal')])
+    print("Non Terminals nodes: ", non_terminal_nodes)
 
 
 def biggest_non_terminal_node(nodes_df):
-    #  todo
-    pass
 
+    df_max = int(nodes_df['Size'].max())
+    max_list = {}
+
+    """
+    # .iterrows -> not good at time? #TODO check it
+    for index, row in nodes_df.iterrows():
+        print(row['Node_name'], row['Size'])
+        if
+    """
+
+    for row in nodes_df.itertuples():
+        print(row)
 
 def smallest_non_terminal_node(nodes_df):
     # todo
@@ -809,6 +820,12 @@ def median_size_non_terminal_nodes(nodes_df):
 
 
 # 7 - 10
+def number_of_terminal_nodes(nodes_df):
+
+    terminal_nodes = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
+    print("Terminals nodes: ", terminal_nodes)
+
+
 def biggest_terminal_node(nodes_df):
     #  todo
     pass
