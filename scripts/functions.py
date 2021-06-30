@@ -787,6 +787,101 @@ def lists_to_dataframes(node_list, net_list, row_list):
     return nodes_df, nets_df, rows_df, design_df
 
 
+# 2 - 5
+def number_of_non_terminal_nodes(nodes_df):
+    # todo
+    pass
+
+
+def biggest_non_terminal_node(nodes_df):
+    #  todo
+    pass
+
+
+def smallest_non_terminal_node(nodes_df):
+    # todo
+    pass
+
+
+def median_size_non_terminal_nodes(nodes_df):
+    # todo
+    pass
+
+
+# 7 - 10
+def biggest_terminal_node(nodes_df):
+    #  todo
+    pass
+
+
+def smallest_terminal_node(nodes_df):
+    # todo
+    pass
+
+
+def median_size_of_terminal_nodes(nodes_df):
+    # todo
+    pass
+
+
+# 12 - 15
+def number_of_nets(nets_df):
+    # todo
+    pass
+
+
+def smallest_net(nets_df):
+    # todo
+    pass
+
+
+def biggest_net(nets_df):
+    # todo
+    pass
+
+
+def median_size_of_nets(nets_df):
+    # todo
+    pass
+
+
+# 17 - 20
+def number_of_rows(rows_df):
+    # todo
+    pass
+
+
+def biggest_row(rows_df):
+    # todo
+    pass
+
+
+def smallest_row(rows_df):
+    # todo
+    pass
+
+
+def median_num_of_nodes_on_rows(rows_df):
+    # todo
+    pass
+
+
+# 24 - 25
+def design_half_perimeter_wirelength():
+    # todo
+    pass
+
+
+def design_density():
+    # todo
+    pass
+
+
+
+
+
+
+
 # TESTING PRINTS:
 """
 
