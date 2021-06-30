@@ -715,9 +715,6 @@ def parser():  # parsing the whole circuit
     for row in row_list:
         row.calculate_row_density()
 
-    # Design calculations
-    design_infos = Design(number_of_nodes, number_of_terminals, number_of_nets)
-
     return node_list, net_list, row_list
 
 
@@ -884,7 +881,7 @@ def mean_num_of_nodes_on_rows(rows_df):
 def design_half_perimeter_wirelength(nets_df):
     design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
 
-    print("Design Half Perimeter Wirelength: ",design_hpw)
+    print("Design Half Perimeter Wirelength: ", design_hpw)
 
 
 def design_density(nodes_df, rows_df):
