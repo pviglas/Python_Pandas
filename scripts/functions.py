@@ -801,10 +801,9 @@ def biggest_non_terminal_node(nodes_df):
 
     max_df = max_df[max_df.Size == max_node_size]
 
-    # print(max_df)
-
-    print("\n Maximum Non Terminal Node(s): ")
-    print(max_df.get(["Node_name", "Size"]))
+    print("\nMaximum Non Terminal Node(s): ")
+    print(max_df.get(["Node_name", "Size"]).to_string(index=False))
+    print("\n")
 
     # todo create list with maxes -> iterrows or itertuples
 
@@ -816,17 +815,19 @@ def smallest_non_terminal_node(nodes_df):
 
     min_df = min_df[min_df.Size == min_node_size]
 
-    # print(min_df)
-
-    print("\n Minimum Non Terminal Nodes: ")
-    print(min_df.get(["Node_name", "Size"]))
+    print("Minimum Non Terminal Node(s): ")
+    print(min_df.get(["Node_name", "Size"]).to_string(index=False))
+    print("\n")
 
     # todo create list with mins -> iterrows or itertuples
 
 
-def median_size_non_terminal_nodes(nodes_df):
-    # todo
-    pass
+def mean_size_non_terminal_nodes(nodes_df):
+
+    mean_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
+    mean = int(mean_df['Size'].mean())
+
+    print("Mean of Non Terminal Node(s): ", mean)
 
 
 # 7 - 10 --- terminal are dots --> they have no size
@@ -838,8 +839,9 @@ def number_of_terminal_nodes(nodes_df):
 
 # 12 - 15
 def number_of_nets(nets_df):
-    # todo
-    pass
+
+    num_of_nets = nets_df.shape[0]
+    print("Number of nets: ", num_of_nets)
 
 
 def smallest_net(nets_df):
@@ -852,7 +854,7 @@ def biggest_net(nets_df):
     pass
 
 
-def median_size_of_nets(nets_df):
+def mean_size_of_nets(nets_df):
     # todo
     pass
 
@@ -873,20 +875,30 @@ def smallest_row(rows_df):
     pass
 
 
-def median_num_of_nodes_on_rows(rows_df):
+def mean_num_of_nodes_on_rows(rows_df):
     # todo
     pass
 
 
 # 24 - 25
-def design_half_perimeter_wirelength():
-    # todo
-    pass
+def design_half_perimeter_wirelength(nets_df):
+    design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
+
+    print("Design Half Perimeter Wirelength: ",design_hpw)
 
 
-def design_density():
-    # todo
-    pass
+def design_density(nodes_df, rows_df):
+    design_height = (rows_df['Coordinate_y_max'].max()
+                     - rows_df['Coordinate_y_min'].min())
+
+    design_width = (rows_df['Coordinate_x_max'].max()
+                    - rows_df['Coordinate_x_min'].min())
+
+    design_total_area = design_height * design_width
+    design_total_cell_area = nodes_df['Size'].sum()
+    design_density = (design_total_cell_area / design_total_area) * 100
+
+    print("Design Density: " + str(design_density) + "%")
 
 
 

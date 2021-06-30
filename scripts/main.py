@@ -18,6 +18,10 @@ if __name__ == "__main__":
         number_of_terminal_nodes(dfs[0])
         biggest_non_terminal_node(dfs[0])
         smallest_non_terminal_node(dfs[0])
+        mean_size_non_terminal_nodes(dfs[0])
+        number_of_nets(dfs[1])
+        design_half_perimeter_wirelength(dfs[1])
+        design_density(dfs[0], dfs[2])
 
     else:
         pass
