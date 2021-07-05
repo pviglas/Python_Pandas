@@ -822,7 +822,8 @@ def smallest_non_terminal_node(nodes_df):
 def mean_size_non_terminal_nodes(nodes_df):
 
     mean_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
-    mean = int(mean_df['Size'].mean())
+    mean = float(mean_df['Size'].mean())
+    mean = round(mean, 2)
 
     print("Mean size of Non Terminal Node(s): ", mean)
 
@@ -886,7 +887,7 @@ def smallest_row(rows_df):
 
 
 def mean_num_of_nodes_on_rows(rows_df):
-    mean_num_of_cells = int(rows_df["Cells"].str.len().mean())
+    mean_num_of_cells = float(rows_df["Cells"].str.len().mean())
 
     print("Mean number of cells on each row: ", mean_num_of_cells)
     print("\n")
