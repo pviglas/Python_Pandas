@@ -824,7 +824,7 @@ def mean_size_non_terminal_nodes(nodes_df):
     mean_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
     mean = int(mean_df['Size'].mean())
 
-    print("Mean of Non Terminal Node(s): ", mean)
+    print("Mean size of Non Terminal Node(s): ", mean)
 
 
 # 7 - 10 --- terminal are dots --> they have no size
@@ -858,23 +858,38 @@ def mean_size_of_nets(nets_df):
 
 # 17 - 20
 def number_of_rows(rows_df):
-    # todo
-    pass
+    num_of_rows = rows_df.shape[0]
+    print("Number of rows: ", num_of_rows)
+    print("\n")
 
 
 def biggest_row(rows_df):
-    # todo
-    pass
+    max_num_of_cells = int(rows_df["Cells"].str.len().max())
+    max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
+
+    print("Maximum number of cells in a row: ", max_num_of_cells)
+    print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
+    print("\n")
+
+    # todo create list with maxs -> iterrows or itertuples
 
 
 def smallest_row(rows_df):
-    # todo
-    pass
+    min_num_of_cells = int(rows_df["Cells"].str.len().min())
+    min_rows_df = rows_df[rows_df.Cells.str.len() == min_num_of_cells]
+
+    print("Minimum number of cells in a row: ", min_num_of_cells)
+    print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
+    print("\n")
+
+    # todo create list with mins -> iterrows or itertuples
 
 
 def mean_num_of_nodes_on_rows(rows_df):
-    # todo
-    pass
+    mean_num_of_cells = int(rows_df["Cells"].str.len().mean())
+
+    print("Mean number of cells on each row: ", mean_num_of_cells)
+    print("\n")
 
 
 # 24 - 25
