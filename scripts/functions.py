@@ -874,27 +874,6 @@ def mean_size_of_nets_based_on_nodes(nets_df):
     print("\n")
 
 
-"""
-            'Net_name': 
-            'Nodes': 
-            'Half_Perimeter_Wirelength': 
-            'Rows':
-            'Internal_nodes'
-            'External_nodes'
-"""
-"""
-            'Node_name": self.node_name,
-            'Width': self.node_width,
-            'Height': self.node_height,
-            'Size': self.node_width * self.node_height,
-            'Coordinate_x': self.node_x,
-            'Coordinate_y': self.node_y,
-            'Row_number': self.node_row.row_name,
-            'Nets': self.node_nets,
-            'Type': self.node_type,
-"""
-
-
 def biggest_net_based_on_size(nets_df, nodes_df):
     """
     df = nets_df.get(["External_nodes"])
