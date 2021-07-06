@@ -906,6 +906,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
 
     # todo find max with: lists, itertuples, vectorization ?
 
+
 def smallest_net_based_on_size(nets_df, nodes_df):
     # todo
     pass
