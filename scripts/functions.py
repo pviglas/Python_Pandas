@@ -853,15 +853,6 @@ def biggest_net_based_on_nodes(nets_df):
     print("Biggest net(s): ", max_nets_list)
     print("\n")
 
-"""
-            'Net_name': 
-            'Nodes': 
-            'Half_Perimeter_Wirelength': 
-            'Rows':
-            'Internal_nodes'
-            'External_nodes'
-"""
-
 
 def smallest_net_based_on_nodes(nets_df):
 
@@ -875,11 +866,54 @@ def smallest_net_based_on_nodes(nets_df):
 
 
 def mean_size_of_nets_based_on_nodes(nets_df):
+
     mean_num_of_cells = float(nets_df["Nodes"].str.len().mean())
     mean_num_of_cells = round(mean_num_of_cells, 2)
 
     print("Mean number of cell(s) on each net: ", mean_num_of_cells)
     print("\n")
+
+
+"""
+            'Net_name': 
+            'Nodes': 
+            'Half_Perimeter_Wirelength': 
+            'Rows':
+            'Internal_nodes'
+            'External_nodes'
+"""
+"""
+            'Node_name": self.node_name,
+            'Width': self.node_width,
+            'Height': self.node_height,
+            'Size': self.node_width * self.node_height,
+            'Coordinate_x': self.node_x,
+            'Coordinate_y': self.node_y,
+            'Row_number': self.node_row.row_name,
+            'Nets': self.node_nets,
+            'Type': self.node_type,
+"""
+
+
+def biggest_net_based_on_size(nets_df, nodes_df):
+    """
+    df = nets_df.get(["External_nodes"])
+    print(df, type(df))
+
+    serie = nets_df["External_nodes"]
+    print(serie, type(serie))
+    """
+
+    # todo find max with: lists, itertuples, vectorization ?
+
+def smallest_net_based_on_size(nets_df, nodes_df):
+    # todo
+    pass
+
+
+def mean_net_based_on_size(nets_df, nodes_df):
+    # todo
+    pass
 
 
 # 17 - 20

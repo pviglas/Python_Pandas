@@ -34,5 +34,7 @@ if __name__ == "__main__":
         design_half_perimeter_wirelength(dfs[1])
         design_density(dfs[0], dfs[2])
 
+        biggest_net_based_on_size(dfs[1], dfs[0])
+
     else:
         pass
