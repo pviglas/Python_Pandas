@@ -773,10 +773,10 @@ def lists_to_dataframes(node_list, net_list, row_list):
         'Total_Cell_Area': design_total_cell_area
     }
 
-    # 1 way to create DF Design
+    # 1st way to create DF Design
     # design_df = pd.DataFrame(design_dict, index=[0])
 
-    # 2 way to create DF design
+    # 2nd way to create DF design
     print("\nDisplay Designs Dataframe: \n")
     design_df = pd.DataFrame.from_records([design_dict])
     print(design_df)
@@ -797,13 +797,11 @@ def biggest_non_terminal_node(nodes_df):
     max_node_size = int(max_df['Size'].max())
 
     max_df = max_df[max_df.Size == max_node_size]
-
-    print("Maximum Non Terminal Node size = ", max_node_size)
-    # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
-
-    print("Non Terminal Node(s) with max size: ")
     max_nodes_list = list(max_df.Node_name)
-    print(max_nodes_list)
+
+    # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
+    print("Maximum Non Terminal Node size = ", max_node_size)
+    print("Non Terminal Node(s) with max size: ", max_nodes_list)
     print("\n")
 
 
@@ -813,13 +811,11 @@ def smallest_non_terminal_node(nodes_df):
     min_node_size = int(min_df['Size'].min())
 
     min_df = min_df[min_df.Size == min_node_size]
-
-    print("Minimum Non Terminal Node size = ", min_node_size)
-    # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
-
-    print("Non Terminal Node(s) with min size: ")
     min_nodes_list = list(min_df.Node_name)
-    print(min_nodes_list)
+
+    # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
+    print("Minimum Non Terminal Node size = ", min_node_size)
+    print("Non Terminal Node(s) with min size: ", min_nodes_list)
     print("\n")
 
 
@@ -871,24 +867,22 @@ def number_of_rows(rows_df):
 def biggest_row(rows_df):
     max_num_of_cells = int(rows_df["Cells"].str.len().max())
     max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
-
-    print("Maximum number of cells in a row: ", max_num_of_cells)
-    # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
-
     max_rows_list = list(max_rows_df.Row_name)
-    print(max_rows_list)
+
+    # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
+    print("Maximum number of cells in a row: ", max_num_of_cells)
+    print("Biggest row(s): ", max_rows_list)
     print("\n")
 
 
 def smallest_row(rows_df):
     min_num_of_cells = int(rows_df["Cells"].str.len().min())
     min_rows_df = rows_df[rows_df.Cells.str.len() == min_num_of_cells]
-
-    print("Minimum number of cells in a row: ", min_num_of_cells)
-    # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
-
     min_rows_list = list(min_rows_df.Row_name)
-    print(min_rows_list)
+
+    # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
+    print("Minimum number of cells in a row: ", min_num_of_cells)
+    print("Smallest row(s): ", min_rows_list)
     print("\n")
 
 
