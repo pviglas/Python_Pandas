@@ -798,11 +798,13 @@ def biggest_non_terminal_node(nodes_df):
 
     max_df = max_df[max_df.Size == max_node_size]
 
-    print("\nMaximum Non Terminal Node(s): ")
-    print(max_df.get(["Node_name", "Size"]).to_string(index=False))
-    print("\n")
+    print("Maximum Non Terminal Node size = ", max_node_size)
+    # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
 
-    # todo create list with maxes -> iterrows or itertuples
+    print("Non Terminal Node(s) with max size: ")
+    max_nodes_list = list(max_df.Node_name)
+    print(max_nodes_list)
+    print("\n")
 
 
 def smallest_non_terminal_node(nodes_df):
@@ -812,11 +814,13 @@ def smallest_non_terminal_node(nodes_df):
 
     min_df = min_df[min_df.Size == min_node_size]
 
-    print("Minimum Non Terminal Node(s): ")
-    print(min_df.get(["Node_name", "Size"]).to_string(index=False))
-    print("\n")
+    print("Minimum Non Terminal Node size = ", min_node_size)
+    # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
 
-    # todo create list with mins -> iterrows or itertuples
+    print("Non Terminal Node(s) with min size: ")
+    min_nodes_list = list(min_df.Node_name)
+    print(min_nodes_list)
+    print("\n")
 
 
 def mean_size_non_terminal_nodes(nodes_df):
@@ -869,10 +873,11 @@ def biggest_row(rows_df):
     max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
 
     print("Maximum number of cells in a row: ", max_num_of_cells)
-    print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
-    print("\n")
+    # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
 
-    # todo create list with maxs -> iterrows or itertuples
+    max_rows_list = list(max_rows_df.Row_name)
+    print(max_rows_list)
+    print("\n")
 
 
 def smallest_row(rows_df):
@@ -880,10 +885,11 @@ def smallest_row(rows_df):
     min_rows_df = rows_df[rows_df.Cells.str.len() == min_num_of_cells]
 
     print("Minimum number of cells in a row: ", min_num_of_cells)
-    print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
-    print("\n")
+    # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
 
-    # todo create list with mins -> iterrows or itertuples
+    min_rows_list = list(min_rows_df.Row_name)
+    print(min_rows_list)
+    print("\n")
 
 
 def mean_num_of_nodes_on_rows(rows_df):
