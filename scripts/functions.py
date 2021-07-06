@@ -883,7 +883,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
     print(serie, type(serie))
     """
 
-    # todo find max with: lists, itertuples, vectorization ?
+    # todo find max with: lists, itertuples, vectorization, cython ?
 
 
 def smallest_net_based_on_size(nets_df, nodes_df):
