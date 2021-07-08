@@ -983,19 +983,57 @@ def testing(nodes_df, nets_df, rows_df):
         print("\n")
 
 
-def find_df_net_size(nodes_df, nets_df):
+def net_size_and_hpw(nodes_df, nets_df):
 
-    net_names_list = list(nets_df['External_nodes'])
-    print(net_names_list)
+    net_names_list = list(nets_df['Net_name'])
+    net_externals_list = list(nets_df['External_nodes'])
+    # print(net_names_list, len(net_names_list))
+    # print(net_externals_list, len(net_externals_list))
 
-    nets_dict = nets_df.set_index('Net_name').T.to_dict('records') # dictionary me ta nodes internal+external tou kathe net
+    for net_name, node_names in zip(net_names_list, net_externals_list):
+        print("\n")
+        print(net_name)
+        print(node_names)
 
-    print(nets_dict)
+        test_df = pd.DataFrame()
+        for name in node_names:
+            test_df = test_df.append(nodes_df[nodes_df.Node_name == name], sort = False)
 
-    # for net_name in net_names_list:
+            test_df['x_max'] = test_df['Coordinate_x'] + test_df['Width']
+            test_df['y_max'] = test_df['Coordinate_y'] + test_df['Height']
 
-        # temp = nodes_df[nodes_df['Nets'].str.contains(net_name)]
-        # print(temp)
+            net_x_min = int(test_df['Coordinate_x'].min())
+            net_x_max = int(test_df['x_max'].max())
+            net_y_min = int(test_df['Coordinate_y'].min())
+            net_y_max = int(test_df['y_max'].max())
+
+            # max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
+
+            test_df['net_size'] = ((net_x_max - net_x_min)
+                                   * (net_y_max - net_y_min))
+
+            test_df['net_HPW'] = ((net_x_max - net_x_min)
+                                  + (net_y_max - net_y_min))
+
+        print(test_df)
+
+
+
+        # wirelength = (x_max - x_min) + (y_max - y_min)
+        # net_size = (x_max - x_min) * (y_max - y_min)
+
+    """
+    # dictionary me ta nodes internal+external tou kathe net
+    # nets_dict = nets_df.set_index('Net_name').T.to_dict('records')
+    # print(nets_dict)
+    """
+
+
+
+
+
+
+
 
 
 # TESTING PRINTS:
