@@ -235,10 +235,11 @@ class Net:
         return {
             'Net_name': self.net_name,
             'Nodes': [node.node_name for node in self.net_nodes],
-            'Half_Perimeter_Wirelength': self.wirelength,
             'Rows': [row.row_name for row in self.net_rows],
             'Internal_nodes': [node.node_name for node in self.internal_nodes],
-            'External_nodes': [node.node_name for node in self.external_nodes]
+            'External_nodes': [node.node_name for node in self.external_nodes],
+            'Half_Perimeter_Wirelength': self.wirelength,
+            'Net_size': self.net_size
         }
 
     # not displaying the nodes that are part of the net
@@ -985,42 +986,47 @@ def testing(nodes_df, nets_df, rows_df):
 
 def net_size_and_hpw(nodes_df, nets_df):
 
+    # add 2 new colums on the nets_df
+    nets_df['testing_Net_size'] = 0
+    nets_df['testing_HPW'] = 0
+
     net_names_list = list(nets_df['Net_name'])
     net_externals_list = list(nets_df['External_nodes'])
     # print(net_names_list, len(net_names_list))
     # print(net_externals_list, len(net_externals_list))
 
     for net_name, node_names in zip(net_names_list, net_externals_list):
-        print("\n")
-        print(net_name)
-        print(node_names)
+        # print("\n")
+        # print(net_name)
+        # print(node_names)
 
-        test_df = pd.DataFrame()
+        test_node_df = pd.DataFrame()
+
         for name in node_names:
-            test_df = test_df.append(nodes_df[nodes_df.Node_name == name], sort = False)
+            test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort = False)
 
-            test_df['x_max'] = test_df['Coordinate_x'] + test_df['Width']
-            test_df['y_max'] = test_df['Coordinate_y'] + test_df['Height']
+            test_node_df['x_max'] = (test_node_df['Coordinate_x']
+                                     + test_node_df['Width'])
 
-            net_x_min = int(test_df['Coordinate_x'].min())
-            net_x_max = int(test_df['x_max'].max())
-            net_y_min = int(test_df['Coordinate_y'].min())
-            net_y_max = int(test_df['y_max'].max())
+            test_node_df['y_max'] = (test_node_df['Coordinate_y']
+                                     + test_node_df['Height'])
+            # print(test_node_df)
 
-            # max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
+        net_x_min = int(test_node_df['Coordinate_x'].min())
+        net_x_max = int(test_node_df['x_max'].max())
+        net_y_min = int(test_node_df['Coordinate_y'].min())
+        net_y_max = int(test_node_df['y_max'].max())
 
-            test_df['net_size'] = ((net_x_max - net_x_min)
-                                   * (net_y_max - net_y_min))
+        index = nets_df.index[nets_df.Net_name == net_name]  # type int64index
+        index = int(index[0])   # convert to int
 
-            test_df['net_HPW'] = ((net_x_max - net_x_min)
-                                  + (net_y_max - net_y_min))
+        nets_df.at[index, 'testing_Net_size'] = ((net_x_max - net_x_min)
+                                                 * (net_y_max - net_y_min))
 
-        print(test_df)
+        nets_df.at[index, 'testing_HPW'] = ((net_x_max - net_x_min)
+                                            + (net_y_max - net_y_min))
+    print(nets_df)
 
-
-
-        # wirelength = (x_max - x_min) + (y_max - y_min)
-        # net_size = (x_max - x_min) * (y_max - y_min)
 
     """
     # dictionary me ta nodes internal+external tou kathe net
