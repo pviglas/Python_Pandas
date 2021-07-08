@@ -963,30 +963,49 @@ def design_density(nodes_df, rows_df):
     print("\n")
 
 
-def testing(nodes_df, nets_df, rows_df):
+""" Testing DataFrames """
 
-   # max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
 
-    a = []
-    temp = []
+def row_density(nodes_df, nets_df, rows_df):
+
+    # add 1 new column on the rows_df
+    rows_df['testing_density'] = 0
+
+    rows_width = int(rows_df['Coordinate_x_max'].max()
+                     - int(rows_df['Coordinate_x_min'].max()))
+
+    rows_height = int(rows_df['Coordinate_y_max'].max()
+                      - rows_df['Coordinate_y_min'].max())
+
+    row_area = rows_width * rows_height
+
+    print(row_area)
+
+    temp_nodes_df = pd.DataFrame()
     row_names_list = list(rows_df['Row_name'])
 
     for row_name in row_names_list:
 
-        temp = nodes_df[nodes_df.Row_number == row_name]    # temporary DF with nodes that belong to this list
-        row_all_nodes_area_size = temp.Size.sum()           # sum of all node_sizes that belong to the current row
+        # temporary DF with nodes that belong to this list
+        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
 
-        # todo - twra mporw na vrw xmin, xmaxes klp xwris iters
+        # sum of all node_sizes that belong to the current row
+        row_all_nodes_area = temp_nodes_df.Size.sum()
+        print(row_all_nodes_area)
 
-        print("Row name: ", row_name)
-        print(temp)
-        print(row_all_nodes_area_size)
-        print("\n")
+        index = rows_df.index[rows_df.Row_name == row_name]  # type int64Index
+        index = int(index[0])
+
+        rows_df.at[index, 'testing_density'] = float((row_all_nodes_area / row_area) * 100)
+
+    print(rows_df)
+    print("\n")
 
 
+# Net's min/max & net_size & HPW
 def net_size_and_hpw(nodes_df, nets_df):
 
-    # add 2 new colums on the nets_df
+    # add 2 new columns on the nets_df
     nets_df['testing_Net_size'] = 0
     nets_df['testing_HPW'] = 0
 
@@ -1017,14 +1036,15 @@ def net_size_and_hpw(nodes_df, nets_df):
         net_y_min = int(test_node_df['Coordinate_y'].min())
         net_y_max = int(test_node_df['y_max'].max())
 
-        index = nets_df.index[nets_df.Net_name == net_name]  # type int64index
-        index = int(index[0])   # convert to int
+        index = nets_df.index[nets_df.Net_name == net_name]  # type int64Index
+        index = int(index[0])
 
         nets_df.at[index, 'testing_Net_size'] = ((net_x_max - net_x_min)
                                                  * (net_y_max - net_y_min))
 
         nets_df.at[index, 'testing_HPW'] = ((net_x_max - net_x_min)
                                             + (net_y_max - net_y_min))
+
     print(nets_df)
 
 
