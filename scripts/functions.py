@@ -18,6 +18,8 @@ fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
+
+
 """"    Classes    """
 
 
@@ -239,7 +241,11 @@ class Net:
             'Internal_nodes': [node.node_name for node in self.internal_nodes],
             'External_nodes': [node.node_name for node in self.external_nodes],
             'Half_Perimeter_Wirelength': self.wirelength,
-            'Net_size': self.net_size
+            'Net_size': self.net_size,
+            'x_min': self.x_min,
+            'x_max': self.x_max,
+            'y_min': self.y_min,
+            'y_max': self.y_max
         }
 
     # not displaying the nodes that are part of the net
@@ -885,7 +891,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
     print(serie, type(serie))
     """
 
-    # todo find max with: lists, itertuples, vectorization, cython ?
+    # todo
 
 
 def smallest_net_based_on_size(nets_df, nodes_df):
@@ -1023,13 +1029,22 @@ def net_size_and_hpw(nodes_df, nets_df):
 
         for name in node_names:
             test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort=False)
+            current_node_type = str(nodes_df[nodes_df.Node_name == name].get("Type"))
 
-            test_node_df['x_max'] = (test_node_df['Coordinate_x']
-                                     + test_node_df['Width'])
+            # Terminals have no Width and Height
+            if current_node_type == 'Non_terminal':
+                test_node_df['x_max'] = (test_node_df['Coordinate_x']
+                                         + test_node_df['Width'])
 
-            test_node_df['y_max'] = (test_node_df['Coordinate_y']
-                                     + test_node_df['Height'])
-            # print(test_node_df)
+                test_node_df['y_max'] = (test_node_df['Coordinate_y']
+                                         + test_node_df['Height'])
+
+            else:
+                test_node_df['x_max'] = test_node_df['Coordinate_x']
+                test_node_df['y_max'] = test_node_df['Coordinate_y']
+
+
+        #print(test_node_df)
 
         net_x_min = int(test_node_df['Coordinate_x'].min())
         net_x_max = int(test_node_df['x_max'].max())
@@ -1044,6 +1059,12 @@ def net_size_and_hpw(nodes_df, nets_df):
 
         nets_df.at[index, 'testing_HPW'] = ((net_x_max - net_x_min)
                                             + (net_y_max - net_y_min))
+
+        nets_df.at[index, 'test_x_min'] = net_x_min
+        nets_df.at[index, 'test_x_max'] = net_x_max
+        nets_df.at[index, 'test_y_min'] = net_y_min
+        nets_df.at[index, 'test_y_max'] = net_y_max
+
 
     print(nets_df)
 
