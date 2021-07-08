@@ -92,12 +92,12 @@ class Node:
             'Node_name': self.node_name,
             'Width': self.node_width,
             'Height': self.node_height,
-            'Size': self.node_width * self.node_height,
-            'Coordinate_x': self.node_x,
-            'Coordinate_y': self.node_y,
+            'Coordinate_x_min': self.node_x,
+            'Coordinate_y_min': self.node_y,
             'Row_number': self.node_row.row_name,
             'Nets': self.node_nets,
             'Type': self.node_type,
+            'list_size': self.node_width * self.node_height
         }
 
     def __str__(self):
@@ -187,7 +187,7 @@ class Net:
                     if node.node_y > self.y_max:
                         self.y_max = node.node_y
                         temp_internal_node_3 = node
-
+        """
         for node in self.net_nodes:
             if (node != temp_internal_node_0 and node != temp_internal_node_1
                     and node != temp_internal_node_2
@@ -195,6 +195,26 @@ class Net:
                 self.internal_nodes.append(node)
             else:
                 self.external_nodes.add(node)
+        """
+
+        for node in self.net_nodes:
+            if node.node_type == "Non_Terminal":
+                if(node.lower_left_corner.x == self.x_min or
+                        node.lower_right_corner.x == self.x_max or
+                        node.lower_left_corner.y == self.y_min or
+                        node.upper_right_corner.y == self.y_max):
+
+                    self.external_nodes.add(node)
+
+            elif node.node_type == "Terminal":
+                if(node.node_x == self.x_min or
+                        node.node_x == self.x_max or
+                        node.node_y == self.y_min or
+                        node.node_y == self.y_max):
+
+                    self.external_nodes.add(node)
+            else:
+                self.internal_nodes.append(node)
 
     def calculate_net_wirelength(self):
         self.wirelength = (self.x_max - self.x_min) + (self.y_max - self.y_min)
@@ -725,15 +745,18 @@ def parser():  # parsing the whole circuit
     return node_list, net_list, row_list
 
 
-def lists_to_dataframes(node_list, net_list, row_list):
+def node_list_to_df(node_list):
     pd.set_option('display.width', 800)
     pd.set_option('display.max_columns', 20)
 
+    nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
+    nodes_df['Size'] = nodes_df["Width"] * nodes_df["Height"]
+
+
     print("\nDisplay Nodes Dataframe: \n")
-    nodes_df = pd.DataFrame.from_records(
-        [node.to_dict() for node in node_list])
-    # nodes_df["Size_v1"] = nodes_df["Width"] * nodes_df["Height"]
     print(nodes_df)
+
+def lists_to_dataframes(node_list, net_list, row_list):
 
     print("\nDisplay Nets Dataframe: \n")
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
@@ -1026,24 +1049,32 @@ def net_size_and_hpw(nodes_df, nets_df):
         # print(node_names)
 
         test_node_df = pd.DataFrame()
+        one_line_df = pd.DataFrame()
+        test_node_df['x_max'] = 0
+        test_node_df['y_max'] = 0
 
         for name in node_names:
-            test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort=False)
-            current_node_type = str(nodes_df[nodes_df.Node_name == name].get("Type"))
+           # test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort=True)
 
+            one_line_df = nodes_df[nodes_df.Node_name == name]
+            current_node_type = len(one_line_df['Type'].str.match('Terminal'))
+
+            print(one_line_df)
             # Terminals have no Width and Height
-            if current_node_type == 'Non_terminal':
-                test_node_df['x_max'] = (test_node_df['Coordinate_x']
-                                         + test_node_df['Width'])
+            if current_node_type == 0:
+                one_line_df['x_max'] = (one_line_df['Coordinate_x']
+                                         + one_line_df['Width'])
 
-                test_node_df['y_max'] = (test_node_df['Coordinate_y']
-                                         + test_node_df['Height'])
+                one_line_df['y_max'] = (one_line_df['Coordinate_y']
+                                         + one_line_df['Height'])
 
             else:
-                test_node_df['x_max'] = test_node_df['Coordinate_x']
-                test_node_df['y_max'] = test_node_df['Coordinate_y']
+                one_line_df['x_max'] = one_line_df['Coordinate_x']
+                one_line_df['y_max'] = one_line_df['Coordinate_y']
 
+            #test_node_df = test_node_df.append(one_line_df)
 
+        print("\n")
         #print(test_node_df)
 
         net_x_min = int(test_node_df['Coordinate_x'].min())
@@ -1054,16 +1085,18 @@ def net_size_and_hpw(nodes_df, nets_df):
         index = nets_df.index[nets_df.Net_name == net_name]  # type int64Index
         index = int(index[0])
 
+        nets_df.at[index, 'test_x_min'] = net_x_min
+        nets_df.at[index, 'test_x_max'] = net_x_max
+        nets_df.at[index, 'test_y_min'] = net_y_min
+        nets_df.at[index, 'test_y_max'] = net_y_max
+
         nets_df.at[index, 'testing_Net_size'] = ((net_x_max - net_x_min)
                                                  * (net_y_max - net_y_min))
 
         nets_df.at[index, 'testing_HPW'] = ((net_x_max - net_x_min)
                                             + (net_y_max - net_y_min))
 
-        nets_df.at[index, 'test_x_min'] = net_x_min
-        nets_df.at[index, 'test_x_max'] = net_x_max
-        nets_df.at[index, 'test_y_min'] = net_y_min
-        nets_df.at[index, 'test_y_max'] = net_y_max
+
 
 
     print(nets_df)
@@ -1139,3 +1172,5 @@ def net_size_and_hpw(nodes_df, nets_df):
         if a == 15:
             break
 """
+
+
