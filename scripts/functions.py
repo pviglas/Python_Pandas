@@ -1022,7 +1022,7 @@ def net_size_and_hpw(nodes_df, nets_df):
         test_node_df = pd.DataFrame()
 
         for name in node_names:
-            test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort = False)
+            test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort=False)
 
             test_node_df['x_max'] = (test_node_df['Coordinate_x']
                                      + test_node_df['Width'])

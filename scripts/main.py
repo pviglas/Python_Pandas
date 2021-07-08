@@ -36,8 +36,8 @@ if __name__ == "__main__":
 
         # biggest_net_based_on_size(dfs[1], dfs[0])
 
-        row_density(dfs[0], dfs[1], dfs[2])
-        #net_size_and_hpw(dfs[0], dfs[1])
+        #row_density(dfs[0], dfs[1], dfs[2])
+        net_size_and_hpw(dfs[0], dfs[1])
 
 
     else:
