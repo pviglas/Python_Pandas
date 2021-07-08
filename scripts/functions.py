@@ -725,6 +725,7 @@ def lists_to_dataframes(node_list, net_list, row_list):
     print("\nDisplay Nodes Dataframe: \n")
     nodes_df = pd.DataFrame.from_records(
         [node.to_dict() for node in node_list])
+    # nodes_df["Size_v1"] = nodes_df["Width"] * nodes_df["Height"]
     print(nodes_df)
 
     print("\nDisplay Nets Dataframe: \n")
@@ -961,8 +962,40 @@ def design_density(nodes_df, rows_df):
     print("\n")
 
 
+def testing(nodes_df, nets_df, rows_df):
+
+   # max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
+
+    a = []
+    temp = []
+    row_names_list = list(rows_df['Row_name'])
+
+    for row_name in row_names_list:
+
+        temp = nodes_df[nodes_df.Row_number == row_name]    # temporary DF with nodes that belong to this list
+        row_all_nodes_area_size = temp.Size.sum()           # sum of all node_sizes that belong to the current row
+
+        # todo - twra mporw na vrw xmin, xmaxes klp xwris iters
+
+        print("Row name: ", row_name)
+        print(temp)
+        print(row_all_nodes_area_size)
+        print("\n")
 
 
+def find_df_net_size(nodes_df, nets_df):
+
+    net_names_list = list(nets_df['External_nodes'])
+    print(net_names_list)
+
+    nets_dict = nets_df.set_index('Net_name').T.to_dict('records') # dictionary me ta nodes internal+external tou kathe net
+
+    print(nets_dict)
+
+    # for net_name in net_names_list:
+
+        # temp = nodes_df[nodes_df['Nets'].str.contains(net_name)]
+        # print(temp)
 
 
 # TESTING PRINTS:

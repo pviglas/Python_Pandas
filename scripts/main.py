@@ -36,5 +36,9 @@ if __name__ == "__main__":
 
         biggest_net_based_on_size(dfs[1], dfs[0])
 
+        testing(dfs[0], dfs[1], dfs[2])
+        # find_df_net_size(dfs[0], dfs[1])
+        # print(dfs[0])
+
     else:
         pass
