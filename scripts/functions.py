@@ -1056,12 +1056,6 @@ def net_size_and_hpw(nodes_df, nets_df):
 
 
 
-
-
-
-
-
-
 # TESTING PRINTS:
 """
 
