@@ -1,5 +1,6 @@
 
 from functions import *
+import datetime
 
 if __name__ == "__main__":
     
@@ -22,8 +23,12 @@ if __name__ == "__main__":
         print(nets_df)
 
         rows_df = row_list_to_df(parser_lists[2])
-        #row_nodes_area(nodes_df, rows_df)
+
+        begin_time = datetime.datetime.now()
         row_density(nodes_df, rows_df)
+        print("\nRow Density DF time: ", datetime.datetime.now() - begin_time)
+
+        print(parser_lists[3])
 
         #number_of_non_terminal_nodes(dfs[0])
         #biggest_non_terminal_node(dfs[0])

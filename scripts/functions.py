@@ -3,11 +3,13 @@
 """"   Set the current working dir infos   """
 
 import os
+import datetime
+import time
 import pandas as pd
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-"""
+
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 
@@ -19,6 +21,8 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
+
+"""
 
 
 
@@ -724,14 +728,18 @@ def parser():  # parsing the whole circuit
     file.close()  # Close .scl file
     """               End of Parse .scl              """
 
+    begin1_time = datetime.datetime.now()
+
     # Find the row, each node is placed in
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
             if (node.lower_left_corner.y == row.lower_left_corner.y and
                     node.upper_left_corner.y == row.upper_left_corner.y):
-                node.set_row(row)
+                #node.set_row(row)
                 row.append_node(node)
+
+    begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -741,11 +749,17 @@ def parser():  # parsing the whole circuit
                 node.node_row.append_net(net)
         net.net_rows = list(dict.fromkeys(net.net_rows))  # remove duplicates
 
+    begin3_time = datetime.datetime.now()
+
     # Update each row, with its density
     for row in row_list:
         row.calculate_row_density()
 
-    return node_list, net_list, row_list
+    begin4_time = datetime.datetime.now() - begin3_time
+
+    print("\nRow Density list time: ", begin4_time + begin2_time)
+
+    return node_list, net_list, row_list, begin4_time + begin2_time
 
 
 """               DataFrame's Functions             """
