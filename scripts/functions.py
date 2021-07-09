@@ -779,9 +779,8 @@ def net_list_to_df(net_list):
 
     return nets_df
 
-"""
-# Net's min/max & net_size & HPW
-def net_size_and_hpw(nodes_df, nets_df):
+
+def find_min_max_on_nets_df(nodes_df, nets_df):
     net_names_list = list(nets_df['Net_name'])
     net_externals_list = list(nets_df['External_nodes'])
     print("\n")
@@ -806,18 +805,26 @@ def net_size_and_hpw(nodes_df, nets_df):
         nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_max'] = (
             test_node_df['Coordinate_y_max'].max())
 
-        nets_df.loc[nets_df['Net_name'] == net_name, 'testing_Net_size'] = (
-                (nets_df['test_x_max'] - nets_df['test_x_min'])
-                * (nets_df['test_y_max'] - nets_df['test_y_min']))
+    # print(nets_df)
+    # return nets_df
 
-        nets_df.loc[nets_df['Net_name'] == net_name, 'testing_HPW'] = (
-                (nets_df['test_x_max'] - nets_df['test_x_min'])
-                + (nets_df['test_y_max'] - nets_df['test_y_min']))
 
-    print(nets_df)
+def calculate_net_hpw(nets_df):
 
-    return nets_df
-"""
+    nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
+                              + (nets_df['test_y_max'] - nets_df['test_y_min']))
+
+    # print(nets_df)
+
+
+def calculate_net_size(nets_df):
+
+    nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
+                              * (nets_df['test_y_max'] - nets_df['test_y_min']))
+
+    # print(nets_df)
+
+
 
 """
 def lists_to_dataframes(node_list, net_list, row_list):
