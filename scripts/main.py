@@ -8,13 +8,14 @@ if __name__ == "__main__":
         #dfs = lists_to_dataframes(parser_lists[0], parser_lists[1],
                                  # parser_lists[2])
 
-        # dfs[0] = nodes_df
-        # dfs[1] = nets_df
-        # dfs[2] = rows_df
-        # dfs[3] = design_df
-        print("\n")
+        # parser_lists[0] = node_list
+        # parser_lists[1] = nets_list
+        # parser_lists[2] = row_list
 
-        node_list_to_df(parser_lists[0])
+        print("\n")
+        nodes_df = node_list_to_df(parser_lists[0])
+        nets_df = net_list_to_df(parser_lists[1])
+        net_size_and_hpw(nodes_df, nets_df)
 
         #number_of_non_terminal_nodes(dfs[0])
         #biggest_non_terminal_node(dfs[0])
@@ -39,7 +40,7 @@ if __name__ == "__main__":
         # biggest_net_based_on_size(dfs[1], dfs[0])
 
         #row_density(dfs[0], dfs[1], dfs[2])
-        #net_size_and_hpw(dfs[0], dfs[1])
+
 
         """
         for node in parser_lists[0]:

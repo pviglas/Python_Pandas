@@ -4,6 +4,8 @@
 
 import os
 import pandas as pd
+pd.set_option('display.width', 800)
+pd.set_option('display.max_columns', 20)
 
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
@@ -92,11 +94,11 @@ class Node:
             'Node_name': self.node_name,
             'Width': self.node_width,
             'Height': self.node_height,
-            'Coordinate_x_min': self.node_x,
-            'Coordinate_y_min': self.node_y,
+            'Type': self.node_type,
             'Row_number': self.node_row.row_name,
             'Nets': self.node_nets,
-            'Type': self.node_type,
+            'Coordinate_x_min': self.node_x,
+            'Coordinate_y_min': self.node_y,
             'list_size': self.node_width * self.node_height
         }
 
@@ -260,12 +262,12 @@ class Net:
             'Rows': [row.row_name for row in self.net_rows],
             'Internal_nodes': [node.node_name for node in self.internal_nodes],
             'External_nodes': [node.node_name for node in self.external_nodes],
-            'Half_Perimeter_Wirelength': self.wirelength,
-            'Net_size': self.net_size,
             'x_min': self.x_min,
             'x_max': self.x_max,
             'y_min': self.y_min,
-            'y_max': self.y_max
+            'y_max': self.y_max,
+            'Half_Perimeter_Wirelength': self.wirelength,
+            'Net_size': self.net_size,
         }
 
     # not displaying the nodes that are part of the net
@@ -321,13 +323,13 @@ class Row:
     def to_dict(self):
         return {
             'Row_name': self.row_name,
-            'Density': self.density,
             'Cells': [node.node_name for node in self.row_nodes],
             'Nets': [net.net_name for net in self.row_nets],
             'Coordinate_x_min': self.x_min,
             'Coordinate_x_max': self.x_max,
             'Coordinate_y_min': self.y_min,
             'Coordinate_y_max': self.y_max,
+            'Density': self.density
         }
 
     def __str__(self):
@@ -745,22 +747,81 @@ def parser():  # parsing the whole circuit
     return node_list, net_list, row_list
 
 
+# DataFrame's Functions
+
 def node_list_to_df(node_list):
-    pd.set_option('display.width', 800)
-    pd.set_option('display.max_columns', 20)
 
     nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
     nodes_df['Size'] = nodes_df["Width"] * nodes_df["Height"]
 
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_max'] = (
+        nodes_df['Coordinate_x_min'])
+
+    nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'Coordinate_x_max'] = (
+         nodes_df['Coordinate_x_min'] + nodes_df['Width'])
+
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'] = (
+        nodes_df['Coordinate_y_min'])
+    nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'Coordinate_y_max'] = (
+            nodes_df['Coordinate_y_min'] + nodes_df['Height'])
 
     print("\nDisplay Nodes Dataframe: \n")
     print(nodes_df)
 
+    return nodes_df
+
+
+def net_list_to_df(net_list):
+
+    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
+    print("\nDisplay Nets Dataframe: \n")
+    print(nets_df)
+
+    return nets_df
+
+"""
+# Net's min/max & net_size & HPW
+def net_size_and_hpw(nodes_df, nets_df):
+    net_names_list = list(nets_df['Net_name'])
+    net_externals_list = list(nets_df['External_nodes'])
+    print("\n")
+
+    for net_name, node_names in zip(net_names_list, net_externals_list):
+
+        test_node_df = pd.DataFrame()
+
+        for name in node_names:
+            test_node_df = test_node_df.append(
+                nodes_df[nodes_df.Node_name == name], sort=False)
+
+        # print(test_node_df)
+
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_x_min'] = (
+            test_node_df['Coordinate_x_min'].min())
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_x_max'] = (
+            test_node_df['Coordinate_x_max'].max())
+
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_min'] = (
+            test_node_df['Coordinate_y_min'].min())
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_max'] = (
+            test_node_df['Coordinate_y_max'].max())
+
+        nets_df.loc[nets_df['Net_name'] == net_name, 'testing_Net_size'] = (
+                (nets_df['test_x_max'] - nets_df['test_x_min'])
+                * (nets_df['test_y_max'] - nets_df['test_y_min']))
+
+        nets_df.loc[nets_df['Net_name'] == net_name, 'testing_HPW'] = (
+                (nets_df['test_x_max'] - nets_df['test_x_min'])
+                + (nets_df['test_y_max'] - nets_df['test_y_min']))
+
+    print(nets_df)
+
+    return nets_df
+"""
+
+"""
 def lists_to_dataframes(node_list, net_list, row_list):
 
-    print("\nDisplay Nets Dataframe: \n")
-    nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
-    print(nets_df)
 
     print("\nDisplay Rows Dataframe: \n")
     rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
@@ -813,6 +874,45 @@ def lists_to_dataframes(node_list, net_list, row_list):
     print(design_df)
 
     return nodes_df, nets_df, rows_df, design_df
+"""
+""" Testing DataFrames """
+
+
+def row_density(nodes_df, nets_df, rows_df):
+
+    # add 1 new column on the rows_df
+    rows_df['testing_density'] = 0
+
+    rows_width = int(rows_df['Coordinate_x_max'].max()
+                     - int(rows_df['Coordinate_x_min'].max()))
+
+    rows_height = int(rows_df['Coordinate_y_max'].max()
+                      - rows_df['Coordinate_y_min'].max())
+
+    row_area = rows_width * rows_height
+
+    print(row_area)
+
+    temp_nodes_df = pd.DataFrame()
+    row_names_list = list(rows_df['Row_name'])
+
+    for row_name in row_names_list:
+
+        # temporary DF with nodes that belong to this list
+        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
+
+        # sum of all node_sizes that belong to the current row
+        row_all_nodes_area = temp_nodes_df.Size.sum()
+        print(row_all_nodes_area)
+
+        index = rows_df.index[rows_df.Row_name == row_name]  # type int64Index
+        index = int(index[0])
+
+        rows_df.at[index, 'testing_density'] = float((row_all_nodes_area / row_area) * 100)
+
+    print(rows_df)
+    print("\n")
+
 
 
 # 2 - 5
@@ -990,124 +1090,6 @@ def design_density(nodes_df, rows_df):
 
     print("Design Density: " + str(design_density) + "%")
     print("\n")
-
-
-""" Testing DataFrames """
-
-
-def row_density(nodes_df, nets_df, rows_df):
-
-    # add 1 new column on the rows_df
-    rows_df['testing_density'] = 0
-
-    rows_width = int(rows_df['Coordinate_x_max'].max()
-                     - int(rows_df['Coordinate_x_min'].max()))
-
-    rows_height = int(rows_df['Coordinate_y_max'].max()
-                      - rows_df['Coordinate_y_min'].max())
-
-    row_area = rows_width * rows_height
-
-    print(row_area)
-
-    temp_nodes_df = pd.DataFrame()
-    row_names_list = list(rows_df['Row_name'])
-
-    for row_name in row_names_list:
-
-        # temporary DF with nodes that belong to this list
-        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
-
-        # sum of all node_sizes that belong to the current row
-        row_all_nodes_area = temp_nodes_df.Size.sum()
-        print(row_all_nodes_area)
-
-        index = rows_df.index[rows_df.Row_name == row_name]  # type int64Index
-        index = int(index[0])
-
-        rows_df.at[index, 'testing_density'] = float((row_all_nodes_area / row_area) * 100)
-
-    print(rows_df)
-    print("\n")
-
-
-# Net's min/max & net_size & HPW
-def net_size_and_hpw(nodes_df, nets_df):
-
-    # add 2 new columns on the nets_df
-    nets_df['testing_Net_size'] = 0
-    nets_df['testing_HPW'] = 0
-
-    net_names_list = list(nets_df['Net_name'])
-    net_externals_list = list(nets_df['External_nodes'])
-    # print(net_names_list, len(net_names_list))
-    # print(net_externals_list, len(net_externals_list))
-
-    for net_name, node_names in zip(net_names_list, net_externals_list):
-        # print("\n")
-        # print(net_name)
-        # print(node_names)
-
-        test_node_df = pd.DataFrame()
-        one_line_df = pd.DataFrame()
-        test_node_df['x_max'] = 0
-        test_node_df['y_max'] = 0
-
-        for name in node_names:
-           # test_node_df = test_node_df.append(nodes_df[nodes_df.Node_name == name], sort=True)
-
-            one_line_df = nodes_df[nodes_df.Node_name == name]
-            current_node_type = len(one_line_df['Type'].str.match('Terminal'))
-
-            print(one_line_df)
-            # Terminals have no Width and Height
-            if current_node_type == 0:
-                one_line_df['x_max'] = (one_line_df['Coordinate_x']
-                                         + one_line_df['Width'])
-
-                one_line_df['y_max'] = (one_line_df['Coordinate_y']
-                                         + one_line_df['Height'])
-
-            else:
-                one_line_df['x_max'] = one_line_df['Coordinate_x']
-                one_line_df['y_max'] = one_line_df['Coordinate_y']
-
-            #test_node_df = test_node_df.append(one_line_df)
-
-        print("\n")
-        #print(test_node_df)
-
-        net_x_min = int(test_node_df['Coordinate_x'].min())
-        net_x_max = int(test_node_df['x_max'].max())
-        net_y_min = int(test_node_df['Coordinate_y'].min())
-        net_y_max = int(test_node_df['y_max'].max())
-
-        index = nets_df.index[nets_df.Net_name == net_name]  # type int64Index
-        index = int(index[0])
-
-        nets_df.at[index, 'test_x_min'] = net_x_min
-        nets_df.at[index, 'test_x_max'] = net_x_max
-        nets_df.at[index, 'test_y_min'] = net_y_min
-        nets_df.at[index, 'test_y_max'] = net_y_max
-
-        nets_df.at[index, 'testing_Net_size'] = ((net_x_max - net_x_min)
-                                                 * (net_y_max - net_y_min))
-
-        nets_df.at[index, 'testing_HPW'] = ((net_x_max - net_x_min)
-                                            + (net_y_max - net_y_min))
-
-
-
-
-    print(nets_df)
-
-
-    """
-    # dictionary me ta nodes internal+external tou kathe net
-    # nets_dict = nets_df.set_index('Net_name').T.to_dict('records')
-    # print(nets_dict)
-    """
-
 
 
 # TESTING PRINTS:
