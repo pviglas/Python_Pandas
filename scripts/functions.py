@@ -723,6 +723,7 @@ def parser():  # parsing the whole circuit
 
     file.close()  # Close .scl file
     """               End of Parse .scl              """
+
     # Find the row, each node is placed in
     for row in row_list:
         for node in node_list:
@@ -747,7 +748,8 @@ def parser():  # parsing the whole circuit
     return node_list, net_list, row_list
 
 
-# DataFrame's Functions
+"""               DataFrame's Functions             """
+
 
 def node_list_to_df(node_list):
 
@@ -806,14 +808,12 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
             test_node_df['Coordinate_y_max'].max())
 
     # print(nets_df)
-    # return nets_df
 
 
 def calculate_net_hpw(nets_df):
 
     nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
                               + (nets_df['test_y_max'] - nets_df['test_y_min']))
-
     # print(nets_df)
 
 
@@ -821,18 +821,48 @@ def calculate_net_size(nets_df):
 
     nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
                               * (nets_df['test_y_max'] - nets_df['test_y_min']))
-
     # print(nets_df)
+
+
+def row_list_to_df(row_list):
+
+    rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
+
+    rows_df['Width'] = rows_df['Coordinate_x_max'] - rows_df['Coordinate_x_min']
+    rows_df['Height'] = rows_df['Coordinate_y_max'] - rows_df['Coordinate_y_min']
+    rows_df['Row_area'] = rows_df['Width'] * rows_df['Height']
+
+    print("\nDisplay Rows Dataframe: \n")
+    print(rows_df)
+    print("\n")
+
+    return rows_df
+
+
+# Find each Row's all nodes_area and then Row density
+def row_density(nodes_df, rows_df):
+
+    temp_nodes_df = pd.DataFrame()
+    row_names_list = list(rows_df['Row_name'])
+
+    for row_name in row_names_list:
+
+        # temporary DF with nodes that belong to this list
+        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
+
+        # sum of all node_sizes that belong to the current row
+        nodes_area = temp_nodes_df.Size.sum()
+
+        rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
+
+    rows_df['tDensity'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
+    print(rows_df)
+    # print("\n")
 
 
 
 """
-def lists_to_dataframes(node_list, net_list, row_list):
-
-
-    print("\nDisplay Rows Dataframe: \n")
-    rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
-    print(rows_df)
+def creation_of_design_df(node_list, net_list, row_list):
 
     # calculations for DF Design
     design_cells = nodes_df.shape[0]
@@ -882,44 +912,6 @@ def lists_to_dataframes(node_list, net_list, row_list):
 
     return nodes_df, nets_df, rows_df, design_df
 """
-""" Testing DataFrames """
-
-
-def row_density(nodes_df, nets_df, rows_df):
-
-    # add 1 new column on the rows_df
-    rows_df['testing_density'] = 0
-
-    rows_width = int(rows_df['Coordinate_x_max'].max()
-                     - int(rows_df['Coordinate_x_min'].max()))
-
-    rows_height = int(rows_df['Coordinate_y_max'].max()
-                      - rows_df['Coordinate_y_min'].max())
-
-    row_area = rows_width * rows_height
-
-    print(row_area)
-
-    temp_nodes_df = pd.DataFrame()
-    row_names_list = list(rows_df['Row_name'])
-
-    for row_name in row_names_list:
-
-        # temporary DF with nodes that belong to this list
-        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
-
-        # sum of all node_sizes that belong to the current row
-        row_all_nodes_area = temp_nodes_df.Size.sum()
-        print(row_all_nodes_area)
-
-        index = rows_df.index[rows_df.Row_name == row_name]  # type int64Index
-        index = int(index[0])
-
-        rows_df.at[index, 'testing_density'] = float((row_all_nodes_area / row_area) * 100)
-
-    print(rows_df)
-    print("\n")
-
 
 
 # 2 - 5
@@ -1013,16 +1005,8 @@ def mean_size_of_nets_based_on_nodes(nets_df):
 
 
 def biggest_net_based_on_size(nets_df, nodes_df):
-    """
-    df = nets_df.get(["External_nodes"])
-    print(df, type(df))
-
-    serie = nets_df["External_nodes"]
-    print(serie, type(serie))
-    """
-
     # todo
-
+    pass
 
 def smallest_net_based_on_size(nets_df, nodes_df):
     # todo
@@ -1099,67 +1083,5 @@ def design_density(nodes_df, rows_df):
     print("\n")
 
 
-# TESTING PRINTS:
-"""
-
-    for net in net_list:
-        net.display_net_rows()
-        net.display_net_external_nodes()
-        net.display_net_internal_nodes()
-    print("\n\n**")
-
-
-    for row in row_list:
-        print("\n\n**")
-        row.display_row_nets()
-        row.display_row_nodes()
-
-
-    for net in net_list:
-        for row in net.net_rows:
-            print(type(row.net_rows))
-
-
-    for net in net_list:
-        for node in node_list:
-            if node.node_name == net.net
-
-
-    for node in node_list:
-        node.display_node_row()
-
-
-    for row in row_list:
-        row.display_row()
-
-
-    for i in row_list:
-        print(i)
-
-
-    a = 0
-    for i in node_list:
-        a = a + 1
-        i.display_node_corners()
-
-        if a == 20:
-            break
-
-
-    a = 0
-    for i in net_list:
-        a += 1
-        i.display_net()
-        i.find_coordinates_of_net()
-        i.calculate_net_wirelength()
-        i.calculate_net_size()
-
-        print("\n")
-
-        i.display_net_size()
-        i.display_net_wirelength()
-        if a == 15:
-            break
-"""
 
 

@@ -14,12 +14,16 @@ if __name__ == "__main__":
 
         print("\n")
         nodes_df = node_list_to_df(parser_lists[0])
+
         nets_df = net_list_to_df(parser_lists[1])
         find_min_max_on_nets_df(nodes_df, nets_df)
         calculate_net_hpw(nets_df)
         calculate_net_size(nets_df)
         print(nets_df)
-        #net_size_and_hpw(nodes_df, nets_df)
+
+        rows_df = row_list_to_df(parser_lists[2])
+        #row_nodes_area(nodes_df, rows_df)
+        row_density(nodes_df, rows_df)
 
         #number_of_non_terminal_nodes(dfs[0])
         #biggest_non_terminal_node(dfs[0])
