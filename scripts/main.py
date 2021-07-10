@@ -22,7 +22,7 @@ if __name__ == "__main__":
         nodes_df = create_nodes_df(parser_lists[0])
         nodetend = datetime.datetime.now() - nodet
         print("\nDisplay Nodes Dataframe: \n")
-        #print(nodes_df)
+        print(nodes_df)
         print("\n")
 
         # Nets DataFrame Functions
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         nets_df = create_nets_df(parser_lists[1], nodes_df)
         nettend = datetime.datetime.now() - nett
         print("\nDisplay Nets Dataframe: \n")
-        #print(nets_df)
+        print(nets_df)
         print("\n")
 
         # Rows DataFrame Functions
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         rows_df = create_rows_df(parser_lists[2], nodes_df)
         print("\nDisplay Rows Dataframe: \n")
         rowtend = datetime.datetime.now() - rowt
-        #print(rows_df)
+        print(rows_df)
         print("\n")
 
         # Design DataFrame Functions
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         design_df = create_design_df(nodes_df, nets_df, rows_df)
         dtend = datetime.datetime.now() - dt
         print("\nDisplay Designs Dataframe: \n")
-        #print(design_df)
+        print(design_df)
         print("\n")
         e2 = datetime.datetime.now() - b2
 
@@ -54,11 +54,11 @@ if __name__ == "__main__":
         #nodes_df.to_excel("output.xlsx")
 
 
-#        with pd.ExcelWriter('output.xlsx') as writer:
- #           nodes_df.to_excel(writer, sheet_name='nodes_df')
-  #          nets_df.to_excel(writer, sheet_name='nets_df')
-   #         rows_df.to_excel(writer, sheet_name='rows_df')
-    #        design_df.to_excel(writer, sheet_name='design_df')
+        with pd.ExcelWriter('output.xlsx') as writer:
+            nodes_df.to_excel(writer, sheet_name='nodes_df')
+            nets_df.to_excel(writer, sheet_name='nets_df')
+            rows_df.to_excel(writer, sheet_name='rows_df')
+            design_df.to_excel(writer, sheet_name='design_df')
 
 
         #number_of_non_terminal_nodes(dfs[0])

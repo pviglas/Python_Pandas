@@ -10,7 +10,7 @@ import datetime   #Uncomment when needed
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-
+"""
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 
@@ -22,7 +22,7 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-"""
+
 
 """"    Classes    """
 
@@ -72,7 +72,7 @@ class Node:
             'Nets': self.node_nets,
             'Coordinate_x_min': self.node_x,
             'Coordinate_y_min': self.node_y,
-            'list_size': self.node_width * self.node_height
+            # 'list_size': self.node_width * self.node_height
         }
 
     def __str__(self):
@@ -299,7 +299,7 @@ class Row:
             'Coordinate_x_max': self.x_max,
             'Coordinate_y_min': self.y_min,
             'Coordinate_y_max': self.y_max,
-            'Density': self.density
+            # 'Density': self.density
         }
 
     def __str__(self):
@@ -748,13 +748,13 @@ def create_nets_df(net_list, nodes_df):
 
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
-    find_min_max_on_nets_df(nodes_df, nets_df)
-    calculate_net_hpw(nets_df)
-    calculate_net_size(nets_df)
+    #find_min_max_on_nets_df(nodes_df, nets_df)
+    #calculate_net_hpw(nets_df)
+    #calculate_net_size(nets_df)
 
-    nets_df = nets_df.astype({"test_x_min": int, "test_x_max": int,
-                              "test_y_min": int, "test_y_max": int,
-                              "testing_HPW": int, "testing_net_size": int})
+    #nets_df = nets_df.astype({"test_x_min": int, "test_x_max": int,
+     #                         "test_y_min": int, "test_y_max": int,
+      #                        "testing_HPW": int, "testing_net_size": int})
 
     return nets_df
 
@@ -824,7 +824,7 @@ def row_density(nodes_df, rows_df):
 
         rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
 
-    rows_df['tDensity(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
+    rows_df['Density(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
     rowdftime_end = datetime.datetime.now() - rowdftime
     print("\nRow Density df time: ", rowdftime_end)
 
