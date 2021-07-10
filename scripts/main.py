@@ -6,30 +6,29 @@ if __name__ == "__main__":
     
     if verify_files():
         parser_lists = parser()
-        #dfs = lists_to_dataframes(parser_lists[0], parser_lists[1],
-                                 # parser_lists[2])
-
+        print("\n")
         # parser_lists[0] = node_list
         # parser_lists[1] = nets_list
         # parser_lists[2] = row_list
 
-        print("\n")
         nodes_df = node_list_to_df(parser_lists[0])
+        print("\nDisplay Nodes Dataframe: \n")
+        print(nodes_df)
 
         nets_df = net_list_to_df(parser_lists[1])
         find_min_max_on_nets_df(nodes_df, nets_df)
         calculate_net_hpw(nets_df)
         calculate_net_size(nets_df)
+
+        print("\nDisplay Nets Dataframe: \n")
         print(nets_df)
 
         rows_df = row_list_to_df(parser_lists[2])
-
-        begin_time = datetime.datetime.now()
         row_density(nodes_df, rows_df)
-        print("\nRow Density DF time: ", datetime.datetime.now() - begin_time)
+        print("\nDisplay Rows Dataframe: \n")
+        print(rows_df)
 
-        print(parser_lists[3])
-
+        create_design_df(nodes_df, nets_df, rows_df)
         #number_of_non_terminal_nodes(dfs[0])
         #biggest_non_terminal_node(dfs[0])
         #smallest_non_terminal_node(dfs[0])

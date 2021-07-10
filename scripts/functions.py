@@ -9,7 +9,7 @@ import pandas as pd
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-
+"""
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 
@@ -21,9 +21,6 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-
-"""
-
 
 
 """"    Classes    """
@@ -728,7 +725,7 @@ def parser():  # parsing the whole circuit
     file.close()  # Close .scl file
     """               End of Parse .scl              """
 
-    begin1_time = datetime.datetime.now()
+    # begin1_time = datetime.datetime.now()
 
     # Find the row, each node is placed in
     for row in row_list:
@@ -736,10 +733,10 @@ def parser():  # parsing the whole circuit
             # check for both lower_y and upper_y to avoid Terminal nodes
             if (node.lower_left_corner.y == row.lower_left_corner.y and
                     node.upper_left_corner.y == row.upper_left_corner.y):
-                #node.set_row(row)
+                node.set_row(row)
                 row.append_node(node)
 
-    begin2_time = datetime.datetime.now() - begin1_time
+    # begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -749,17 +746,16 @@ def parser():  # parsing the whole circuit
                 node.node_row.append_net(net)
         net.net_rows = list(dict.fromkeys(net.net_rows))  # remove duplicates
 
-    begin3_time = datetime.datetime.now()
+    # begin3_time = datetime.datetime.now()
 
     # Update each row, with its density
     for row in row_list:
         row.calculate_row_density()
 
-    begin4_time = datetime.datetime.now() - begin3_time
+    # begin4_time = datetime.datetime.now() - begin3_time
+    # print("\nRow Density list time: ", begin4_time + begin2_time)
 
-    print("\nRow Density list time: ", begin4_time + begin2_time)
-
-    return node_list, net_list, row_list, begin4_time + begin2_time
+    return node_list, net_list, row_list
 
 
 """               DataFrame's Functions             """
@@ -781,17 +777,12 @@ def node_list_to_df(node_list):
     nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'Coordinate_y_max'] = (
             nodes_df['Coordinate_y_min'] + nodes_df['Height'])
 
-    print("\nDisplay Nodes Dataframe: \n")
-    print(nodes_df)
-
     return nodes_df
 
 
 def net_list_to_df(net_list):
 
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
-    print("\nDisplay Nets Dataframe: \n")
-    print(nets_df)
 
     return nets_df
 
@@ -808,8 +799,6 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
         for name in node_names:
             test_node_df = test_node_df.append(
                 nodes_df[nodes_df.Node_name == name], sort=False)
-
-        # print(test_node_df)
 
         nets_df.loc[nets_df['Net_name'] == net_name, 'test_x_min'] = (
             test_node_df['Coordinate_x_min'].min())
@@ -846,17 +835,12 @@ def row_list_to_df(row_list):
     rows_df['Height'] = rows_df['Coordinate_y_max'] - rows_df['Coordinate_y_min']
     rows_df['Row_area'] = rows_df['Width'] * rows_df['Height']
 
-    print("\nDisplay Rows Dataframe: \n")
-    print(rows_df)
-    print("\n")
-
     return rows_df
 
 
 # Find each Row's all nodes_area and then Row density
 def row_density(nodes_df, rows_df):
 
-    temp_nodes_df = pd.DataFrame()
     row_names_list = list(rows_df['Row_name'])
 
     for row_name in row_names_list:
@@ -870,50 +854,37 @@ def row_density(nodes_df, rows_df):
         rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
 
     rows_df['tDensity'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
-    print(rows_df)
+
     # print("\n")
 
 
+def create_design_df(nodes_df, nets_df, rows_df):
 
-"""
-def creation_of_design_df(node_list, net_list, row_list):
-
-    # calculations for DF Design
     design_cells = nodes_df.shape[0]
-    print("\nDesign num of cells: ", design_cells)
-
     design_nets = nets_df.shape[0]
-    print("Design num of nets: ", design_nets)
+    design_rows = rows_df.shape[0]
+    design_terminals = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
+    design_total_cell_area = nodes_df['Size'].sum()
 
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
-    print("Design Height: ", design_height)
 
     design_width = (rows_df['Coordinate_x_max'].max()
                     - rows_df['Coordinate_x_min'].min())
-    print("Design Width: ", design_width)
-
-    design_terminals = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
-    print("Design Terminals: ", design_terminals)
 
     design_total_area = design_height * design_width
-    print("Design Total Area: ", design_total_area)
-
-    design_total_cell_area = nodes_df['Size'].sum()
-    print("Design Total Cell Area: ", design_total_cell_area)
-
     design_density = (design_total_cell_area / design_total_area) * 100
-    print("Design Density: " + str(design_density) + "%")
 
     design_dict = {
-        'Density (%)': design_density,
         'Number_of_cells': design_cells,
         'Number_of_terminals': design_terminals,
         'Number_of_nets': design_nets,
+        'Number_of_rows': design_rows,
         'Width': design_width,
         'Height': design_height,
         'Total_Area': design_total_area,
-        'Total_Cell_Area': design_total_cell_area
+        'Total_Cell_Area': design_total_cell_area,
+        'Density (%)': design_density
     }
 
     # 1st way to create DF Design
@@ -924,8 +895,7 @@ def creation_of_design_df(node_list, net_list, row_list):
     design_df = pd.DataFrame.from_records([design_dict])
     print(design_df)
 
-    return nodes_df, nets_df, rows_df, design_df
-"""
+    return design_df
 
 
 # 2 - 5
