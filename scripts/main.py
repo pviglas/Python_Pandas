@@ -1,6 +1,5 @@
 
 from functions import *
-import datetime
 
 if __name__ == "__main__":
     
@@ -11,24 +10,32 @@ if __name__ == "__main__":
         # parser_lists[1] = nets_list
         # parser_lists[2] = row_list
 
-        nodes_df = node_list_to_df(parser_lists[0])
+        # Nodes DataFrame Functions
+        nodes_df = create_nodes_df(parser_lists[0])
         print("\nDisplay Nodes Dataframe: \n")
         print(nodes_df)
+        print("\n")
 
-        nets_df = net_list_to_df(parser_lists[1])
-        find_min_max_on_nets_df(nodes_df, nets_df)
-        calculate_net_hpw(nets_df)
-        calculate_net_size(nets_df)
+        # Nets DataFrame Functions
+        nets_df = create_nets_df(parser_lists[1],nodes_df)
+        #find_min_max_on_nets_df(nodes_df, nets_df)
 
         print("\nDisplay Nets Dataframe: \n")
         print(nets_df)
+        print("\n")
 
-        rows_df = row_list_to_df(parser_lists[2])
-        row_density(nodes_df, rows_df)
+        # Rows DataFrame Functions
+        rows_df = create_rows_df(parser_lists[2], nodes_df)
         print("\nDisplay Rows Dataframe: \n")
         print(rows_df)
+        print("\n")
 
-        create_design_df(nodes_df, nets_df, rows_df)
+        # Design DataFrame Functions
+        design_df = create_design_df(nodes_df, nets_df, rows_df)
+        print("\nDisplay Designs Dataframe: \n")
+        print(design_df)
+        print("\n")
+
         #number_of_non_terminal_nodes(dfs[0])
         #biggest_non_terminal_node(dfs[0])
         #smallest_non_terminal_node(dfs[0])
@@ -54,9 +61,5 @@ if __name__ == "__main__":
         #row_density(dfs[0], dfs[1], dfs[2])
 
 
-        """
-        for node in parser_lists[0]:
-            print(node.display_node_corners())
-        """
     else:
         pass

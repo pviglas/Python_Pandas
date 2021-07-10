@@ -6,6 +6,7 @@ import os
 import pandas as pd
 # import datetime   #Uncomment when needed
 # import time       #Uncomment when needed
+
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
@@ -26,16 +27,6 @@ os.chdir(
 """"    Classes    """
 
 
-class Point:
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __str__(self):
-        return " (" + str(self.x) + " , " + str(self.y) + ") "
-
-
 class Node:
 
     def __init__(self, node_name, node_width, node_height, node_type,
@@ -46,12 +37,9 @@ class Node:
         self.node_type = node_type
         self.node_x = node_x  # Lower Left Corner - x Coordinate
         self.node_y = node_y  # Lower Left Corner - y Coordinate
-        self.lower_left_corner = Point(None, None)
-        self.lower_right_corner = Point(None, None)
-        self.upper_left_corner = Point(None, None)
-        self.upper_right_corner = Point(None, None)
 
-        self.node_nets = []  # net_names that this node are part of #todo net object if needed
+        # todo net object if needed
+        self.node_nets = []  # net_names that this node are part of
         self.node_row = Row(None, None, None, None, None)
 
     # update the Coordinates x & y
@@ -64,22 +52,6 @@ class Node:
 
     def append_net(self, net_name):
         self.node_nets.append(str(net_name))
-
-    # calculate the coordinates of the 4-corners of the node
-    # Terminals are dots, they do not have corners
-    def set_points(self, x_min, x_max, y_min, y_max):
-        if self.node_type == "Non_Terminal":
-            self.lower_left_corner = Point(x_min, y_min)
-            self.lower_right_corner = Point(x_max, y_min)
-            self.upper_left_corner = Point(x_min, y_max)
-            self.upper_right_corner = Point(x_max, y_max)
-
-    def display_node_corners(self):
-        print("\nNode name: " + str(self.node_name)
-              + "\nLower Left Corner: " + str(self.lower_left_corner)
-              + "\nLower Right Corner: " + str(self.lower_right_corner)
-              + "\nUpper Left Corner: " + str(self.upper_left_corner)
-              + "\nUpper Right Corner: " + str(self.upper_right_corner))
 
     def display_node_row(self):
         print("\nNode " + str(self.node_name)
@@ -142,10 +114,14 @@ class Net:
             start += 1
 
             if start == 1 and node.node_type == "Non_Terminal":
-                self.x_min = node.lower_left_corner.x
-                self.x_max = node.lower_right_corner.x
-                self.y_min = node.lower_left_corner.y
-                self.y_max = node.upper_right_corner.y
+                # self.x_min = node.lower_left_corner.x
+                self.x_min = node.node_x
+                # self.x_max = node.lower_right_corner.x
+                self.x_max = node.node_x + node.node_width
+                # self.y_min = node.lower_left_corner.y
+                self.y_min = node.node_y
+                # self.y_max = node.upper_right_corner.y
+                self.y_max = node.node_y + node.node_height
 
                 temp_internal_node_0 = node
                 temp_internal_node_1 = node
@@ -165,17 +141,17 @@ class Net:
 
             else:
                 if node.node_type == "Non_Terminal":
-                    if node.lower_left_corner.x < self.x_min:
-                        self.x_min = node.lower_left_corner.x
+                    if node.node_x < self.x_min:
+                        self.x_min = node.node_x
                         temp_internal_node_0 = node
-                    if node.lower_right_corner.x > self.x_max:
-                        self.x_max = node.lower_right_corner.x
+                    if node.node_x + node.node_width > self.x_max:
+                        self.x_max = node.node_x + node.node_width
                         temp_internal_node_1 = node
-                    if node.lower_left_corner.y < self.y_min:
-                        self.y_min = node.lower_left_corner.y
+                    if node.node_y < self.y_min:
+                        self.y_min = node.node_y
                         temp_internal_node_2 = node
-                    if node.upper_right_corner.y > self.y_max:
-                        self.y_max = node.upper_right_corner.y
+                    if node.node_y + node.node_height > self.y_max:
+                        self.y_max = node.node_y + node.node_height
                         temp_internal_node_3 = node
                 else:
                     if node.node_x < self.x_min:
@@ -202,10 +178,10 @@ class Net:
 
         for node in self.net_nodes:
             if node.node_type == "Non_Terminal":
-                if(node.lower_left_corner.x == self.x_min or
-                        node.lower_right_corner.x == self.x_max or
-                        node.lower_left_corner.y == self.y_min or
-                        node.upper_right_corner.y == self.y_max):
+                if(node.node_x == self.x_min or
+                        node.node_x + node.node_width == self.x_max or
+                        node.node_y == self.y_min or
+                        node.node_y + node.node_height == self.y_max):
 
                     self.external_nodes.add(node)
 
@@ -286,10 +262,6 @@ class Row:
         self.x_max = x_max
         self.row_nodes = []  # list of nodes that are placed in this row
         self.row_nets = set()  # set of nets that are part of this row
-        self.lower_left_corner = Point(x_min, y_min)
-        self.lower_right_corner = Point(x_max, y_min)
-        self.upper_left_corner = Point(x_min, y_max)
-        self.upper_right_corner = Point(x_max, y_max)
         self.density = None
 
     def append_node(self, node):
@@ -340,6 +312,7 @@ class Row:
                 + str(self.x_min) + " - x_max: " + str(self.x_max))
 
 
+"""
 class Design:
 
     def __init__(self, num_of_cells, num_of_terminals, num_of_nets):
@@ -362,9 +335,9 @@ class Design:
         pass
 
     def calculate_design_total_cell_area(self, node_list):
-        total_cell_area = 0
-        for node in node_list:
-            pass
+        # total_cell_area = 0
+        # for node in node_list:
+        pass
 
     def __str__(self):
         return (str(self.density) + " " + str(self.num_of_cells)
@@ -372,7 +345,7 @@ class Design:
                 + " " + str(self.num_of_nets)
                 + " " + str(self.width) + " " + str(self.height)
                 + " " + str(self.total_area) + " " + str(self.total_cell_area))
-
+"""
 
 """"    Functions   """
 
@@ -464,9 +437,6 @@ def parser():  # parsing the whole circuit
 
     saved = 0
     node_list = []  # List of all nodes for the current circuit
-    number_of_nodes = None
-    number_of_terminals = None
-    number_of_nets = None
 
     # Locate NumNodes + NumTerminals
     for i in range(len(lines)):
@@ -480,7 +450,6 @@ def parser():  # parsing the whole circuit
 
             number_of_nodes = temp_parsing[point + length:]
             number_of_nodes = number_of_nodes.strip(": ")
-
             number_of_nodes = int(number_of_nodes)
 
         # Locate NumTerminals
@@ -490,7 +459,6 @@ def parser():  # parsing the whole circuit
 
             number_of_terminals = temp_parsing[point + length:]
             number_of_terminals = number_of_terminals.strip(": ")
-
             number_of_terminals = int(number_of_terminals)
 
             # Starting point for the 2nd for, +1 for the next line.
@@ -542,9 +510,6 @@ def parser():  # parsing the whole circuit
         for node in node_list:
             if node.node_name == node_name:
                 node.set_x_y(node_x, node_y)
-                if node.node_type == "Non_Terminal":
-                    node.set_points(node_x, node_x + node.node_width,
-                                    node_y, node_y + node.node_height)
 
     file.close()  # Close .pl file
     """               End of Parse .pl               """
@@ -567,10 +532,9 @@ def parser():  # parsing the whole circuit
             point = temp_parsing.find("NUMNETS")
             length = len("NUMNETS")
 
-            number_of_nets = temp_parsing[point + length:]
-            number_of_nets = number_of_nets.strip(": ")
-
-            number_of_nets = int(number_of_nets)
+            nets_number = temp_parsing[point + length:]
+            nets_number = nets_number.strip(": ")
+            nets_number = int(nets_number)
 
             saved = i
             break
@@ -629,7 +593,6 @@ def parser():  # parsing the whole circuit
     file = open("{}.scl".format(fileName))
     lines = file.readlines()
 
-    row_name = None
     row_coordinate = None
     row_sub = None
     row_numsites = None
@@ -731,12 +694,10 @@ def parser():  # parsing the whole circuit
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
-            if (node.lower_left_corner.y == row.lower_left_corner.y and
-                    node.upper_left_corner.y == row.upper_left_corner.y):
+            if (node.node_y == row.y_min and
+                    (node.node_y + node.node_height) == row.y_max):
                 node.set_row(row)
                 row.append_node(node)
-
-    # begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -761,14 +722,13 @@ def parser():  # parsing the whole circuit
 """               DataFrame's Functions             """
 
 
-def node_list_to_df(node_list):
+def create_nodes_df(node_list):
 
     nodes_df = pd.DataFrame.from_records([node.to_dict() for node in node_list])
     nodes_df['Size'] = nodes_df["Width"] * nodes_df["Height"]
 
     nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_max'] = (
         nodes_df['Coordinate_x_min'])
-
     nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'Coordinate_x_max'] = (
          nodes_df['Coordinate_x_min'] + nodes_df['Width'])
 
@@ -777,12 +737,23 @@ def node_list_to_df(node_list):
     nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'Coordinate_y_max'] = (
             nodes_df['Coordinate_y_min'] + nodes_df['Height'])
 
+    nodes_df = nodes_df.astype({"Coordinate_x_max": int,
+                                "Coordinate_y_max": int})
+
     return nodes_df
 
 
-def net_list_to_df(net_list):
+def create_nets_df(net_list, nodes_df):
 
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
+
+    find_min_max_on_nets_df(nodes_df, nets_df)
+    calculate_net_hpw(nets_df)
+    calculate_net_size(nets_df)
+
+    nets_df = nets_df.astype({"test_x_min": int, "test_x_max": int,
+                              "test_y_min": int, "test_y_max": int,
+                              "testing_HPW": int, "testing_net_size": int})
 
     return nets_df
 
@@ -810,30 +781,29 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
         nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_max'] = (
             test_node_df['Coordinate_y_max'].max())
 
-    # print(nets_df)
-
 
 def calculate_net_hpw(nets_df):
 
     nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
                               + (nets_df['test_y_max'] - nets_df['test_y_min']))
-    # print(nets_df)
 
 
 def calculate_net_size(nets_df):
 
-    nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
+    nets_df['testing_net_size'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
                               * (nets_df['test_y_max'] - nets_df['test_y_min']))
-    # print(nets_df)
 
 
-def row_list_to_df(row_list):
+def create_rows_df(row_list, nodes_df):
 
     rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
 
     rows_df['Width'] = rows_df['Coordinate_x_max'] - rows_df['Coordinate_x_min']
     rows_df['Height'] = rows_df['Coordinate_y_max'] - rows_df['Coordinate_y_min']
     rows_df['Row_area'] = rows_df['Width'] * rows_df['Height']
+
+    row_density(nodes_df, rows_df)
+    rows_df = rows_df.astype({"Nodes_area": int})
 
     return rows_df
 
@@ -853,9 +823,7 @@ def row_density(nodes_df, rows_df):
 
         rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
 
-    rows_df['tDensity'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
-
-    # print("\n")
+    rows_df['tDensity(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
 
 
 def create_design_df(nodes_df, nets_df, rows_df):
@@ -884,16 +852,14 @@ def create_design_df(nodes_df, nets_df, rows_df):
         'Height': design_height,
         'Total_Area': design_total_area,
         'Total_Cell_Area': design_total_cell_area,
-        'Density (%)': design_density
+        'Density(%)': design_density
     }
 
     # 1st way to create DF Design
     # design_df = pd.DataFrame(design_dict, index=[0])
 
     # 2nd way to create DF design
-    print("\nDisplay Designs Dataframe: \n")
     design_df = pd.DataFrame.from_records([design_dict])
-    print(design_df)
 
     return design_df
 
@@ -992,6 +958,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
     # todo
     pass
 
+
 def smallest_net_based_on_size(nets_df, nodes_df):
     # todo
     pass
@@ -1051,7 +1018,7 @@ def design_half_perimeter_wirelength(nets_df):
     print("\n")
 
 
-def design_density(nodes_df, rows_df):
+def calculate_design_density(nodes_df, rows_df):
 
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
