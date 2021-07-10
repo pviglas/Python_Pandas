@@ -688,9 +688,11 @@ def parser():  # parsing the whole circuit
     file.close()  # Close .scl file
     """               End of Parse .scl              """
 
-    # begin1_time = datetime.datetime.now()
+
 
     # Find the row, each node is placed in
+
+    # begin1_time = datetime.datetime.now()
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
@@ -698,6 +700,8 @@ def parser():  # parsing the whole circuit
                     (node.node_y + node.node_height) == row.y_max):
                 node.set_row(row)
                 row.append_node(node)
+
+    # begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -707,9 +711,9 @@ def parser():  # parsing the whole circuit
                 node.node_row.append_net(net)
         net.net_rows = list(dict.fromkeys(net.net_rows))  # remove duplicates
 
-    # begin3_time = datetime.datetime.now()
-
     # Update each row, with its density
+
+    # begin3_time = datetime.datetime.now()
     for row in row_list:
         row.calculate_row_density()
 
