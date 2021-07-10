@@ -4,13 +4,13 @@
 
 import os
 import pandas as pd
-# import datetime   #Uncomment when needed
+import datetime   #Uncomment when needed
 # import time       #Uncomment when needed
 
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-"""
+
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 
@@ -22,7 +22,7 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-
+"""
 
 """"    Classes    """
 
@@ -105,28 +105,21 @@ class Net:
 
     def find_coordinates_of_net(self):
         start = 0
-        temp_internal_node_0 = Node(None, None, None, None)
-        temp_internal_node_1 = Node(None, None, None, None)
-        temp_internal_node_2 = Node(None, None, None, None)
-        temp_internal_node_3 = Node(None, None, None, None)
 
         for node in self.net_nodes:
             start += 1
 
             if start == 1 and node.node_type == "Non_Terminal":
-                # self.x_min = node.lower_left_corner.x
+
                 self.x_min = node.node_x
-                # self.x_max = node.lower_right_corner.x
                 self.x_max = node.node_x + node.node_width
-                # self.y_min = node.lower_left_corner.y
                 self.y_min = node.node_y
-                # self.y_max = node.upper_right_corner.y
                 self.y_max = node.node_y + node.node_height
 
-                temp_internal_node_0 = node
-                temp_internal_node_1 = node
-                temp_internal_node_2 = node
-                temp_internal_node_3 = node
+                # temp_internal_node_0 = node
+                # temp_internal_node_1 = node
+                # temp_internal_node_2 = node
+                # temp_internal_node_3 = node
 
             elif start == 1 and node.node_type == "Terminal":
                 self.x_min = node.node_x
@@ -134,39 +127,40 @@ class Net:
                 self.y_min = node.node_y
                 self.y_max = node.node_y
 
-                temp_internal_node_0 = node
-                temp_internal_node_1 = node
-                temp_internal_node_2 = node
-                temp_internal_node_3 = node
+                # temp_internal_node_0 = node
+                # temp_internal_node_1 = node
+                # temp_internal_node_2 = node
+                # temp_internal_node_3 = node
 
             else:
                 if node.node_type == "Non_Terminal":
                     if node.node_x < self.x_min:
                         self.x_min = node.node_x
-                        temp_internal_node_0 = node
+                        # temp_internal_node_0 = node
                     if node.node_x + node.node_width > self.x_max:
                         self.x_max = node.node_x + node.node_width
-                        temp_internal_node_1 = node
+                        # temp_internal_node_1 = node
                     if node.node_y < self.y_min:
                         self.y_min = node.node_y
-                        temp_internal_node_2 = node
+                        # temp_internal_node_2 = node
                     if node.node_y + node.node_height > self.y_max:
                         self.y_max = node.node_y + node.node_height
-                        temp_internal_node_3 = node
+                        # temp_internal_node_3 = node
                 else:
                     if node.node_x < self.x_min:
                         self.x_min = node.node_x
-                        temp_internal_node_0 = node
+                        # temp_internal_node_0 = node
                     if node.node_x > self.x_max:
                         self.x_max = node.node_x
-                        temp_internal_node_1 = node
+                        # temp_internal_node_1 = node
                     if node.node_y < self.y_min:
                         self.y_min = node.node_y
-                        temp_internal_node_2 = node
+                        # temp_internal_node_2 = node
                     if node.node_y > self.y_max:
                         self.y_max = node.node_y
-                        temp_internal_node_3 = node
+                        # temp_internal_node_3 = node
         """
+        #  (min=2) (max=4) number of External nodes
         for node in self.net_nodes:
             if (node != temp_internal_node_0 and node != temp_internal_node_1
                     and node != temp_internal_node_2
@@ -176,14 +170,17 @@ class Net:
                 self.external_nodes.add(node)
         """
 
+        # (min=2) (max=oo) number of External nodes
         for node in self.net_nodes:
             if node.node_type == "Non_Terminal":
                 if(node.node_x == self.x_min or
-                        node.node_x + node.node_width == self.x_max or
+                        (node.node_x + node.node_width) == self.x_max or
                         node.node_y == self.y_min or
-                        node.node_y + node.node_height == self.y_max):
+                        (node.node_y + node.node_height) == self.y_max):
 
                     self.external_nodes.add(node)
+                else:
+                    self.internal_nodes.append(node)
 
             elif node.node_type == "Terminal":
                 if(node.node_x == self.x_min or
@@ -192,8 +189,8 @@ class Net:
                         node.node_y == self.y_max):
 
                     self.external_nodes.add(node)
-            else:
-                self.internal_nodes.append(node)
+                else:
+                    self.internal_nodes.append(node)
 
     def calculate_net_wirelength(self):
         self.wirelength = (self.x_max - self.x_min) + (self.y_max - self.y_min)
@@ -692,7 +689,7 @@ def parser():  # parsing the whole circuit
 
     # Find the row, each node is placed in
 
-    # begin1_time = datetime.datetime.now()
+    begin1_time = datetime.datetime.now()
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
@@ -701,7 +698,7 @@ def parser():  # parsing the whole circuit
                 node.set_row(row)
                 row.append_node(node)
 
-    # begin2_time = datetime.datetime.now() - begin1_time
+    begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -713,12 +710,12 @@ def parser():  # parsing the whole circuit
 
     # Update each row, with its density
 
-    # begin3_time = datetime.datetime.now()
+    begin3_time = datetime.datetime.now()
     for row in row_list:
         row.calculate_row_density()
 
-    # begin4_time = datetime.datetime.now() - begin3_time
-    # print("\nRow Density list time: ", begin4_time + begin2_time)
+    begin4_time = datetime.datetime.now() - begin3_time
+    print("\nRow Density list time: ", begin4_time + begin2_time)
 
     return node_list, net_list, row_list
 
@@ -814,7 +811,7 @@ def create_rows_df(row_list, nodes_df):
 
 # Find each Row's all nodes_area and then Row density
 def row_density(nodes_df, rows_df):
-
+    rowdftime = datetime.datetime.now()
     row_names_list = list(rows_df['Row_name'])
 
     for row_name in row_names_list:
@@ -828,6 +825,8 @@ def row_density(nodes_df, rows_df):
         rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
 
     rows_df['tDensity(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
+    rowdftime_end = datetime.datetime.now() - rowdftime
+    print("\nRow Density df time: ", rowdftime_end)
 
 
 def create_design_df(nodes_df, nets_df, rows_df):
