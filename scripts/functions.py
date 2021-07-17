@@ -1103,9 +1103,11 @@ def allocation_of_cells_on_each_row():
 # Πχ έχει εμβαδόν 100 κ έχει συμπληρωθεί το 90  90% θα λέει το barchart
 # R0 -> 90%
 # R1 -> 85%
-def allocation_of_row_densities():
-    # todo
-    pass
+def allocation_of_row_densities(rows_df):
+    # sns.barplot('Density(%)', 'Row_name', data=rows_df)
+    # sns.boxplot(x='Density(%)', y='Row_name', data=rows_df)
+    sns.displot(data=rows_df, x="Density(%)", hue="Row_name", kde=True, rug=True)
+    plt.show()
 
 
 # 23 -> Ελέυθερος χώρος/Δεσμευμένος χώρος ανά row (γραφική παράσταση)
