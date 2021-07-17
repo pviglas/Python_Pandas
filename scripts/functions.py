@@ -13,7 +13,6 @@ pd.set_option('display.max_columns', 20)
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
-
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
 
