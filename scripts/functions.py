@@ -1021,7 +1021,7 @@ def mean_num_of_nodes_on_rows(rows_df):
 
 
 # 24 - 25
-def calculate_design_half_perimeter_wirelength(nets_df):
+def design_half_perimeter_wirelength(nets_df):
 
     design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
 
@@ -1029,7 +1029,7 @@ def calculate_design_half_perimeter_wirelength(nets_df):
     # print("\n")
 
 
-def calculate_design_density(nodes_df, rows_df):
+def design_density(nodes_df, rows_df):
 
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
@@ -1039,9 +1039,9 @@ def calculate_design_density(nodes_df, rows_df):
 
     design_total_area = design_height * design_width
     design_total_cell_area = nodes_df['Size'].sum()
-    design_density = (design_total_cell_area / design_total_area) * 100
+    density = (design_total_cell_area / design_total_area) * 100
 
-    print("Design Density: " + str(design_density) + "%")
+    print("Design Density: " + str(density) + "%")
     # print("\n")
 
 
