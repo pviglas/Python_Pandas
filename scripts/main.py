@@ -95,6 +95,8 @@ if __name__ == "__main__":
         print("create design_df: ", dtend)
         print("Whole main runtime: ", main_end)
 
+        allocation_of_non_terminal_node_sizes(nodes_df)
+
         # Export to excel/csv
         # nodes_df.to_csv('PythonExport.csv', sep=',')
         # nodes_df.to_excel("output.xlsx")

@@ -4,8 +4,10 @@
 
 import os
 import pandas as pd
-import datetime   #Uncomment when needed
-# import time       #Uncomment when needed
+import seaborn as sns
+import datetime
+import matplotlib.pyplot as plt
+
 
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
@@ -1049,10 +1051,38 @@ def design_density(nodes_df, rows_df):
 # Πχ έστω ότι έχουμε μεγέθη κελιών 5,10,15,20 στον x’άξονα και στον y’άξονα
 # θα ναι τόσο ψηλό το κάθε μέγεθος, όσο και το πλήθος των κελιών με το
 # αντίστοιχο μέγεθος.
-def allocation_of_non_terminal_node_sizes():
-    # todo
-    pass
+# άρα θέλω:
+# -> list of node sizes
+# -> number of nodes me gia to kathe size
+def allocation_of_non_terminal_node_sizes(nodes_df):
+    """
+    a = nodes_df.groupby(['Size'])
+    print(a)
+    for i in a:
+        print(i, type(i))
+        print("\n")
+    print("\n\n",type(a))
+"""
 
+    # sns.histplot(nodes_df.Size, kde= False)
+    # sns.histplot(a, kde= False)
+    # plt.show()
+
+    #a = nodes_df.groupby('Size')[["Node_name"]].sum()
+    #a = nodes_df.groupby(["Size", "Node_name"]).sum()
+
+    #a = nodes_df.agg(["Size"])
+    a = nodes_df.groupby(by=len(["Size"])).sum()
+    #sns.displot(data=nodes_df, x="Size", hue="Type", kde=True, rug=True)
+
+    print("\n\nSeaborn: \n")
+    print(a, type(a))
+    # plt.bar(a.Size, a)
+    #sns.barplot('Size','Node_name', data = nodes_df)
+
+    #b = sns.boxplot(x='Size', y='Type', data=nodes_df)
+    #b.set_xlabel("Size", fontsize = 20)
+    #plt.show()
 
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
 def allocation_of_net_sizes():
