@@ -240,8 +240,8 @@ class Net:
             'x_max': self.x_max,
             'y_min': self.y_min,
             'y_max': self.y_max,
-            'Half_Perimeter_Wirelength': self.wirelength,
-            'Net_size': self.net_size,
+            # 'list_Half_Perimeter_Wirelength': self.wirelength,
+            # 'list_Net_size': self.net_size,
         }
 
     # not displaying the nodes that are part of the net
@@ -299,7 +299,7 @@ class Row:
             'Coordinate_x_max': self.x_max,
             'Coordinate_y_min': self.y_min,
             'Coordinate_y_max': self.y_max,
-            # 'Density': self.density
+            'Density': self.density
         }
 
     def __str__(self):
@@ -425,7 +425,7 @@ def verify_files():
     return flag
 
 
-def parser():  # parsing the whole circuit
+def parser():  # parsing the whole circuit into lists of objects
 
     """               Start of Parse .nodes               """
 
@@ -685,11 +685,10 @@ def parser():  # parsing the whole circuit
     file.close()  # Close .scl file
     """               End of Parse .scl              """
 
-
-
     # Find the row, each node is placed in
 
     begin1_time = datetime.datetime.now()
+
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
@@ -711,6 +710,7 @@ def parser():  # parsing the whole circuit
     # Update each row, with its density
 
     begin3_time = datetime.datetime.now()
+
     for row in row_list:
         row.calculate_row_density()
 
@@ -748,13 +748,10 @@ def create_nets_df(net_list, nodes_df):
 
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
-    #find_min_max_on_nets_df(nodes_df, nets_df)
-    #calculate_net_hpw(nets_df)
-    #calculate_net_size(nets_df)
-
-    #nets_df = nets_df.astype({"test_x_min": int, "test_x_max": int,
-     #                         "test_y_min": int, "test_y_max": int,
-      #                        "testing_HPW": int, "testing_net_size": int})
+    # find_min_max_on_nets_df(nodes_df, nets_df)
+    calculate_net_hpw(nets_df)
+    calculate_net_size(nets_df)
+    nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
 
     return nets_df
 
@@ -785,14 +782,14 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
 
 def calculate_net_hpw(nets_df):
 
-    nets_df['testing_HPW'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
-                              + (nets_df['test_y_max'] - nets_df['test_y_min']))
+    nets_df['Half_Perimeter_Wirelength'] = ((nets_df['x_max'] - nets_df['x_min'])
+                                    + (nets_df['y_max'] - nets_df['y_min']))
 
 
 def calculate_net_size(nets_df):
 
-    nets_df['testing_net_size'] = ((nets_df['test_x_max'] - nets_df['test_x_min'])
-                              * (nets_df['test_y_max'] - nets_df['test_y_min']))
+    nets_df['Net_Size'] = ((nets_df['x_max'] - nets_df['x_min'])
+                           * (nets_df['y_max'] - nets_df['y_min']))
 
 
 def create_rows_df(row_list, nodes_df):
@@ -816,15 +813,14 @@ def row_density(nodes_df, rows_df):
 
     for row_name in row_names_list:
 
-        # temporary DF with nodes that belong to this list
-        temp_nodes_df = nodes_df[nodes_df.Row_number == row_name]
-
         # sum of all node_sizes that belong to the current row
-        nodes_area = temp_nodes_df.Size.sum()
+        nodes_area = nodes_df[nodes_df.Row_number == row_name].Size.sum()
 
+        # set nodes area to the current Row
         rows_df.loc[rows_df['Row_name'] == row_name, 'Nodes_area'] = nodes_area
 
     rows_df['Density(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
+
     rowdftime_end = datetime.datetime.now() - rowdftime
     print("\nRow Density df time: ", rowdftime_end)
 
@@ -884,8 +880,8 @@ def biggest_non_terminal_node(nodes_df):
 
     # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Maximum Non Terminal Node size = ", max_node_size)
-    print("Non Terminal Node(s) with max size: ", max_nodes_list)
-    print("\n")
+    print("- Non Terminal Node(s) with max size: ", max_nodes_list)
+    # print("\n")
 
 
 def smallest_non_terminal_node(nodes_df):
@@ -898,8 +894,8 @@ def smallest_non_terminal_node(nodes_df):
 
     # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Minimum Non Terminal Node size = ", min_node_size)
-    print("Non Terminal Node(s) with min size: ", min_nodes_list)
-    print("\n")
+    print("- Non Terminal Node(s) with min size: ", min_nodes_list)
+    # print("\n")
 
 
 def mean_size_non_terminal_nodes(nodes_df):
@@ -923,7 +919,7 @@ def number_of_nets(nets_df):
 
     num_of_nets = nets_df.shape[0]
     print("Number of nets: ", num_of_nets)
-    print("\n")
+    # print("\n")
 
 
 def biggest_net_based_on_nodes(nets_df):
@@ -933,8 +929,8 @@ def biggest_net_based_on_nodes(nets_df):
     max_nets_list = list(max_nets_df.Net_name)
 
     print("Maximum number of cells in a net: ", max_num_of_cells)
-    print("Biggest net(s): ", max_nets_list)
-    print("\n")
+    print("- Biggest net(s): ", max_nets_list)
+    # print("\n")
 
 
 def smallest_net_based_on_nodes(nets_df):
@@ -944,8 +940,8 @@ def smallest_net_based_on_nodes(nets_df):
     min_nets_list = list(min_nets_df.Net_name)
 
     print("Minimum number of cells in a net: ", min_num_of_cells)
-    print("Smallest net(s): ", min_nets_list)
-    print("\n")
+    print("- Smallest net(s): ", min_nets_list)
+    # print("\n")
 
 
 def mean_size_of_nets_based_on_nodes(nets_df):
@@ -954,29 +950,41 @@ def mean_size_of_nets_based_on_nodes(nets_df):
     mean_num_of_cells = round(mean_num_of_cells, 2)
 
     print("Mean number of cell(s) on each net: ", mean_num_of_cells)
-    print("\n")
+    # print("\n")
 
 
 def biggest_net_based_on_size(nets_df, nodes_df):
-    # todo
-    pass
+    max_net_size = int(nets_df["Net_Size"].max())
+    max_nets_df = nets_df[nets_df.Net_Size == max_net_size]
+    max_nets_list = list(max_nets_df.Net_name)
+
+    print("Maximum Net Size: ", max_net_size)
+    print("- Biggest net(s): ", max_nets_list)
+    # print("\n")
 
 
 def smallest_net_based_on_size(nets_df, nodes_df):
-    # todo
-    pass
+    min_net_size = int(nets_df["Net_Size"].min())
+    min_nets_df = nets_df[nets_df.Net_Size == min_net_size]
+    min_nets_list = list(min_nets_df.Net_name)
+
+    print("Minimum Net Size: ", min_net_size)
+    print("- Smallest net(s): ", min_nets_list)
+    # print("\n")
 
 
 def mean_net_based_on_size(nets_df, nodes_df):
-    # todo
-    pass
+    mean_net_size = float(nets_df["Net_Size"].mean())
+
+    print("Mean Net Size: ", mean_net_size)
+    # print("\n")
 
 
 # 17 - 20
 def number_of_rows(rows_df):
     num_of_rows = rows_df.shape[0]
     print("Number of rows: ", num_of_rows)
-    print("\n")
+    # print("\n")
 
 
 def biggest_row(rows_df):
@@ -987,8 +995,8 @@ def biggest_row(rows_df):
 
     # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Maximum number of cells in a row: ", max_num_of_cells)
-    print("Biggest row(s): ", max_rows_list)
-    print("\n")
+    print("- Biggest row(s): ", max_rows_list)
+    # print("\n")
 
 
 def smallest_row(rows_df):
@@ -999,8 +1007,8 @@ def smallest_row(rows_df):
 
     # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Minimum number of cells in a row: ", min_num_of_cells)
-    print("Smallest row(s): ", min_rows_list)
-    print("\n")
+    print("- Smallest row(s): ", min_rows_list)
+    # print("\n")
 
 
 def mean_num_of_nodes_on_rows(rows_df):
@@ -1009,16 +1017,16 @@ def mean_num_of_nodes_on_rows(rows_df):
     mean_num_of_cells = round(mean_num_of_cells, 2)
 
     print("Mean number of cells on each row: ", mean_num_of_cells)
-    print("\n")
+    # print("\n")
 
 
 # 24 - 25
-def design_half_perimeter_wirelength(nets_df):
+def calculate_design_half_perimeter_wirelength(nets_df):
 
     design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
 
     print("Design Half Perimeter Wirelength: ", design_hpw)
-    print("\n")
+    # print("\n")
 
 
 def calculate_design_density(nodes_df, rows_df):
@@ -1034,7 +1042,7 @@ def calculate_design_density(nodes_df, rows_df):
     design_density = (design_total_cell_area / design_total_area) * 100
 
     print("Design Density: " + str(design_density) + "%")
-    print("\n")
+    # print("\n")
 
 
 

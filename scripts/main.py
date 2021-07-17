@@ -54,41 +54,47 @@ if __name__ == "__main__":
         #nodes_df.to_excel("output.xlsx")
 
 
-        with pd.ExcelWriter('output.xlsx') as writer:
-            nodes_df.to_excel(writer, sheet_name='nodes_df')
-            nets_df.to_excel(writer, sheet_name='nets_df')
-            rows_df.to_excel(writer, sheet_name='rows_df')
-            design_df.to_excel(writer, sheet_name='design_df')
+    #    with pd.ExcelWriter('output.xlsx') as writer:
+     #       nodes_df.to_excel(writer, sheet_name='nodes_df')
+      #      nets_df.to_excel(writer, sheet_name='nets_df')
+       #     rows_df.to_excel(writer, sheet_name='rows_df')
+        #    design_df.to_excel(writer, sheet_name='design_df')
 
 
-        #number_of_non_terminal_nodes(dfs[0])
-        #biggest_non_terminal_node(dfs[0])
-        #smallest_non_terminal_node(dfs[0])
-        #mean_size_non_terminal_nodes(dfs[0])
+        number_of_non_terminal_nodes(nodes_df)
+        biggest_non_terminal_node(nodes_df)
+        smallest_non_terminal_node(nodes_df)
+        mean_size_non_terminal_nodes(nodes_df)
+        number_of_terminal_nodes(nodes_df)
 
-        #number_of_terminal_nodes(dfs[0])
+        print('\n')
+        number_of_nets(nets_df)
+        biggest_net_based_on_nodes(nets_df)
+        smallest_net_based_on_nodes(nets_df)
+        mean_size_of_nets_based_on_nodes(nets_df)
+        print('\n')
+        biggest_net_based_on_size(nets_df, nodes_df)
+        smallest_net_based_on_size(nets_df, nodes_df)
+        mean_net_based_on_size(nets_df, nodes_df)
 
-        #number_of_nets(dfs[1])
-        #biggest_net_based_on_nodes(dfs[1])
-        #smallest_net_based_on_nodes(dfs[1])
-        #mean_size_of_nets_based_on_nodes(dfs[1])
+        print('\n')
+        number_of_rows(rows_df)
+        biggest_row(rows_df)
+        smallest_row(rows_df)
+        mean_num_of_nodes_on_rows(rows_df)
 
-        #number_of_rows(dfs[2])
-        #biggest_row(dfs[2])
-        #smallest_row(dfs[2])
-        #mean_num_of_nodes_on_rows(dfs[2])
+        print('\n')
+        calculate_design_half_perimeter_wirelength(nets_df)
+        calculate_design_density(nodes_df, rows_df)
 
-        #design_half_perimeter_wirelength(dfs[1])
-        #design_density(dfs[0], dfs[2])
-
-        # biggest_net_based_on_size(dfs[1], dfs[0])
         print('\n')
         main_end = datetime.datetime.now() - main_time
 
+        lists_to_df_time = nodetend + nettend + rowtend + dtend
         print("\nParser time: ", end_time)
-        print("Convert Lists to DFs time: ", e2)
+        print("Convert Lists to DFs time: ", lists_to_df_time)
         print("Whole main runtime: ", main_end)
-        print("Add parser time + convertions: ", end_time + e2)
+        print("Parser time + convertions to df: ", end_time + lists_to_df_time)
         print("create node_df: ", nodetend)
         print("create net_df: ", nettend)
         print("create row_df: ", rowtend)
