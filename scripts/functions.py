@@ -1055,40 +1055,31 @@ def design_density(nodes_df, rows_df):
 # -> list of node sizes
 # -> number of nodes me gia to kathe size
 def allocation_of_non_terminal_node_sizes(nodes_df):
-    """
-    a = nodes_df.groupby(['Size'])
-    print(a)
-    for i in a:
-        print(i, type(i))
-        print("\n")
-    print("\n\n",type(a))
-"""
 
-    # sns.histplot(nodes_df.Size, kde= False)
-    # sns.histplot(a, kde= False)
-    # plt.show()
+    #plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
-    #a = nodes_df.groupby('Size')[["Node_name"]].sum()
-    #a = nodes_df.groupby(["Size", "Node_name"]).sum()
+    #sns.countplot(x="Size", hue="Type", data=nodes_df)
+    # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
-    #a = nodes_df.agg(["Size"])
-    a = nodes_df.groupby(by=len(["Size"])).sum()
-    #sns.displot(data=nodes_df, x="Size", hue="Type", kde=True, rug=True)
 
-    print("\n\nSeaborn: \n")
-    print(a, type(a))
-    # plt.bar(a.Size, a)
-    #sns.barplot('Size','Node_name', data = nodes_df)
+    sns.catplot(x="Size", hue="Type", data=nodes_df, kind="count",height=8, aspect=1)
+    plt.show()
 
-    #b = sns.boxplot(x='Size', y='Type', data=nodes_df)
-    #b.set_xlabel("Size", fontsize = 20)
-    #plt.show()
 
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
-def allocation_of_net_sizes():
+def allocation_of_net_sizes(nets_df):
+
+    plt.xticks(rotation=90)  # avoid overlapping on x - axis
+
+    sns.countplot(x="Net_Size", data=nets_df)
+    # sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
+
+    plt.show()
+
+
+def allocation_of_net_sizes_based_on_nodes(nets_df):
     # todo
     pass
-
 
 # 21 -> Κατανομή αριθμού κελιών ανά row (γραφική παράσταση)
 # Αν έχω πχ 100 rows -- x’άξονας έχω από 0-99 και στον y’άξονα έχω τον αριθμό
@@ -1106,7 +1097,8 @@ def allocation_of_cells_on_each_row():
 def allocation_of_row_densities(rows_df):
     # sns.barplot('Density(%)', 'Row_name', data=rows_df)
     # sns.boxplot(x='Density(%)', y='Row_name', data=rows_df)
-    sns.displot(data=rows_df, x="Density(%)", hue="Row_name", kde=True, rug=True)
+    #sns.displot(data=rows_df, x="Density(%)", hue="Row_name", kde=True, rug=True)
+    sns.rugplot(rows_df["Density(%)"])
     plt.show()
 
 
