@@ -1,13 +1,12 @@
-# Parsing bookshelf formatted file
+# Parsing bookshelf formatted files
 
 """"   Set the current working dir infos   """
 
 import os
 import pandas as pd
 import seaborn as sns
-import datetime
 import matplotlib.pyplot as plt
-
+import datetime
 
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
@@ -1056,11 +1055,13 @@ def design_density(nodes_df, rows_df):
 # -> number of nodes me gia to kathe size
 def allocation_of_non_terminal_node_sizes(nodes_df):
 
-    #plt.xticks(rotation=90)  # avoid overlapping on x - axis
+    # TODO Find max node Size and set limits (0, max_size)
+    # to avoid x-axis overlapping
 
-    #sns.countplot(x="Size", hue="Type", data=nodes_df)
+    # sns.countplot(x="Size", hue="Type", data=nodes_df)
     # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
+    plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
     sns.catplot(x="Size", hue="Type", data=nodes_df, kind="count",height=8, aspect=1)
     plt.show()
@@ -1069,25 +1070,56 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
 def allocation_of_net_sizes(nets_df):
 
-    plt.xticks(rotation=90)  # avoid overlapping on x - axis
+    # TODO Find max net Size and set limits (0, max_size)
+    # to avoid x-axis overlapping
 
+    # sns.set_context('poster', font_scale=1)
+
+    plt.xticks(rotation=90)  # avoid overlapping on x - axis
     sns.countplot(x="Net_Size", data=nets_df)
+
+    # Another way, using catplot
     # sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
 
     plt.show()
 
 
 def allocation_of_net_sizes_based_on_nodes(nets_df):
-    # todo
-    pass
+
+    # TODO Find max num_of_nodes and set limits (0, max)
+    # to avoid x-axis overlapping
+
+    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
+
+    # 1st way - creating an extra colum on DF, storing the number of nodes
+    nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
+    plot = sns.countplot(x="Num_of_nodes", data=nets_df)
+    plot.set(xlabel='Number of Nodes', ylabel='Number of Nets')
+    plot.set(title='Number of Nets matched with Number of Nodes ')
+    plt.show()
+
+    # 2nd way - with list
+    # num_of_nodes = nets_df["Nodes"].str.len()
+    # sns.countplot(x=num_of_nodes)
+    # plt.show()
+
 
 # 21 -> Κατανομή αριθμού κελιών ανά row (γραφική παράσταση)
 # Αν έχω πχ 100 rows -- x’άξονας έχω από 0-99 και στον y’άξονα έχω τον αριθμό
 # από κελιά (Non-Terminals) -- και μετά κάνω ένα barchart για να φαίνεται ποιες
 # γραμμές έχουν περισσότερα κελιά.
-def allocation_of_cells_on_each_row():
-    # todo
-    pass
+def allocation_of_cells_on_each_row(rows_df):
+
+    row_names = rows_df["Row_name"]
+    num_of_cells = rows_df["Cells"].str.len()
+
+    # plt.figure(figsize=(8,4))
+    # sns.set_context('paper')
+
+    plt.xticks(rotation=90)  # avoid overlapping on x - axis
+
+    sns.barplot(x=row_names, y=num_of_cells)
+    plt.show()
 
 
 # 22 -> Πυκνότητα ανά γραμμή (γραφική παράσταση)
@@ -1098,6 +1130,7 @@ def allocation_of_row_densities(rows_df):
     # sns.barplot('Density(%)', 'Row_name', data=rows_df)
     # sns.boxplot(x='Density(%)', y='Row_name', data=rows_df)
     #sns.displot(data=rows_df, x="Density(%)", hue="Row_name", kde=True, rug=True)
+
     sns.rugplot(rows_df["Density(%)"])
     plt.show()
 
