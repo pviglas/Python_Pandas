@@ -1057,13 +1057,14 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
 
     # TODO Find max node Size and set limits (0, max_size)
     # to avoid x-axis overlapping
+    # TODO If countplot doesnt match, check catplot
 
-    # sns.countplot(x="Size", hue="Type", data=nodes_df)
     # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
     plt.xticks(rotation=90)  # avoid overlapping on x - axis
-
-    sns.catplot(x="Size", hue="Type", data=nodes_df, kind="count",height=8, aspect=1)
+    plot = sns.countplot(x="Size", hue="Type", data=nodes_df)
+    plot.set(xlabel='Node Sizes', ylabel='Number of Nodes')
+    plot.set(title='Number of Nodes matched with Node Sizes ')
     plt.show()
 
 
@@ -1076,7 +1077,9 @@ def allocation_of_net_sizes(nets_df):
     # sns.set_context('poster', font_scale=1)
 
     plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    sns.countplot(x="Net_Size", data=nets_df)
+    plot = sns.countplot(x="Net_Size", data=nets_df)
+    plot.set(xlabel='Net Sizes', ylabel='Number of Nets')
+    plot.set(title='Number of Nets matched with Net Sizes ')
 
     # Another way, using catplot
     # sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
@@ -1118,7 +1121,9 @@ def allocation_of_cells_on_each_row(rows_df):
 
     plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
-    sns.barplot(x=row_names, y=num_of_cells)
+    plot = sns.barplot(x=row_names, y=num_of_cells)
+    plot.set(xlabel='Row names', ylabel='Number of Cells')
+    plot.set(title='Rows matched with their number of Cells ')
     plt.show()
 
 
@@ -1127,11 +1132,16 @@ def allocation_of_cells_on_each_row(rows_df):
 # R0 -> 90%
 # R1 -> 85%
 def allocation_of_row_densities(rows_df):
-    # sns.barplot('Density(%)', 'Row_name', data=rows_df)
-    # sns.boxplot(x='Density(%)', y='Row_name', data=rows_df)
-    #sns.displot(data=rows_df, x="Density(%)", hue="Row_name", kde=True, rug=True)
 
-    sns.rugplot(rows_df["Density(%)"])
+    # TODO maybe do it number of rows with a current density?
+    # TODO and also add here 0 to max_num to avoid overlap
+
+    plot = sns.barplot('Row_name', 'Density(%)', data=rows_df)
+    plot.set(xlabel='Row names', ylabel='Density(%)')
+    plot.set(title='Rows matched with their Density(%)')
+
+    # sns.boxplot(y='Density(%)', x='Row_name', data=rows_df)
+
     plt.show()
 
 
@@ -1141,6 +1151,40 @@ def allocation_of_row_densities(rows_df):
 # αφού όλες οι γραμμές έχουν ίδιο ύψος. Και θα φτιάξουμε ένα barchart που θα
 # δείχνει το free και non-free space. Και απλά η μπάρα θα ναι κόκκινη στο
 # non-free space κ πράσινη στο free.
-def allocation_of_row_spaces():
-    # todo
-    pass
+def allocation_of_row_spaces(rows_df):
+    import numpy as np
+    # rows_df['Density(%)']
+    # rows_df['Nodes_area']
+    # rows_df['Row_area']
+
+
+    # 1st way
+    # TODO show numbers of free and non free space
+
+    row_area = 1000
+    labels = list(rows_df['Row_name'])
+    nodes_areas = list(rows_df['Nodes_area'])
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(16, 9))
+    ax.bar(labels, row_area, width, label="Free_Space", color='limegreen')
+    ax.bar(labels, nodes_areas, width, label="Non_Free_Space", bottom=0,
+           color='firebrick')
+    ax.legend()
+    plt.show()
+
+
+    """
+    # 2nd way
+    # TODO cant show labels, need .legend
+    row_area = 1000
+    labels = list(rows_df['Row_name'])
+    nodes_areas = list(rows_df['Nodes_area'])
+
+    y = np.arange(len(labels))
+    plt.xticks(y, labels)
+    plt.bar(y, row_area, label="FreeSpace")
+    plt.bar(y, nodes_areas, label="NonFreeSpace")
+    plt.show()
+    """
+

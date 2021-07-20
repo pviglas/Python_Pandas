@@ -96,12 +96,13 @@ if __name__ == "__main__":
         print("Whole main runtime: ", main_end)
 
         # allocation_of_non_terminal_node_sizes(nodes_df)
+
         # allocation_of_net_sizes(nets_df)
-        # allocation_of_row_densities(rows_df)
+        # allocation_of_net_sizes_based_on_nodes(nets_df)
+
         # allocation_of_cells_on_each_row(rows_df)
-        allocation_of_net_sizes_based_on_nodes(nets_df)
-
-
+        # allocation_of_row_densities(rows_df)
+        allocation_of_row_spaces(rows_df)
 
         # Export to excel/csv
         # nodes_df.to_csv('PythonExport.csv', sep=',')
