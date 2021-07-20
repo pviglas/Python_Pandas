@@ -1152,7 +1152,7 @@ def allocation_of_row_densities(rows_df):
 # δείχνει το free και non-free space. Και απλά η μπάρα θα ναι κόκκινη στο
 # non-free space κ πράσινη στο free.
 def allocation_of_row_spaces(rows_df):
-    import numpy as np
+
     # rows_df['Density(%)']
     # rows_df['Nodes_area']
     # rows_df['Row_area']
@@ -1177,6 +1177,9 @@ def allocation_of_row_spaces(rows_df):
     """
     # 2nd way
     # TODO cant show labels, need .legend
+    
+    import numpy as np
+    
     row_area = 1000
     labels = list(rows_df['Row_name'])
     nodes_areas = list(rows_df['Nodes_area'])
