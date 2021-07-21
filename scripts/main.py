@@ -78,8 +78,8 @@ if __name__ == "__main__":
         print('\n')
 
         # Design Functions
-        design_half_perimeter_wirelength(nets_df)
-        design_density(nodes_df, rows_df)
+        # design_df_half_perimeter_wirelength(nets_df)
+        # design_df_density(nodes_df, rows_df)
         print('\n')
 
         main_end = datetime.datetime.now() - main_time
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
         # allocation_of_cells_on_each_row(rows_df)
         # allocation_of_row_densities(rows_df)
-        allocation_of_row_spaces(rows_df)
+        # allocation_of_row_spaces(rows_df)
 
         # Export to excel/csv
         # nodes_df.to_csv('PythonExport.csv', sep=',')

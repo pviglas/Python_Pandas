@@ -309,7 +309,6 @@ class Row:
                 + str(self.x_min) + " - x_max: " + str(self.x_max))
 
 
-"""
 class Design:
 
     def __init__(self, num_of_cells, num_of_terminals, num_of_nets):
@@ -321,6 +320,7 @@ class Design:
         self.height = None
         self.total_area = None
         self.total_cell_area = None
+        self.half_perimeter_wirelength = None
 
     def calculate_design_width_height(self):
         pass
@@ -336,13 +336,22 @@ class Design:
         # for node in node_list:
         pass
 
+    def calculate_design_half_perimeter_wirelength(self, net_list):
+        total_hpw = 0
+
+        for net in net_list:
+            total_hpw += net.wirelength
+
+        self.half_perimeter_wirelength = int(total_hpw)
+
     def __str__(self):
         return (str(self.density) + " " + str(self.num_of_cells)
                 + " " + str(self.num_of_terminals)
                 + " " + str(self.num_of_nets)
                 + " " + str(self.width) + " " + str(self.height)
-                + " " + str(self.total_area) + " " + str(self.total_cell_area))
-"""
+                + " " + str(self.total_area) + " " + str(self.total_cell_area)
+                + " " + str(self.half_perimeter_wirelength))
+
 
 """"    Functions   """
 
@@ -717,6 +726,11 @@ def parser():  # parsing the whole circuit into lists of objects
     begin4_time = datetime.datetime.now() - begin3_time
     print("\nRow Density list time: ", begin4_time + begin2_time)
 
+    # Create Design
+    current_design = Design(number_of_nodes, number_of_terminals, nets_number)
+    current_design.calculate_design_half_perimeter_wirelength(net_list)
+    print("***\n\nCurrentDesign: ", current_design)
+
     return node_list, net_list, row_list
 
 
@@ -842,6 +856,11 @@ def create_design_df(nodes_df, nets_df, rows_df):
     design_total_area = design_height * design_width
     design_density = (design_total_cell_area / design_total_area) * 100
 
+    # TODO CHECK how to calculate density, with function or like above?
+    # density = design_df_density(nodes_df, rows_df)
+
+    design_hpw = design_df_half_perimeter_wirelength(nets_df)
+
     design_dict = {
         'Number_of_cells': design_cells,
         'Number_of_terminals': design_terminals,
@@ -851,6 +870,7 @@ def create_design_df(nodes_df, nets_df, rows_df):
         'Height': design_height,
         'Total_Area': design_total_area,
         'Total_Cell_Area': design_total_cell_area,
+        'Half_Perimeter_Wirelength': design_hpw,
         'Density(%)': design_density
     }
 
@@ -1021,15 +1041,16 @@ def mean_num_of_nodes_on_rows(rows_df):
 
 
 # 24 - 25
-def design_half_perimeter_wirelength(nets_df):
+def design_df_half_perimeter_wirelength(nets_df):
 
     design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
 
-    print("Design Half Perimeter Wirelength: ", design_hpw)
+    # print("Design Half Perimeter Wirelength: ", design_hpw)
     # print("\n")
+    return design_hpw
 
 
-def design_density(nodes_df, rows_df):
+def design_df_density(nodes_df, rows_df):
 
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
@@ -1041,8 +1062,9 @@ def design_density(nodes_df, rows_df):
     design_total_cell_area = nodes_df['Size'].sum()
     density = (design_total_cell_area / design_total_area) * 100
 
-    print("Design Density: " + str(density) + "%")
+    # print("Design Density: " + str(density) + "%")
     # print("\n")
+    return density
 
 
 # 6 -> Κατανομή μεγεθών non terminal nodes (γραφική παράσταση)
@@ -1157,7 +1179,6 @@ def allocation_of_row_spaces(rows_df):
     # rows_df['Nodes_area']
     # rows_df['Row_area']
 
-
     # 1st way
     # TODO show numbers of free and non free space
 
@@ -1172,7 +1193,6 @@ def allocation_of_row_spaces(rows_df):
            color='firebrick')
     ax.legend()
     plt.show()
-
 
     """
     # 2nd way
