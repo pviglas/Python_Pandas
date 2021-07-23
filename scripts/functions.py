@@ -11,7 +11,7 @@ import datetime
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-"""
+
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
@@ -22,7 +22,7 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-
+"""
 
 """"    Classes    """
 
@@ -793,6 +793,48 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
         nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_max'] = (
             test_node_df['Coordinate_y_max'].max())
 
+
+def find_min_max_on_nets_df2(nodes_df, nets_df):
+    net_names_list = list(nets_df['Net_name'])
+    net_externals_list = list(nets_df['External_nodes'])
+    print("\n")
+
+    x_max = None
+    x_min = None
+    y_max = None
+    y_min = None
+
+    for net_name, node_names in zip(net_names_list, net_externals_list):
+
+        flag = 0
+        for name in node_names:
+            if flag == 0:
+                flag += 1
+                x_max = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_max'])
+                x_min = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_min'])
+                y_max = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_max'])
+                y_min = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_min'])
+            else:
+                if x_max < int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_max']):
+                    x_max = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_max'])
+
+                if x_min > int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_min']):
+                    x_min = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_x_min'])
+
+                if y_max < int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_max']):
+                    y_max = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_max'])
+
+                if y_min > int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_min']):
+                    y_min = int(nodes_df.loc[nodes_df['Node_name'] == name, 'Coordinate_y_min'])
+
+                # print(x_max, x_min, y_max, y_min)
+
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_x_min'] = x_min
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_x_max'] = x_max
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_min'] = y_min
+        nets_df.loc[nets_df['Net_name'] == net_name, 'test_y_max'] = y_max
+
+    print(nets_df)
 
 def calculate_net_hpw(nets_df):
 

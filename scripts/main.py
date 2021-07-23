@@ -95,6 +95,17 @@ if __name__ == "__main__":
         print("create design_df: ", dtend)
         print("Whole main runtime: ", main_end)
 
+        aa1 = datetime.datetime.now()
+        find_min_max_on_nets_df2(nodes_df, nets_df)
+        aa1end = datetime.datetime.now() - aa1
+
+        aa2 = datetime.datetime.now()
+        find_min_max_on_nets_df(nodes_df, nets_df)
+        aa2end = datetime.datetime.now() - aa2
+
+        print("\nFind min/max of nets with DFs: ", aa2end)
+        print("\nFind min/max of nets with DFs(new way): ", aa1end)
+
         # allocation_of_non_terminal_node_sizes(nodes_df)
 
         # allocation_of_net_sizes(nets_df)
