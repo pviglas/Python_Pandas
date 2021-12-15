@@ -1253,4 +1253,4 @@ def allocation_of_row_spaces(rows_df):
     plt.bar(y, nodes_areas, label="NonFreeSpace")
     plt.show()
     """
-
+#DD
