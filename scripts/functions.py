@@ -11,7 +11,7 @@ import datetime
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-
+"""
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
 os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
@@ -22,7 +22,7 @@ folderName = "design"
 fileName = "design"
 os.chdir(
     'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-"""
+
 
 """"    Classes    """
 
@@ -1130,6 +1130,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     plot.set(xlabel='Node Sizes', ylabel='Number of Nodes')
     plot.set(title='Number of Nodes matched with Node Sizes ')
     plt.show()
+
 
 
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
