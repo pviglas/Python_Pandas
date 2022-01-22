@@ -11,6 +11,9 @@ import datetime
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
+fileLinux = "//home//root01//PycharmProjects//Python_Pandas//docs"
+path_to_designs = "../docs/{}"
+
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
 fileName = "ibm01"
@@ -20,10 +23,13 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
 """
 folderName = "design"
 fileName = "design"
-os.chdir(
-    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
+#os.chdir(
+ #   'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
+# file = open("{}{}.nodes".format(path, fileName))
+# os.chdir(fileLinux.format(folderName))
 
+os.chdir(path_to_designs.format(folderName))
 """"    Classes    """
 
 
@@ -322,19 +328,48 @@ class Design:
         self.total_cell_area = None
         self.half_perimeter_wirelength = None
 
-    def calculate_design_width_height(self):
-        pass
+    def calculate_design_width_height(self, row_list):
+        # y_max = 0
+        # y_min = 0
+        # x_max = 0
+        # x_min = 0
+        first_time = True
+
+        for row in row_list:
+
+            if first_time:
+                x_max = row.x_max
+                x_min = row.x_min
+                y_max = row.y_max
+                y_min = row.y_min
+
+                first_time = False
+            else:
+                if row.x_max > x_max:
+                    x_max = row.x_max
+                if row.x_min < x_min:
+                    x_min = row.x_min
+                if row.y_max > y_max:
+                    y_max = row.y_max
+                if row.y_min < y_min:
+                    y_min = row.y_min
+
+        self.height = y_max - y_min
+        self.width = x_max - x_min
 
     def calculate_design_density(self):
-        pass
+        self.density = round((self.total_cell_area / self.total_area) * 100, 2)
 
     def calculate_design_total_area(self):
-        pass
+        self.total_area = self.height * self.width
 
     def calculate_design_total_cell_area(self, node_list):
-        # total_cell_area = 0
-        # for node in node_list:
-        pass
+        total_cell_area = 0
+
+        for node in node_list:
+            total_cell_area += node.node_height * node.node_width
+
+        self.total_cell_area = total_cell_area
 
     def calculate_design_half_perimeter_wirelength(self, net_list):
         total_hpw = 0
@@ -345,12 +380,13 @@ class Design:
         self.half_perimeter_wirelength = int(total_hpw)
 
     def __str__(self):
-        return (str(self.density) + " " + str(self.num_of_cells)
-                + " " + str(self.num_of_terminals)
-                + " " + str(self.num_of_nets)
-                + " " + str(self.width) + " " + str(self.height)
-                + " " + str(self.total_area) + " " + str(self.total_cell_area)
-                + " " + str(self.half_perimeter_wirelength))
+        return ("\nNumber of cells: " + str(self.num_of_cells)
+                + "\nNumber of terminals: " + str(self.num_of_terminals)
+                + "\nNumber of nets: " + str(self.num_of_nets)
+                + "\nWidth: " + str(self.width) + "\nHeight: " + str(self.height)
+                + "\nTotal_area: " + str(self.total_area) + "\nTotal_cell_area: " + str(self.total_cell_area)
+                + "\nHalf_perimeter_wirelength: " + str(self.half_perimeter_wirelength)
+                + "\nDensity: " + str(self.density))
 
 
 """"    Functions   """
@@ -729,6 +765,11 @@ def parser():  # parsing the whole circuit into lists of objects
     # Create Design
     current_design = Design(number_of_nodes, number_of_terminals, nets_number)
     current_design.calculate_design_half_perimeter_wirelength(net_list)
+    current_design.calculate_design_width_height(row_list)
+    current_design.calculate_design_total_area()
+    current_design.calculate_design_total_cell_area(node_list)
+    current_design.calculate_design_density()
+
     print("***\n\nCurrentDesign: ", current_design)
 
     return node_list, net_list, row_list

@@ -11,9 +11,9 @@ if __name__ == "__main__":
         parser_lists = parser()
         end_time = datetime.datetime.now() - begin_time
 
-        # parser_lists[0] = node_list
-        # parser_lists[1] = nets_list
-        # parser_lists[2] = row_list
+        # parser_lists[0] -> node_list
+        # parser_lists[1] -> nets_list
+        # parser_lists[2] -> row_list
 
         # Nodes DataFrame Functions
         nodet = datetime.datetime.now()
@@ -131,8 +131,8 @@ if __name__ == "__main__":
         # nodes_df.to_csv('PythonExport.csv', sep=',')
         # nodes_df.to_excel("output.xlsx")
 
-        with pd.ExcelWriter('output.xlsx') as writer:
-            nodes_df_lines.to_excel(writer, sheet_name='nodes_df')
+        # with pd.ExcelWriter('output.xlsx') as writer:
+          #  nodes_df_lines.to_excel(writer, sheet_name='nodes_df')
             # nets_df.to_excel(writer, sheet_name='nets_df')
         #     rows_df.to_excel(writer, sheet_name='rows_df')
         #    design_df.to_excel(writer, sheet_name='design_df')
