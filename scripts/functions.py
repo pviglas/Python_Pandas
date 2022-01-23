@@ -4,6 +4,7 @@
 
 import os
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime
@@ -11,8 +12,6 @@ import datetime
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-fileLinux = "//home//root01//PycharmProjects//Python_Pandas//docs"
-path_to_designs = "../docs/ISPD/{}"
 
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
@@ -21,17 +20,19 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
 
 """
-
-folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-# folderName = "design"
-fileName = "ibm01"
+#path_to_designs = "../docs/ISPD/{}"
+#folderName = "ibm18_mpl6_placed_and_nettetris_legalized"
+#fileName = "ibm18"
 #os.chdir(
  #   'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
-# file = open("{}{}.nodes".format(path, fileName))
-# os.chdir(fileLinux.format(folderName))
+
+path_to_designs = "../docs/{}"
+folderName = "design"
+fileName = "design"
 
 os.chdir(path_to_designs.format(folderName))
+
 """"    Classes    """
 
 
@@ -1285,6 +1286,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     max_node_size = nodes_df['Size'].max()
     # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
+#     sizes_array = np.arrange(0, max_node_size, max_node_size / 10)
     plt.xticks(rotation=90)  # avoid overlapping on x - axis
     plot = sns.countplot(x="Size", hue="Type", data=nodes_df)
     plot.set(xlabel='Node Sizes', ylabel='Number of Nodes')
@@ -1296,20 +1298,19 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
 def allocation_of_net_sizes(nets_df):
 
-    # TODO Find max net Size and set limits (0, max_size)
-    # to avoid x-axis overlapping
-
-    # sns.set_context('poster', font_scale=1)
-
-    plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    plot = sns.countplot(x="Net_Size", data=nets_df)
-    plot.set(xlabel='Net Sizes', ylabel='Number of Nets')
-    plot.set(title='Number of Nets matched with Net Sizes ')
+    """ old one
+    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
+    # plot = sns.countplot(x="Net_Size", data=nets_df)
+    # plot.set(xlabel='Net Sizes', ylabel='Number of Nets')
+    #plot.set(title='Number of Nets matched with Net Sizes ')
 
     # Another way, using catplot
-    # sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
+    plot = sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
 
     plt.show()
+    """
+
+    """ Reverted, second way."""
 
 
 def allocation_of_net_sizes_based_on_nodes(nets_df):
@@ -1339,6 +1340,7 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
     # plt.title("Set X labels in Matplotlib Plot")
     # plt.xticks(values, x)
     # plt.show()
+
     # 2nd way - with list
     # num_of_nodes = nets_df["Nodes"].str.len()
     # sns.countplot(x=num_of_nodes)
@@ -1371,17 +1373,58 @@ def allocation_of_cells_on_each_row(rows_df):
 # R1 -> 85%
 def allocation_of_row_densities(rows_df):
 
-    # TODO maybe do it number of rows with a current density?
-    # TODO and also add here 0 to max_num to avoid overlap
-
+    """OLD ONE"""
     #plot = sns.barplot('Row_name', 'Density(%)', data=rows_df)
 
-    plot = sns.countplot(x="Density(%)", data=rows_df)
-    plot.set(xlabel='Row names', ylabel='Density(%)')
-    plot.set(title='Rows matched with their Density(%)')
+    #plot = sns.countplot(x="Density(%)", data=rows_df)
+    #plot.set(xlabel='Row names', ylabel='Density(%)')
+    #plot.set(title='Rows matched with their Density(%)')
+    """ END OF OLD ONE."""
 
-    # sns.boxplot(y='Density(%)', x='Row_name', data=rows_df)
+    num_of_rows = rows_df.shape[0]
+    densities = np.arange(0, 105, 5)
+    counter_of_densities = [0] * 21
 
+    i = 0
+    first_time = True
+
+    for density in densities:
+
+        if first_time:
+            counter_of_densities[i] = len(rows_df.loc[(rows_df['Density(%)'] <= density)])
+            first_time = False
+        else:
+            counter_of_densities[i] = len(rows_df.loc[(rows_df['Density(%)'] <= density)
+                                                      & (rows_df['Density(%)'] > (density - 5))])
+
+        i += 1
+
+    fig, ax = plt.subplots(figsize=(16, 9))
+
+    # Remove axes splines
+    for s in ['top', 'right']:
+        ax.spines[s].set_visible(False)
+
+    # Remove x, y Ticks
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+
+    # Add x, y gridlines
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
+
+    # densities_labels = ["0-5 ", '5 - 10', '10 - 15 ', '15 - 20', '20 - 25 ', '25 - 30', '30 - 35 ', '35 - 40',
+    #                     '40 - 45', '45 - 50 ', '50 - 55', '55 - 60 ', '60 - 65', '65 - 70', '70 - 75', '75 -80 ',
+    #                     '80 - 85', '85 - 90 ', '90 - 95',  '95 - 100']
+
+    # Label values
+    plt.xticks(np.arange(0, 105, step=5))       # Set value step on x axis
+    plt.yticks(np.arange(0, num_of_rows+1, 1))  # Set value step on y axis
+
+    plt.title('Number of Rows, in a current density range. (upper rounded)', loc='center', fontsize=15, fontweight='bold')
+    plt.xlabel("Density (%)", fontsize=12, fontweight='bold')
+    plt.ylabel("Number of row(s)", fontsize=12, fontweight='bold')
+
+    plt.bar(densities, counter_of_densities)
     plt.show()
 
 
@@ -1410,22 +1453,34 @@ def allocation_of_row_spaces(rows_df):
     ax.bar(labels, nodes_areas, width, label="Non_Free_Space", bottom=0,
            color='firebrick')
     ax.legend()
+    #ax.invert_yaxis()
+    # plt.show()
+
+# Remove axes splines
+    for s in ['top', 'bottom', 'left', 'right']:
+        ax.spines[s].set_visible(False)
+
+    # Remove x, y Ticks
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+
+    # Add padding between axes and labels
+    ax.xaxis.set_tick_params(pad=1)
+    ax.yaxis.set_tick_params(pad=2)
+
+    # Add x, y gridlines
+    ax.grid(b=True, color='grey',
+            linestyle='-.', linewidth=0.5,
+            alpha=0.2)
+
+    # Show top values
+    #ax.invert_yaxis()
+
+    # Add Plot Title
+    ax.set_title('test.', loc='left', )
+
+
     plt.show()
 
-    """
-    # 2nd way
-    # TODO cant show labels, need .legend
-    
-    import numpy as np
-    
-    row_area = 1000
-    labels = list(rows_df['Row_name'])
-    nodes_areas = list(rows_df['Nodes_area'])
-
-    y = np.arange(len(labels))
-    plt.xticks(y, labels)
-    plt.bar(y, row_area, label="FreeSpace")
-    plt.bar(y, nodes_areas, label="NonFreeSpace")
-    plt.show()
-    """
-
+def random_placement(nodes_df):
+    pass
