@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
         allocation_of_non_terminal_node_sizes(nodes_df)
 
-        #allocation_of_net_sizes(nets_df)
+        allocation_of_net_sizes(nets_df)
         #allocation_of_net_sizes_based_on_nodes(nets_df)
 
         #allocation_of_cells_on_each_row(rows_df)
