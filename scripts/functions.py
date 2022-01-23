@@ -12,7 +12,7 @@ pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
 fileLinux = "//home//root01//PycharmProjects//Python_Pandas//docs"
-path_to_designs = "../docs/{}"
+path_to_designs = "../docs/ISPD/{}"
 
 """
 folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
@@ -21,8 +21,10 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
 
 """
-folderName = "design"
-fileName = "design"
+
+folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+# folderName = "design"
+fileName = "ibm01"
 #os.chdir(
  #   'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
@@ -1280,7 +1282,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     # TODO Find max node Size and set limits (0, max_size)
     # to avoid x-axis overlapping
     # TODO If countplot doesnt match, check catplot
-
+    max_node_size = nodes_df['Size'].max()
     # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
     plt.xticks(rotation=90)  # avoid overlapping on x - axis
@@ -1288,6 +1290,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     plot.set(xlabel='Node Sizes', ylabel='Number of Nodes')
     plot.set(title='Number of Nodes matched with Node Sizes ')
     plt.show()
+
 
 
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
@@ -1313,16 +1316,29 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
 
     # TODO Find max num_of_nodes and set limits (0, max)
     # to avoid x-axis overlapping
-
     # plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
     # 1st way - creating an extra colum on DF, storing the number of nodes
     nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
+    max = nets_df['Num_of_nodes'].max()
+
     plot = sns.countplot(x="Num_of_nodes", data=nets_df)
     plot.set(xlabel='Number of Nodes', ylabel='Number of Nets')
     plot.set(title='Number of Nets matched with Number of Nodes ')
     plt.show()
 
+    #nets_df['Num_of_nodes'].value_counts(normalize=False).plot(kind='bar')
+    # x = [0.01, 0.1, 1, 10, 100]
+    # y = [2, 1, 6, 4, 8]
+    # values = nodes_df['size'].max()
+
+
+    # plt.plot(values, y, marker="o")
+    # plt.xlabel("X-Axis")
+    # plt.ylabel("Y-Axis")
+    # plt.title("Set X labels in Matplotlib Plot")
+    # plt.xticks(values, x)
+    # plt.show()
     # 2nd way - with list
     # num_of_nodes = nets_df["Nodes"].str.len()
     # sns.countplot(x=num_of_nodes)
@@ -1358,7 +1374,9 @@ def allocation_of_row_densities(rows_df):
     # TODO maybe do it number of rows with a current density?
     # TODO and also add here 0 to max_num to avoid overlap
 
-    plot = sns.barplot('Row_name', 'Density(%)', data=rows_df)
+    #plot = sns.barplot('Row_name', 'Density(%)', data=rows_df)
+
+    plot = sns.countplot(x="Density(%)", data=rows_df)
     plot.set(xlabel='Row names', ylabel='Density(%)')
     plot.set(title='Rows matched with their Density(%)')
 
@@ -1410,4 +1428,4 @@ def allocation_of_row_spaces(rows_df):
     plt.bar(y, nodes_areas, label="NonFreeSpace")
     plt.show()
     """
-#DD
+
