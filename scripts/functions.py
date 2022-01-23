@@ -25,13 +25,13 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
 #    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 
-path_to_designs = "../docs/{}"
-folderName = "design"
-fileName = "design"
+# path_to_designs = "../docs/{}"
+# folderName = "design"
+# fileName = "design"
 
-# path_to_designs = "../docs/ISPD/{}"
-# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-# fileName = "ibm01"
+path_to_designs = "../docs/ISPD/{}"
+folderName = "ibm18_mpl6_placed_and_nettetris_legalized"
+fileName = "ibm18"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -1337,7 +1337,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     # Label values
     #plt.xticks(np.arange(0, rounded_up_max_size, step=50))  # Set value step on x axis
     plt.xticks(array_size_labels)
-    plt.yticks(np.arange(0, num_of_nodes + 1, 1))  # Set value step on y axis
+    #plt.yticks(np.arange(0, num_of_nodes + 1, 1))  # Set value step on y axis
 
     plt.title('Number of Nodes, with a current size(range).', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Size", fontsize=12, fontweight='bold')
@@ -1348,7 +1348,8 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
 
     size_labels = []
     for size in array_size_labels:
-        size_labels.append("[" + str(size+1) + " - " + str(size+50) + "]")
+        # size_labels.append("[" + str(size+1) + " - " + str(size+50) + "]")
+        size_labels.append("[..-" + str(size + 50) + "]")
     size_labels.pop()
     size_labels.insert(0, " ")
 
@@ -1356,7 +1357,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     # Set number of ticks for x-axis
     ax.set_xticks(array_size_labels)
     # Set ticks labels for x-axis
-    ax.set_xticklabels(size_labels, fontsize=12)
+    ax.set_xticklabels(size_labels, rotation='vertical')
 
     plt.show()
 
@@ -1411,7 +1412,7 @@ def allocation_of_net_sizes(nets_df):
 
         i += 1
 
-    fig, ax = plt.subplots(figsize=(20, 10))
+    fig, ax = plt.subplots(figsize=(20, 11))
     print(counter_of_sizes)
 
     # plt.xticks(rotation=90)  # avoid overlapping on x - axis
@@ -1429,9 +1430,9 @@ def allocation_of_net_sizes(nets_df):
 
     # Label values
     plt.xticks(array_size_labels)  # Set value step on x axis
-    plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
+    # plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
 
-    plt.title('Number of Nets, with a current size (range).', loc='center', fontsize=15, fontweight='bold')
+    # plt.title('Number of Nets, with a current size (range).', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Size", fontsize=12, fontweight='bold')
     plt.ylabel("Number of Net(s)", fontsize=12, fontweight='bold')
 
@@ -1441,7 +1442,8 @@ def allocation_of_net_sizes(nets_df):
 
     size_labels = []
     for size in array_size_labels:
-        size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
+        # size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
+        size_labels.append("[..-" + str(size+int(rounded_up_max_size / 10)) + "]")
     size_labels.pop()
     size_labels.insert(0, " ")
 
@@ -1449,10 +1451,12 @@ def allocation_of_net_sizes(nets_df):
     # Set number of ticks for x-axis
     ax.set_xticks(array_size_labels)
     # Set ticks labels for x-axis
-    ax.set_xticklabels(size_labels, fontsize=12)
+    ax.set_xticklabels(size_labels,  rotation='vertical')
+
     #ax.set_yticks(array_size_labels)
     #ax.set_yticklabels(size_labels)
     # ax.invert_yaxis()
+
     plt.show()
 
 
@@ -1542,7 +1546,7 @@ def allocation_of_row_densities(rows_df):
 
         i += 1
 
-    fig, ax = plt.subplots(figsize=(16, 9))
+    fig, ax = plt.subplots(figsize=(20, 9))
 
     # Remove axes splines
     for s in ['top', 'right']:
@@ -1555,13 +1559,13 @@ def allocation_of_row_densities(rows_df):
     # Add x, y gridlines
     ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
 
-    densities_labels = [' ', '0-5', '6 - 10', '11 - 15 ', '16 - 20', '21 - 25 ', '26 - 30', '31 - 35 ', '36 - 40',
-                        '41 - 45', '46 - 50 ', '51 - 55', '56 - 60 ', '61 - 65', '66 - 70', '71 - 75', '76 -80 ',
-                        '81 - 85', '86 - 90 ', '91 - 95',  '96 - 100']
+    densities_labels = [' ', '[0-5]', '[6-10]', '[11-15]', '[16-20]', '[21-25]', '[26-30]', '[31-35]',
+                        '[36-40]', '[41-45]', '[46-50]', '[51-55]', '[56-60]', '[61-65]', '[66-70]',
+                        '[71-75]', '[76-80]', '[81-85]', '[86-90]', '[91-95]',  '[96-100]']
 
     # Label values
     plt.xticks(np.arange(0, 105, step=5))       # Set value step on x axis
-    plt.yticks(np.arange(0, num_of_rows+1, 1))  # Set value step on y axis
+    # plt.yticks(np.arange(0, num_of_rows+1, 1))  # Set value step on y axis
 
     plt.title('Number of Rows, in a current density range. (upper rounded)', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Density (%)", fontsize=12, fontweight='bold')
@@ -1574,7 +1578,7 @@ def allocation_of_row_densities(rows_df):
     ax.set_xticks(densities)
 
     # Set ticks labels for x-axis
-    ax.set_xticklabels(densities_labels, rotation='vertical', fontsize=12)
+    ax.set_xticklabels(densities_labels, fontsize=12)
 
     plt.show()
 
