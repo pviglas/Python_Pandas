@@ -25,13 +25,13 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
 #    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 
-# path_to_designs = "../docs/{}"
-# folderName = "design"
-# fileName = "design"
+path_to_designs = "../docs/{}"
+folderName = "design"
+fileName = "design"
 
-path_to_designs = "../docs/ISPD/{}"
-folderName = "ibm18_mpl6_placed_and_nettetris_legalized"
-fileName = "ibm18"
+# path_to_designs = "../docs/ISPD/{}"
+# folderName = "ibm18_mpl6_placed_and_nettetris_legalized"
+# fileName = "ibm18"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -1332,7 +1332,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     ax.yaxis.set_ticks_position('none')
 
     # Add x, y gridlines
-    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
 
     # Label values
     #plt.xticks(np.arange(0, rounded_up_max_size, step=50))  # Set value step on x axis
@@ -1426,7 +1426,7 @@ def allocation_of_net_sizes(nets_df):
     ax.yaxis.set_ticks_position('none')
 
     # Add x, y gridlines
-    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
 
     # Label values
     plt.xticks(array_size_labels)  # Set value step on x axis
@@ -1437,7 +1437,7 @@ def allocation_of_net_sizes(nets_df):
     plt.ylabel("Number of Net(s)", fontsize=12, fontweight='bold')
 
     # ax.plot(densities, counter_of_densities)
-    ax.bar(array_size_labels, counter_of_sizes, width=100, color='#FF0055')
+    ax.bar(array_size_labels, counter_of_sizes, width=100)
     # ax.bar(counter_of_sizes, array_size_labels, color='#FF0055')
 
     size_labels = []
@@ -1462,35 +1462,108 @@ def allocation_of_net_sizes(nets_df):
 
 def allocation_of_net_sizes_based_on_nodes(nets_df):
 
-    # TODO Find max num_of_nodes and set limits (0, max)
-    # to avoid x-axis overlapping
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
+    """ OLD ONE
 
-    # 1st way - creating an extra colum on DF, storing the number of nodes
-    nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
-    max = nets_df['Num_of_nodes'].max()
-
+    plt.xticks(rotation=90)  # avoid overlapping on x - axis
     plot = sns.countplot(x="Num_of_nodes", data=nets_df)
     plot.set(xlabel='Number of Nodes', ylabel='Number of Nets')
     plot.set(title='Number of Nets matched with Number of Nodes ')
     plt.show()
 
-    #nets_df['Num_of_nodes'].value_counts(normalize=False).plot(kind='bar')
-    # x = [0.01, 0.1, 1, 10, 100]
-    # y = [2, 1, 6, 4, 8]
-    # values = nodes_df['size'].max()
-
-
-    # plt.plot(values, y, marker="o")
-    # plt.xlabel("X-Axis")
-    # plt.ylabel("Y-Axis")
-    # plt.title("Set X labels in Matplotlib Plot")
-    # plt.xticks(values, x)
-    # plt.show()
+    # 1st way - creating an extra colum on DF, storing the number of nodes
+    nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
+    max = nets_df['Num_of_nodes'].max()
+    nets_df['Num_of_nodes'].value_counts(normalize=False).plot(kind='bar')
+    plt.show()
 
     # 2nd way - with list
     # num_of_nodes = nets_df["Nodes"].str.len()
     # sns.countplot(x=num_of_nodes)
+    #
+
+    END OF OLD ONE"""
+
+    import math
+
+    nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
+    max_node_count = nets_df['Num_of_nodes'].max()
+    num_of_nets = nets_df.shape[0]
+
+    print("max node count: " + str(max_node_count))
+
+    max_count_len = len(str(max_node_count))
+    first_digit = max_count_len // 10 ** (int(math.log(max_count_len, 10)))  # first digit of max_count_len
+
+    print("first digit= " + str(first_digit), type(first_digit))
+    print("len of net count: " + str(max_count_len))
+
+    rounded_up_max_count = (first_digit + 1) * (10 ** (max_count_len - 1))
+    print(rounded_up_max_count)
+
+    array_size_labels = np.arange(0, rounded_up_max_count + 1, int(rounded_up_max_count / 10))
+    print(array_size_labels)
+
+    counter_of_sizes = [0] * len(array_size_labels)
+    print(counter_of_sizes)
+
+    i = 0
+    first_time = True
+
+    # for size in array_size_labels:
+    #     print("first size: ", size)
+    #     if first_time:
+    #         first_time = False
+    #     else:
+    #         counter_of_sizes[i] = len(nets_df.loc[(nets_df['Net_Size'] <= size) & (
+    #                     nets_df['Net_Size'] > (size - int(rounded_up_max_size / 10)))])
+    #
+    #     i += 1
+    #
+    # fig, ax = plt.subplots(figsize=(20, 11))
+    # print(counter_of_sizes)
+    #
+    # # plt.xticks(rotation=90)  # avoid overlapping on x - axis
+    #
+    # # Remove axes splines
+    # for s in ['top', 'right']:
+    #     ax.spines[s].set_visible(False)
+    #
+    # # Remove x, y Ticks
+    # ax.xaxis.set_ticks_position('none')
+    # ax.yaxis.set_ticks_position('none')
+    #
+    # # Add x, y gridlines
+    # ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
+    #
+    # # Label values
+    # plt.xticks(array_size_labels)  # Set value step on x axis
+    # # plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
+    #
+    # # plt.title('Number of Nets, with a current size (range).', loc='center', fontsize=15, fontweight='bold')
+    # plt.xlabel("Size", fontsize=12, fontweight='bold')
+    # plt.ylabel("Number of Net(s)", fontsize=12, fontweight='bold')
+    #
+    # # ax.plot(densities, counter_of_densities)
+    # ax.bar(array_size_labels, counter_of_sizes, width=100)
+    # # ax.bar(counter_of_sizes, array_size_labels, color='#FF0055')
+    #
+    # size_labels = []
+    # for size in array_size_labels:
+    #     # size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
+    #     size_labels.append("[..-" + str(size + int(rounded_up_max_size / 10)) + "]")
+    # size_labels.pop()
+    # size_labels.insert(0, " ")
+    #
+    # # Show 0-50, 50 - 100 instead of 0,50,100..
+    # # Set number of ticks for x-axis
+    # ax.set_xticks(array_size_labels)
+    # # Set ticks labels for x-axis
+    # ax.set_xticklabels(size_labels, rotation='vertical')
+    #
+    # # ax.set_yticks(array_size_labels)
+    # # ax.set_yticklabels(size_labels)
+    # # ax.invert_yaxis()
+    #
     # plt.show()
 
 
@@ -1510,7 +1583,7 @@ def allocation_of_cells_on_each_row(rows_df):
 
     plot = sns.barplot(x=row_names, y=num_of_cells)
     plot.set(xlabel='Row names', ylabel='Number of Cells')
-    plot.set(title='Rows matched with their number of Cells ')
+    plot.set(title='Rows matched with their number of Cells.')
     plt.show()
 
 
@@ -1557,7 +1630,7 @@ def allocation_of_row_densities(rows_df):
     ax.yaxis.set_ticks_position('none')
 
     # Add x, y gridlines
-    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
 
     densities_labels = [' ', '[0-5]', '[6-10]', '[11-15]', '[16-20]', '[21-25]', '[26-30]', '[31-35]',
                         '[36-40]', '[41-45]', '[46-50]', '[51-55]', '[56-60]', '[61-65]', '[66-70]',
@@ -1567,7 +1640,7 @@ def allocation_of_row_densities(rows_df):
     plt.xticks(np.arange(0, 105, step=5))       # Set value step on x axis
     # plt.yticks(np.arange(0, num_of_rows+1, 1))  # Set value step on y axis
 
-    plt.title('Number of Rows, in a current density range. (upper rounded)', loc='center', fontsize=15, fontweight='bold')
+    plt.title('Number of Rows, in a current density range.', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Density (%)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of row(s)", fontsize=12, fontweight='bold')
 
