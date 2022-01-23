@@ -20,11 +20,11 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
 
 """
-#path_to_designs = "../docs/ISPD/{}"
-#folderName = "ibm18_mpl6_placed_and_nettetris_legalized"
-#fileName = "ibm18"
-#os.chdir(
- #   'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
+# path_to_designs = "../docs/ISPD/{}"
+# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+# fileName = "ibm01"
+# os.chdir(
+#    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 
 path_to_designs = "../docs/{}"
@@ -1279,20 +1279,76 @@ def design_df_density(nodes_df, rows_df):
 # -> list of node sizes
 # -> number of nodes me gia to kathe size
 def allocation_of_non_terminal_node_sizes(nodes_df):
+    import math
 
-    # TODO Find max node Size and set limits (0, max_size)
-    # to avoid x-axis overlapping
-    # TODO If countplot doesnt match, check catplot
+    num_of_nodes = nodes_df.shape[0]
     max_node_size = nodes_df['Size'].max()
-    # order = nodes_df['Size'].value_counts().index # extra countplot attribute
 
-#     sizes_array = np.arrange(0, max_node_size, max_node_size / 10)
-    plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    plot = sns.countplot(x="Size", hue="Type", data=nodes_df)
-    plot.set(xlabel='Node Sizes', ylabel='Number of Nodes')
-    plot.set(title='Number of Nodes matched with Node Sizes ')
+    print("max node size: " + str(max_node_size))
+
+    max_size_len = len(str(max_node_size))
+    first_digit = max_node_size // 10 ** (int(math.log(max_node_size, 10)))   # first digit of max_size
+
+    print("first digit= " + str(first_digit), type(first_digit))
+    print("len of max node size: " + str(max_size_len))
+
+    rounded_up_max_size = (first_digit + 1) * (10 ** (max_size_len-1))
+    print(rounded_up_max_size)
+
+    array_size_labels = np.arange(0, rounded_up_max_size+1, 50)
+    print(array_size_labels)
+
+    counter_of_sizes = [0] * len(array_size_labels)
+    print(counter_of_sizes)
+
+    i = 0
+    first_time = True
+
+    for size in array_size_labels:
+
+        if first_time:
+            counter_of_sizes[i] = len(nodes_df.loc[(nodes_df['Size'] <= size)])
+            first_time = False
+        else:
+            counter_of_sizes[i] = len(nodes_df.loc[(nodes_df['Size'] <= size)
+                                                      & (nodes_df['Size'] > (size - 50))])
+
+        i += 1
+
+    fig, ax = plt.subplots(figsize=(16, 9))
+    print(counter_of_sizes)
+
+    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
+
+    # Remove axes splines
+    for s in ['top', 'right']:
+        ax.spines[s].set_visible(False)
+
+    # Remove x, y Ticks
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+
+    # Add x, y gridlines
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
+
+    # Label values
+    plt.xticks(np.arange(0, rounded_up_max_size, step=50))  # Set value step on x axis
+    plt.yticks(np.arange(0, num_of_nodes + 1, 1))  # Set value step on y axis
+
+    plt.title('Number of Nodes, with a currente size(range).' , loc='center', fontsize=15, fontweight='bold')
+    plt.xlabel("Size", fontsize=12, fontweight='bold')
+    plt.ylabel("Number of node(s)", fontsize=12, fontweight='bold')
+
+    # ax.plot(densities, counter_of_densities)
+    ax.bar(array_size_labels, counter_of_sizes, width = 10)
+
+    # Set number of ticks for x-axis
+    #ax.set_xticks(densities)
+
+    # Set ticks labels for x-axis
+    #ax.set_xticklabels(densities_labels, rotation='vertical', fontsize=12)
+
     plt.show()
-
 
 
 # 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
@@ -1412,9 +1468,9 @@ def allocation_of_row_densities(rows_df):
     # Add x, y gridlines
     ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=0.2)
 
-    # densities_labels = ["0-5 ", '5 - 10', '10 - 15 ', '15 - 20', '20 - 25 ', '25 - 30', '30 - 35 ', '35 - 40',
-    #                     '40 - 45', '45 - 50 ', '50 - 55', '55 - 60 ', '60 - 65', '65 - 70', '70 - 75', '75 -80 ',
-    #                     '80 - 85', '85 - 90 ', '90 - 95',  '95 - 100']
+    densities_labels = [' ', '0-5', '6 - 10', '11 - 15 ', '16 - 20', '21 - 25 ', '26 - 30', '31 - 35 ', '36 - 40',
+                        '41 - 45', '46 - 50 ', '51 - 55', '56 - 60 ', '61 - 65', '66 - 70', '71 - 75', '76 -80 ',
+                        '81 - 85', '86 - 90 ', '91 - 95',  '96 - 100']
 
     # Label values
     plt.xticks(np.arange(0, 105, step=5))       # Set value step on x axis
@@ -1424,7 +1480,15 @@ def allocation_of_row_densities(rows_df):
     plt.xlabel("Density (%)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of row(s)", fontsize=12, fontweight='bold')
 
-    plt.bar(densities, counter_of_densities)
+    #ax.plot(densities, counter_of_densities)
+    ax.bar(densities, counter_of_densities, width=2)
+
+    # Set number of ticks for x-axis
+    ax.set_xticks(densities)
+
+    # Set ticks labels for x-axis
+    ax.set_xticklabels(densities_labels, rotation='vertical', fontsize=12)
+
     plt.show()
 
 
