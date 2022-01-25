@@ -20,9 +20,10 @@ os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
     folderName))
 
 """
-
 # os.chdir(
 #    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
+
+
 
 
 path_to_designs = "../docs/{}"
@@ -34,6 +35,8 @@ fileName = "design"
 # fileName = "ibm18"
 
 os.chdir(path_to_designs.format(folderName))
+
+
 
 """"    Classes    """
 
@@ -1491,8 +1494,10 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
 
     print("max node count: " + str(max_node_count))
 
-    max_count_len = len(str(max_node_count))
-    first_digit = max_count_len // 10 ** (int(math.log(max_count_len, 10)))  # first digit of max_count_len
+    # TODO Check in the previous allocation as well, if len < 10
+    if len(max_node_count) >= 10:
+        max_count_len = len(str(max_node_count))
+        first_digit = max_count_len // 10 ** (int(math.log(max_count_len, 10)))  # first digit of max_count_len
 
     print("first digit= " + str(first_digit), type(first_digit))
     print("len of net count: " + str(max_count_len))
@@ -1500,7 +1505,8 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
     rounded_up_max_count = (first_digit + 1) * (10 ** (max_count_len - 1))
     print(rounded_up_max_count)
 
-    array_size_labels = np.arange(0, rounded_up_max_count + 1, int(rounded_up_max_count / 10))
+    array_size_labels = np.arange(0, rounded_up_max_count + 1,
+                                  int(rounded_up_max_count / 10))
     print(array_size_labels)
 
     counter_of_sizes = [0] * len(array_size_labels)
