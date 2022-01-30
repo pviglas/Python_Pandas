@@ -1773,5 +1773,38 @@ def allocation_of_row_spaces(rows_df):
         plt.show()
 
 
-def random_placement(nodes_df):
-    pass
+def random_placement(nodes_df, rows_df):
+    import random
+    # random.randint(0, 9)
+    design_x_min = int(rows_df['Coordinate_x_min'].min())
+    design_x_max = int(rows_df['Coordinate_x_max'].max())
+    design_y_min = int(rows_df['Coordinate_y_min'].min())
+    design_y_max = int(rows_df['Coordinate_y_max'].max())
+    # df[1] = df[1].apply(add_one)
+
+    # print(design_x_min)
+    # http: // pytolearn.csd.auth.gr / b4 - pandas / 40 / moddfcols.html
+    # nodes_df['Coordinate_x_min'] = random.randint(0, design_x_max)
+
+    #x_min = [random.randint(design_x_min, design_x_max-2)] * len(nodes_df)
+
+    # TODO, do it with for loop
+    x_min = random.sample(range(design_x_min, design_x_max-2), len(nodes_df))
+    x_max = random.sample(range((x_min+2), design_x_max), len(nodes_df))
+    y_min = random.sample(range(design_y_min, design_y_max - 2), len(nodes_df))
+    y_max = random.sample(range(y_min + 2, design_x_max), len(nodes_df))
+
+    nodes_df = nodes_df.drop(['Coordinate_x_min'], axis = 1)
+    nodes_df = nodes_df.drop(['Coordinate_x_max'], axis=1)
+    nodes_df = nodes_df.drop(['Coordinate_y_min'], axis=1)
+    nodes_df = nodes_df.drop(['Coordinate_y_max'], axis=1)
+
+    print(nodes_df)
+
+    # for i in range(len(nodes_df)):
+    #     nodes_df.Coordinate_x_min = random.randint(0, design_x_min)
+    #     nodes_df.Coordinate_x_max = random.randint(0, design_x_max)
+    #     nodes_df.Coordinate_y_min = random.randint(0, design_y_min)
+    #     nodes_df.Coordinate_y_max = random.randint(0, design_y_max)
+
+    #print(nodes_df)
