@@ -1774,7 +1774,7 @@ def allocation_of_row_spaces(rows_df):
 
 
 def random_placement(nodes_df, rows_df):
-    import random
+
     # random.randint(0, 9)
     design_x_min = int(rows_df['Coordinate_x_min'].min())
     design_x_max = int(rows_df['Coordinate_x_max'].max())
@@ -1789,15 +1789,24 @@ def random_placement(nodes_df, rows_df):
     #x_min = [random.randint(design_x_min, design_x_max-2)] * len(nodes_df)
 
     # TODO, do it with for loop
-    x_min = random.sample(range(design_x_min, design_x_max-2), len(nodes_df))
-    x_max = random.sample(range((x_min+2), design_x_max), len(nodes_df))
-    y_min = random.sample(range(design_y_min, design_y_max - 2), len(nodes_df))
-    y_max = random.sample(range(y_min + 2, design_x_max), len(nodes_df))
+
+    # x_max = random.sample(range((x_min+2), design_x_max), len(nodes_df))
+    # y_max = random.sample(range(y_min + 2, design_x_max), len(nodes_df))
 
     nodes_df = nodes_df.drop(['Coordinate_x_min'], axis = 1)
     nodes_df = nodes_df.drop(['Coordinate_x_max'], axis=1)
     nodes_df = nodes_df.drop(['Coordinate_y_min'], axis=1)
     nodes_df = nodes_df.drop(['Coordinate_y_max'], axis=1)
+
+    import random
+    from random import randint
+
+    # nodes_df['test_max'] = random.sample(int(nodes_df.Width), design_y_max)
+    # https: // stackoverflow.com / questions / 30327417 / pandas - create - new - column - in -df -
+    # with-random - integers -from -range
+    # nodes_df['test_max'] = nodes_df['Width'] + 100
+    nodes_df['test_x_max'] = np.random.randint(nodes_df['Width'], design_x_max, nodes_df.shape[0]) #TODO FILTER FOR TERMINALS. X_MAX = X_MIN
+    # df1['randNumCol'] = np.random.randint(1, 6, df1.shape[0])
 
     print(nodes_df)
 
