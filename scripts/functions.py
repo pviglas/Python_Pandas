@@ -23,13 +23,13 @@ pd.set_option('display.max_columns', 20)
 #    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 
-path_to_designs = "../docs/{}"
-folderName = "design"
-fileName = "design"
+# path_to_designs = "../docs/{}"
+# folderName = "design"
+# fileName = "design"
 
-# path_to_designs = "../docs/ISPD/{}"
-# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-# fileName = "ibm01"
+path_to_designs = "../docs/ISPD/{}"
+folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+fileName = "ibm01"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -886,7 +886,7 @@ def create_nets_df(net_list, nodes_df):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
     # find_min_max_on_nets_df(nodes_df, nets_df)
-    # find_min_max_on_nets_lines(nodes_df, nets_df)
+    find_min_max_on_nets_lines(nodes_df, nets_df)
     calculate_net_hpw(nets_df)
     calculate_net_size(nets_df)
     nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
@@ -1773,47 +1773,106 @@ def allocation_of_row_spaces(rows_df):
         plt.show()
 
 
-def random_placement(nodes_df, rows_df):
+def random_placement(nodes_df, rows_df, nets_df, design_df):
 
-    # random.randint(0, 9)
+    print(nodes_df)
+    print("\n\n")
+    nodes_df = random_placement_nodes_df(nodes_df, rows_df)
+
+    # Updates on Nets: x_min, x_max, y_min, y_max, Internals, Externals,
+    #                  HPW, Size
+
+    find_min_max_on_nets_df(nodes_df, nets_df)
+    calculate_net_hpw(nets_df)
+    calculate_net_size(nets_df)
+
+    print("\n")
+    print(nets_df)
+
+    # Updates on Rows: Cells, Density, Node_Area
+    row_density(nodes_df, rows_df)
+    print("\n")
+    print(rows_df)
+
+    # Updates on Design: HPW, Density
+    create_design_df(nodes_df, nets_df, rows_df)
+    print("\n")
+    print(design_df)
+
+    print(nodes_df)
+
+
+def random_placement_nodes_df(nodes_df, rows_df):
+
+    # http: // pytolearn.csd.auth.gr / b4 - pandas / 40 / moddfcols.html
+    # https: // stackoverflow.com / questions / 30327417 / pandas - create - new - column - in -df -
+    # with-random - integers -from -range
+
     design_x_min = int(rows_df['Coordinate_x_min'].min())
     design_x_max = int(rows_df['Coordinate_x_max'].max())
     design_y_min = int(rows_df['Coordinate_y_min'].min())
     design_y_max = int(rows_df['Coordinate_y_max'].max())
-    # df[1] = df[1].apply(add_one)
 
-    # print(design_x_min)
-    # http: // pytolearn.csd.auth.gr / b4 - pandas / 40 / moddfcols.html
-    # nodes_df['Coordinate_x_min'] = random.randint(0, design_x_max)
+    nodes_df['Coordinate_x_max'] = np.random.randint(nodes_df['Width'],
+                                                     design_x_max,
+                                                     nodes_df.shape[0])
+    nodes_df['Coordinate_x_min'] = nodes_df['Coordinate_x_max'] - nodes_df[
+        'Width']
 
-    #x_min = [random.randint(design_x_min, design_x_max-2)] * len(nodes_df)
+    nodes_df['Coordinate_y_max'] = np.random.randint(nodes_df['Height'],
+                                                     design_y_max,
+                                                     nodes_df.shape[0])
+    nodes_df['Coordinate_y_min'] = nodes_df['Coordinate_y_max'] - nodes_df[
+        'Height']
 
-    # TODO, do it with for loop
+    # Find min,max Coordinates of Terminals
+    terminals_y_min = nodes_df.loc[
+        nodes_df['Type'] == 'Terminal', 'Coordinate_y_min'].min()
+    terminals_x_min = nodes_df.loc[
+        nodes_df['Type'] == 'Terminal', 'Coordinate_x_min'].min()
+    terminals_y_max = nodes_df.loc[
+        nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'].max()
+    terminals_x_max = nodes_df.loc[
+        nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'].max()
 
-    # x_max = random.sample(range((x_min+2), design_x_max), len(nodes_df))
-    # y_max = random.sample(range(y_min + 2, design_x_max), len(nodes_df))
+    if terminals_y_min > design_y_min:
+        terminals_y_min = design_y_min
 
-    nodes_df = nodes_df.drop(['Coordinate_x_min'], axis = 1)
-    nodes_df = nodes_df.drop(['Coordinate_x_max'], axis=1)
-    nodes_df = nodes_df.drop(['Coordinate_y_min'], axis=1)
-    nodes_df = nodes_df.drop(['Coordinate_y_max'], axis=1)
+    if terminals_y_max < design_y_max:
+        terminals_y_max = design_y_max
 
-    import random
-    from random import randint
+    if terminals_x_min > design_x_min:
+        terminals_x_min = design_x_min
 
-    # nodes_df['test_max'] = random.sample(int(nodes_df.Width), design_y_max)
-    # https: // stackoverflow.com / questions / 30327417 / pandas - create - new - column - in -df -
-    # with-random - integers -from -range
-    # nodes_df['test_max'] = nodes_df['Width'] + 100
-    nodes_df['test_x_max'] = np.random.randint(nodes_df['Width'], design_x_max, nodes_df.shape[0]) #TODO FILTER FOR TERMINALS. X_MAX = X_MIN
-    # df1['randNumCol'] = np.random.randint(1, 6, df1.shape[0])
+    if terminals_x_max > design_x_max:
+        terminals_x_max = design_x_max
 
-    print(nodes_df)
+    number_of_terminals = len(nodes_df.loc[nodes_df['Type'] == 'Terminal'])
 
-    # for i in range(len(nodes_df)):
-    #     nodes_df.Coordinate_x_min = random.randint(0, design_x_min)
-    #     nodes_df.Coordinate_x_max = random.randint(0, design_x_max)
-    #     nodes_df.Coordinate_y_min = random.randint(0, design_y_min)
-    #     nodes_df.Coordinate_y_max = random.randint(0, design_y_max)
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'] = (
+        np.random.randint(terminals_y_min, terminals_y_max,
+                          number_of_terminals))
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_max'] = (
+        np.random.randint(terminals_x_min, terminals_x_max,
+                          number_of_terminals))
 
-    #print(nodes_df)
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_y_min'] = (
+        nodes_df['Coordinate_y_max'])
+    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_min'] = (
+        nodes_df['Coordinate_x_max'])
+
+    # print("\nDesign: \n")
+    # print("y_min = " + str(design_y_min))
+    # print("y_max = " + str(design_y_max))
+    # print("x_min = " + str(design_x_min))
+    # print("x_max = " + str(design_x_max))
+    #
+    # print("\nTerminals: \n")
+    # print("y_min = " + str(terminals_y_min))
+    # print("y_max = " + str(terminals_y_max))
+    # print("x_min = " + str(terminals_x_min))
+    # print("x_max = " + str(terminals_x_max))
+    # print("\nTerminals: \n")
+
+
+    return nodes_df

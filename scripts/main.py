@@ -17,15 +17,15 @@ if __name__ == "__main__":
 
         # Nodes DataFrame Functions
         nodet = datetime.datetime.now()
-        nodes_df = create_nodes_df(parser_lists[0])
+        # nodes_df = create_nodes_df(parser_lists[0])
         nodetend = datetime.datetime.now() - nodet
 
         print("\nDisplay Nodes Dataframe: \n")
-        print(nodes_df)
+        # print(nodes_df)
         print("\n")
 
 
-        # nodes_df_lines = nodes_df_lines(parser_lists[0])
+        nodes_df_lines = nodes_df_lines(parser_lists[0])
         # print("\nDisplay Nodes Dataframe (with duplicates): \n")
         # print(nodes_df_lines)
         # print("\n")
@@ -33,8 +33,8 @@ if __name__ == "__main__":
 
         # Nets DataFrame Functions
         nett = datetime.datetime.now()
-        nets_df = create_nets_df(parser_lists[1], nodes_df)
-        # nets_df = create_nets_df(parser_lists[1], nodes_df_lines)
+        # nets_df = create_nets_df(parser_lists[1], nodes_df)
+        nets_df = create_nets_df(parser_lists[1], nodes_df_lines)
         nettend = datetime.datetime.now() - nett
 
         print("\nDisplay Nets Dataframe: \n")
@@ -127,7 +127,14 @@ if __name__ == "__main__":
         # allocation_of_row_densities(rows_df)
         # allocation_of_row_spaces(rows_df)
 
-        random_placement(nodes_df, rows_df)
+
+        random_being = datetime.datetime.now()
+        random_placement(nodes_df, rows_df, nets_df, design_df)
+        random_end = datetime.datetime.now() - begin_time
+
+        print("\n\n Random placement time: ", random_end)
+
+
         # Export to excel/csv
         # nodes_df.to_csv('PythonExport.csv', sep=',')
         # nodes_df.to_excel("output.xlsx")
