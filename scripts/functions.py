@@ -886,7 +886,7 @@ def create_nets_df(net_list, nodes_df):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
     # find_min_max_on_nets_df(nodes_df, nets_df)
-    find_min_max_on_nets_lines(nodes_df, nets_df)
+    # find_min_max_on_nets_lines(nodes_df, nets_df)
     calculate_net_hpw(nets_df)
     calculate_net_size(nets_df)
     nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
@@ -1314,8 +1314,8 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     plt.xticks(array_size_labels)
     # plt.yticks(np.arange(0, num_of_nodes + 1, 1))  # Set value step on y axis
 
-    plt.title('Number of Nodes, with a current size(range).', loc='center', fontsize=15, fontweight='bold')
-    plt.xlabel("Size", fontsize=12, fontweight='bold')
+    plt.title('Number of Nodes, with a current size.', loc='center', fontsize=15, fontweight='bold')
+    plt.xlabel("Size (measured in ranges)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of node(s)", fontsize=12, fontweight='bold')
 
     # ax.plot(densities, counter_of_densities)
@@ -1335,6 +1335,7 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     ax.set_xticklabels(size_labels, rotation='vertical')
     ax.bar_label(ax.containers[0])
 
+    plt.tight_layout()
     plt.show()
 
 
@@ -1410,7 +1411,7 @@ def allocation_of_net_sizes(nets_df):
 
     #ax.bar(array_size_labels, counter_of_sizes, width=500, edgecolor='white')
     plt.bar(array_size_labels, counter_of_sizes, width=20000)
-    ax.plot(array_size_labels, counter_of_sizes)
+    # ax.plot(array_size_labels, counter_of_sizes)
 
 
     size_labels = []
@@ -1425,6 +1426,7 @@ def allocation_of_net_sizes(nets_df):
     ax.set_xticklabels(size_labels, rotation='vertical')    # Set ticks labels for x-axis
     ax.bar_label(ax.containers[0]) # Show number above of the bars
     ax.autoscale_view()
+
     plt.tight_layout()
     plt.show()
 
@@ -1641,6 +1643,7 @@ def allocation_of_cells_on_each_row(rows_df):
     ax.set_xticklabels(size_labels, rotation='vertical')        # Set ticks labels for x-axis
     ax.bar_label(ax.containers[0])
 
+    plt.tight_layout()
     plt.show()
 
 
@@ -1707,6 +1710,7 @@ def allocation_of_row_densities(rows_df):
     ax.set_xticklabels(densities_labels, fontsize=12)
     ax.bar_label(ax.containers[0])
 
+    plt.tight_layout()
     plt.show()
 
 
@@ -1723,54 +1727,68 @@ def allocation_of_row_spaces(rows_df):
 
     while True:
 
-        answer = input('Press "0" if you want to exit and "1" if you want to continue: ')
-        if answer != '1':
-            break
-
         while True:
-            print('- Valid inputs [0 - ' + str(num_of_rows) + "]")
-            print('- Starting and ending number must have max distance 20.')
-            print('- Input must be numbers.\n')
+            answer = input('Press "0" if you want to exit ' +
+                           'and "1" if you want to continue: ')
 
-            start = int(input('Starting position: '))
-            end = int(input('Ending position: '))
-
-            if (0 <= start < num_of_rows) and (0 < end <= num_of_rows) and start < end and end - start <= 15:
+            if answer != '1' and answer != '0':
+                print('Wrong input, try again!\n')
+            elif answer == '0' or answer == '1':
                 break
 
-        row_area = int(rows_df.iloc[0, 10].max())
-        labels = list(rows_df.iloc[start:end, 0])
-        nodes_areas = list(rows_df.iloc[start:end, 11])
-        width = 0.35
+        if answer == '0':
+            exit_message()
+            break
+        else:
+            while True:
+                print('- Valid inputs [0 - ' + str(num_of_rows) + "]")
+                print('- Starting and ending number must have max distance 15.')
+                print('- Input must be numbers.\n')
 
-        fig, ax = plt.subplots(figsize=(16, 9))
-        ax.bar(labels, row_area, width, label="Free_Space", color='limegreen')
-        ax.bar(labels, nodes_areas, width, label="Non_Free_Space", bottom=0, color='firebrick')
-        ax.legend()
+                start = int(input('Starting position: '))
+                end = int(input('Ending position: '))
+
+                if (0 <= start < num_of_rows) and (0 < end <= num_of_rows) and start < end and end - start <= 15:
+                    break
+
+            row_area = int(rows_df.iloc[0, 10].max())
+            labels = list(rows_df.iloc[start:end, 0])
+            nodes_areas = list(rows_df.iloc[start:end, 11])
+            width = 0.35
+
+            fig, ax = plt.subplots(figsize=(16, 9))
+            ax.bar(labels, row_area, width, label="Free_Space", color='limegreen')
+            ax.bar(labels, nodes_areas, width, label="Non_Free_Space", bottom=0, color='firebrick')
+            ax.legend()
 
 
-        # Remove axes splines
-        for s in ['top', 'bottom', 'left', 'right']:
-            ax.spines[s].set_visible(False)
+            # Remove axes splines
+            for s in ['top', 'bottom', 'left', 'right']:
+                ax.spines[s].set_visible(False)
 
-        # Remove x, y Ticks
-        ax.xaxis.set_ticks_position('none')
-        ax.yaxis.set_ticks_position('none')
+            # Remove x, y Ticks
+            ax.xaxis.set_ticks_position('none')
+            ax.yaxis.set_ticks_position('none')
 
-        # Add padding between axes and labels
-        ax.xaxis.set_tick_params(pad=1)
-        ax.yaxis.set_tick_params(pad=2)
+            # Add padding between axes and labels
+            ax.xaxis.set_tick_params(pad=1)
+            ax.yaxis.set_tick_params(pad=2)
 
-        # Add x, y gridlines
-        ax.grid(b=True, color='grey',
-                linestyle='-.', linewidth=0.5,
-                alpha=0.2)
+            # Add x, y gridlines
+            ax.grid(b=True, color='grey',
+                    linestyle='-.', linewidth=0.5,
+                    alpha=0.2)
 
-        # Add Plot Title
-        ax.set_title('Row and their capacities.', loc='left', )
-        ax.bar_label(ax.containers[0])
+            # Add Plot Title
+            # ax.set_title('Row and their capacities.', loc='center', fontsize=14,
+            #              fontweight='bold')
+            ax.bar_label(ax.containers[0])
 
-        plt.show()
+            plt.ylabel("Row Capacity", fontsize=12, fontweight='bold')
+            plt.xlabel("Row name", fontsize=12, fontweight='bold')
+
+            # plt.tight_layout()
+            plt.show()
 
 
 def random_placement(nodes_df, rows_df, nets_df, design_df):
@@ -1873,6 +1891,5 @@ def random_placement_nodes_df(nodes_df, rows_df):
     # print("x_min = " + str(terminals_x_min))
     # print("x_max = " + str(terminals_x_max))
     # print("\nTerminals: \n")
-
 
     return nodes_df
