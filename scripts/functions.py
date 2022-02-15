@@ -961,6 +961,7 @@ def number_of_non_terminal_nodes(nodes_df):
     print("Non Terminals nodes: ", non_terminal_nodes)
     print("\n")
 
+
 def biggest_non_terminal_node(nodes_df):
     max_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
     max_node_size = int(max_df['Size'].max())
