@@ -46,8 +46,6 @@ class Node:
         self.node_type = node_type
         self.node_x = node_x  # Lower Left Corner - x Coordinate
         self.node_y = node_y  # Lower Left Corner - y Coordinate
-
-        # todo net object if needed
         self.node_nets = []  # net_names that this node are part of
         self.node_row = Row(None, None, None, None, None)
 
@@ -801,121 +799,12 @@ def create_nodes_df(node_list):
     return nodes_df
 
 
-def nodes_df_lines(node_list):
-    # 'list_size': self.node_width * self.node_height
-    column_names = ["Node_name", "Width", "Height", "Type", "Row_number",
-                    "Net", "x_min", "y_min"]
-    nodes_df = pd.DataFrame(columns=column_names)
-
-    for node in node_list:
-        # line_df = pd.DataFrame()
-
-        if len(node.node_nets) > 1:
-            # if node.node_type == 'Non_Terminal':
-            for net in node.node_nets:
-                nodes_df = nodes_df.append(dict(zip(nodes_df.columns,
-                                                    [node.node_name, node.node_width,
-                                                     node.node_height, node.node_type,
-                                                     node.node_row.row_name, net,
-                                                     node.node_x, node.node_y])), ignore_index=True)
-            """
-            else:
-                for net in node.node_nets:
-
-                    nodes_df = nodes_df.append(dict(zip(nodes_df.columns,
-                                                        [node.node_name,
-                                                         node.node_width,
-                                                         node.node_height,
-                                                         node.node_type,
-                                                         "None",
-                                                         net,
-                                                         node.node_x,
-                                                         node.node_y])),
-                                               ignore_index=True)
-            """
-
-        else:
-            # if node.node_type == 'Non_Terminal':
-            nodes_df = nodes_df.append(dict(zip(nodes_df.columns,
-                                                [node.node_name,
-                                                 node.node_width,
-                                                 node.node_height,
-                                                 node.node_type,
-                                                 node.node_row.row_name,
-                                                 node.node_nets[0],
-                                                 node.node_x, node.node_y,
-                                                 ])), ignore_index=True)
-            """
-            else:
-                nodes_df = nodes_df.append(dict(zip(nodes_df.columns,
-                                                    [node.node_name,
-                                                     node.node_width,
-                                                     node.node_height,
-                                                     node.node_type,
-                                                     "None",
-                                                     node.node_nets[0],
-                                                     node.node_x, node.node_y,
-                                                     ])), ignore_index=True)
-            """
-
-    nodes_df['Size'] = nodes_df["Width"] * nodes_df["Height"]
-
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'x_max'] = (
-        nodes_df['x_min'])
-    nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'x_max'] = (
-            nodes_df['x_min'] + nodes_df['Width'])
-
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'y_max'] = (
-        nodes_df['y_min'])
-    nodes_df.loc[nodes_df['Type'] == 'Non_Terminal', 'y_max'] = (
-            nodes_df['y_min'] + nodes_df['Height'])
-
-    nodes_df = nodes_df.astype({"x_max": int,
-                                "y_max": int})
-
-    """
-    # dropping ALL duplicate values, keeping only the first found
-    nodes_df.drop_duplicates(subset="Node_name",
-                         keep='first', inplace=True)
-    """
-
-    return nodes_df
-
-
 def create_nets_df(net_list, nodes_df):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
-    # find_min_max_on_nets_df(nodes_df, nets_df)
-    # find_min_max_on_nets_lines(nodes_df, nets_df)
     calculate_net_hpw(nets_df)
     calculate_net_size(nets_df)
     nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
-
-    return nets_df
-
-
-def find_min_max_on_nets_lines(nodes_df, nets_df):
-    net_names_list = list(nets_df['Net_name'])
-    temp_df = pd.DataFrame()
-
-    for net in net_names_list:
-        x_min = int(nodes_df.loc[nodes_df['Net'] == net]['x_min'].min())
-        x_max = int(nodes_df.loc[nodes_df['Net'] == net]['x_max'].max())
-        y_min = int(nodes_df.loc[nodes_df['Net'] == net]['y_min'].min())
-        y_max = int(nodes_df.loc[nodes_df['Net'] == net]['y_max'].max())
-
-        nets_df.loc[nets_df['Net_name'] == net, 'DUPL_x_MIN'] = x_min
-        nets_df.loc[nets_df['Net_name'] == net, 'DUPL_x_MAX'] = x_max
-        nets_df.loc[nets_df['Net_name'] == net, 'DUPL_y_MIN'] = y_min
-        nets_df.loc[nets_df['Net_name'] == net, 'DUPL_y_MAX'] = y_max
-
-    nets_df = nets_df.astype({"DUPL_x_MIN": int, "DUPL_x_MAX": int,
-                              "DUPL_y_MIN": int, "DUPL_y_MAX": int})
-
-    # temp_df = nodes_df.loc[nodes_df['Net'] == net]
-    # temp_df = nodes_df[nodes_df['Net'].str.match(net)]
-    # print(temp_df)
-    # print(net, type(net))
 
     return nets_df
 
@@ -991,16 +880,10 @@ def calculate_net_hpw(nets_df):
     nets_df['Half_Perimeter_Wirelength'] = ((nets_df['x_max'] - nets_df['x_min'])
                                             + (nets_df['y_max'] - nets_df['y_min']))
 
-    # nets_df['DUPL_Half_Perimeter_Wirelength'] = ((nets_df['DUPL_x_MAX'] - nets_df['DUPL_x_MIN'])
-    #                               + (nets_df['DUPL_y_MAX'] - nets_df['DUPL_y_MIN']))
-
 
 def calculate_net_size(nets_df):
     nets_df['Net_Size'] = ((nets_df['x_max'] - nets_df['x_min'])
                            * (nets_df['y_max'] - nets_df['y_min']))
-
-    # nets_df['DUPL_Net_size'] = ((nets_df['DUPL_x_MAX'] - nets_df['DUPL_x_MIN'])
-    #                              * (nets_df['DUPL_y_MAX'] - nets_df['DUPL_y_MIN']))
 
 
 def create_rows_df(row_list, nodes_df):
@@ -1068,20 +951,15 @@ def create_design_df(nodes_df, nets_df, rows_df):
         'Density(%)': design_density
     }
 
-    # 1st way to create DF Design
-    # design_df = pd.DataFrame(design_dict, index=[0])
-
-    # 2nd way to create DF design
     design_df = pd.DataFrame.from_records([design_dict])
 
     return design_df
 
 
-# 2 - 5
 def number_of_non_terminal_nodes(nodes_df):
     non_terminal_nodes = len(nodes_df[nodes_df['Type'].str.match('Non_Terminal')])
     print("Non Terminals nodes: ", non_terminal_nodes)
-
+    print("\n")
 
 def biggest_non_terminal_node(nodes_df):
     max_df = nodes_df[nodes_df['Type'].str.match('Non_Terminal')]
@@ -1093,7 +971,7 @@ def biggest_non_terminal_node(nodes_df):
     # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Maximum Non Terminal Node size = ", max_node_size)
     print("- Non Terminal Node(s) with max size: ", max_nodes_list)
-    # print("\n")
+    print("\n")
 
 
 def smallest_non_terminal_node(nodes_df):
@@ -1106,7 +984,7 @@ def smallest_non_terminal_node(nodes_df):
     # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Minimum Non Terminal Node size = ", min_node_size)
     print("- Non Terminal Node(s) with min size: ", min_nodes_list)
-    # print("\n")
+    print("\n")
 
 
 def mean_size_non_terminal_nodes(nodes_df):
@@ -1117,17 +995,15 @@ def mean_size_non_terminal_nodes(nodes_df):
     print("Mean size of Non Terminal Node(s): ", mean)
 
 
-# 7 - 10 --- terminal are dots --> they have no size
 def number_of_terminal_nodes(nodes_df):
     terminal_nodes = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
     print("Terminals nodes: ", terminal_nodes)
 
 
-# 12 - 15
 def number_of_nets(nets_df):
     num_of_nets = nets_df.shape[0]
     print("Number of nets: ", num_of_nets)
-    # print("\n")
+    print("\n")
 
 
 def biggest_net_based_on_nodes(nets_df):
@@ -1137,7 +1013,7 @@ def biggest_net_based_on_nodes(nets_df):
 
     print("Maximum number of cells in a net: ", max_num_of_cells)
     print("- Biggest net(s): ", max_nets_list)
-    # print("\n")
+    print("\n")
 
 
 def smallest_net_based_on_nodes(nets_df):
@@ -1147,7 +1023,7 @@ def smallest_net_based_on_nodes(nets_df):
 
     print("Minimum number of cells in a net: ", min_num_of_cells)
     print("- Smallest net(s): ", min_nets_list)
-    # print("\n")
+    print("\n")
 
 
 def mean_size_of_nets_based_on_nodes(nets_df):
@@ -1155,7 +1031,7 @@ def mean_size_of_nets_based_on_nodes(nets_df):
     mean_num_of_cells = round(mean_num_of_cells, 2)
 
     print("Mean number of cell(s) on each net: ", mean_num_of_cells)
-    # print("\n")
+    print("\n")
 
 
 def biggest_net_based_on_size(nets_df, nodes_df):
@@ -1165,7 +1041,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
 
     print("Maximum Net Size: ", max_net_size)
     print("- Biggest net(s): ", max_nets_list)
-    # print("\n")
+    print("\n")
 
 
 def smallest_net_based_on_size(nets_df, nodes_df):
@@ -1175,21 +1051,20 @@ def smallest_net_based_on_size(nets_df, nodes_df):
 
     print("Minimum Net Size: ", min_net_size)
     print("- Smallest net(s): ", min_nets_list)
-    # print("\n")
+    print("\n")
 
 
 def mean_net_based_on_size(nets_df, nodes_df):
     mean_net_size = float(nets_df["Net_Size"].mean())
 
     print("Mean Net Size: ", mean_net_size)
-    # print("\n")
+    print("\n")
 
 
-# 17 - 20
 def number_of_rows(rows_df):
     num_of_rows = rows_df.shape[0]
     print("Number of rows: ", num_of_rows)
-    # print("\n")
+    print("\n")
 
 
 def biggest_row(rows_df):
@@ -1200,7 +1075,7 @@ def biggest_row(rows_df):
     # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Maximum number of cells in a row: ", max_num_of_cells)
     print("- Biggest row(s): ", max_rows_list)
-    # print("\n")
+    print("\n")
 
 
 def smallest_row(rows_df):
@@ -1211,7 +1086,7 @@ def smallest_row(rows_df):
     # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Minimum number of cells in a row: ", min_num_of_cells)
     print("- Smallest row(s): ", min_rows_list)
-    # print("\n")
+    print("\n")
 
 
 def mean_num_of_nodes_on_rows(rows_df):
@@ -1219,15 +1094,12 @@ def mean_num_of_nodes_on_rows(rows_df):
     mean_num_of_cells = round(mean_num_of_cells, 2)
 
     print("Mean number of cells on each row: ", mean_num_of_cells)
-    # print("\n")
+    print("\n")
 
 
-# 24 - 25
 def design_df_half_perimeter_wirelength(nets_df):
     design_hpw = nets_df['Half_Perimeter_Wirelength'].sum()
 
-    # print("Design Half Perimeter Wirelength: ", design_hpw)
-    # print("\n")
     return design_hpw
 
 
@@ -1247,14 +1119,8 @@ def design_df_density(nodes_df, rows_df):
     return density
 
 
-# 6 -> Κατανομή μεγεθών non terminal nodes (γραφική παράσταση)
-# γραφική παράσταση που θα δείχνει για κάθε ένα μέγεθος πόσα υπάρχουν.
-# Πχ έστω ότι έχουμε μεγέθη κελιών 5,10,15,20 στον x’άξονα και στον y’άξονα
-# θα ναι τόσο ψηλό το κάθε μέγεθος, όσο και το πλήθος των κελιών με το
-# αντίστοιχο μέγεθος.
-# άρα θέλω:
-# -> list of node sizes
-# -> number of nodes me gia to kathe size
+"""              Matplotlib graphs               """
+
 def allocation_of_non_terminal_node_sizes(nodes_df):
     import math
 
@@ -1339,23 +1205,8 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     plt.show()
 
 
-# 16 -> Κατανομή μεγεθών nets (γραφική παράσταση)
 def allocation_of_net_sizes(nets_df):
     import math
-
-    """ old one
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    # plot = sns.countplot(x="Net_Size", data=nets_df)
-    # plot.set(xlabel='Net Sizes', ylabel='Number of Nets')
-    #plot.set(title='Number of Nets matched with Net Sizes ')
-
-    # Another way, using catplot
-    plot = sns.catplot(y="Net_Size", data=nets_df, kind="count", height=10,  aspect=1)
-
-    plt.show()
-    """
-
-    """ Reverted, second way."""
 
     max_net_size = nets_df['Net_Size'].max()
     max_size_len = len(str(max_net_size))
@@ -1432,27 +1283,6 @@ def allocation_of_net_sizes(nets_df):
 
 
 def allocation_of_net_sizes_based_on_nodes(nets_df):
-    """ OLD ONE
-
-    plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    plot = sns.countplot(x="Num_of_nodes", data=nets_df)
-    plot.set(xlabel='Number of Nodes', ylabel='Number of Nets')
-    plot.set(title='Number of Nets matched with Number of Nodes ')
-    plt.show()
-
-    # 1st way - creating an extra colum on DF, storing the number of nodes
-    nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
-    max = nets_df['Num_of_nodes'].max()
-    nets_df['Num_of_nodes'].value_counts(normalize=False).plot(kind='bar')
-    plt.show()
-
-    # 2nd way - with list
-    # num_of_nodes = nets_df["Nodes"].str.len()
-    # sns.countplot(x=num_of_nodes)
-    #
-
-    END OF OLD ONE"""
-
     import math
 
     nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
@@ -1540,25 +1370,7 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
     plt.show()
 
 
-# 21 -> Κατανομή αριθμού κελιών ανά row (γραφική παράσταση)
-# Αν έχω πχ 100 rows -- x’άξονας έχω από 0-99 και στον y’άξονα έχω τον αριθμό
-# από κελιά (Non-Terminals) -- και μετά κάνω ένα barchart για να φαίνεται ποιες
-# γραμμές έχουν περισσότερα κελιά.
 def allocation_of_cells_on_each_row(rows_df):
-    """OLD WAY"""
-    # row_names = rows_df["Row_name"]
-    # num_of_cells = rows_df["Cells"].str.len()
-    #
-    # # plt.figure(figsize=(8,4))
-    # # sns.set_context('paper')
-    #
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
-    #
-    # plot = sns.barplot(x=row_names, y=num_of_cells)
-    # plot.set(xlabel='Row names', ylabel='Number of Cells')
-    # plot.set(title='Rows matched with their number of Cells.')
-    """ END OF OLD WAY."""
-
     import math
 
     max_node_count = rows_df["Cells"].str.len().max()
@@ -1638,7 +1450,7 @@ def allocation_of_cells_on_each_row(rows_df):
     size_labels.pop()
     size_labels.insert(0, "O")
 
-    # Show 0-50, 50 - 100 instead of 0,50,100..
+    # Shows 0-50, 50 - 100 instead of 0,50,100..
     ax.set_xticks(array_size_labels)                            # Set number of ticks for x-axis
     ax.set_xticklabels(size_labels, rotation='vertical')        # Set ticks labels for x-axis
     ax.bar_label(ax.containers[0])
@@ -1647,15 +1459,7 @@ def allocation_of_cells_on_each_row(rows_df):
     plt.show()
 
 
-# 22 -> Πυκνότητα ανά γραμμή (γραφική παράσταση)
 def allocation_of_row_densities(rows_df):
-    """OLD ONE"""
-    # plot = sns.barplot('Row_name', 'Density(%)', data=rows_df)
-
-    # plot = sns.countplot(x="Density(%)", data=rows_df)
-    # plot.set(xlabel='Row names', ylabel='Density(%)')
-    # plot.set(title='Rows matched with their Density(%)')
-    """ END OF OLD ONE."""
 
     num_of_rows = rows_df.shape[0]
     densities = np.arange(0, 105, 5)
@@ -1714,12 +1518,6 @@ def allocation_of_row_densities(rows_df):
     plt.show()
 
 
-# 23 -> Ελέυθερος χώρος/Δεσμευμένος χώρος ανά row (γραφική παράσταση)
-# Θα είναι βασισμένο στο 22 και θα φαίνονται όλες οι γραμμές στο ίδιο
-# σχεδιάγραμμα. Όλες οι μπάρες θα ναι ίδιου ύψους,
-# αφού όλες οι γραμμές έχουν ίδιο ύψος. Και θα φτιάξουμε ένα barchart που θα
-# δείχνει το free και non-free space. Και απλά η μπάρα θα ναι κόκκινη στο
-# non-free space κ πράσινη στο free.
 def allocation_of_row_spaces(rows_df):
 
     num_of_rows = rows_df.shape[0]
@@ -1789,107 +1587,3 @@ def allocation_of_row_spaces(rows_df):
 
             # plt.tight_layout()
             plt.show()
-
-
-def random_placement(nodes_df, rows_df, nets_df, design_df):
-
-    print(nodes_df)
-    print("\n\n")
-    nodes_df = random_placement_nodes_df(nodes_df, rows_df)
-
-    # Updates on Nets: x_min, x_max, y_min, y_max, Internals, Externals,
-    #                  HPW, Size
-
-    find_min_max_on_nets_df(nodes_df, nets_df)
-    calculate_net_hpw(nets_df)
-    calculate_net_size(nets_df)
-
-    print("\n")
-    print(nets_df)
-
-    # Updates on Rows: Cells, Density, Node_Area
-    row_density(nodes_df, rows_df)
-    print("\n")
-    print(rows_df)
-
-    # Updates on Design: HPW, Density
-    create_design_df(nodes_df, nets_df, rows_df)
-    print("\n")
-    print(design_df)
-
-    print(nodes_df)
-
-
-def random_placement_nodes_df(nodes_df, rows_df):
-
-    # http: // pytolearn.csd.auth.gr / b4 - pandas / 40 / moddfcols.html
-    # https: // stackoverflow.com / questions / 30327417 / pandas - create - new - column - in -df -
-    # with-random - integers -from -range
-
-    design_x_min = int(rows_df['Coordinate_x_min'].min())
-    design_x_max = int(rows_df['Coordinate_x_max'].max())
-    design_y_min = int(rows_df['Coordinate_y_min'].min())
-    design_y_max = int(rows_df['Coordinate_y_max'].max())
-
-    nodes_df['Coordinate_x_max'] = np.random.randint(nodes_df['Width'],
-                                                     design_x_max,
-                                                     nodes_df.shape[0])
-    nodes_df['Coordinate_x_min'] = nodes_df['Coordinate_x_max'] - nodes_df[
-        'Width']
-
-    nodes_df['Coordinate_y_max'] = np.random.randint(nodes_df['Height'],
-                                                     design_y_max,
-                                                     nodes_df.shape[0])
-    nodes_df['Coordinate_y_min'] = nodes_df['Coordinate_y_max'] - nodes_df[
-        'Height']
-
-    # Find min,max Coordinates of Terminals
-    terminals_y_min = nodes_df.loc[
-        nodes_df['Type'] == 'Terminal', 'Coordinate_y_min'].min()
-    terminals_x_min = nodes_df.loc[
-        nodes_df['Type'] == 'Terminal', 'Coordinate_x_min'].min()
-    terminals_y_max = nodes_df.loc[
-        nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'].max()
-    terminals_x_max = nodes_df.loc[
-        nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'].max()
-
-    if terminals_y_min > design_y_min:
-        terminals_y_min = design_y_min
-
-    if terminals_y_max < design_y_max:
-        terminals_y_max = design_y_max
-
-    if terminals_x_min > design_x_min:
-        terminals_x_min = design_x_min
-
-    if terminals_x_max > design_x_max:
-        terminals_x_max = design_x_max
-
-    number_of_terminals = len(nodes_df.loc[nodes_df['Type'] == 'Terminal'])
-
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_y_max'] = (
-        np.random.randint(terminals_y_min, terminals_y_max,
-                          number_of_terminals))
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_max'] = (
-        np.random.randint(terminals_x_min, terminals_x_max,
-                          number_of_terminals))
-
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_y_min'] = (
-        nodes_df['Coordinate_y_max'])
-    nodes_df.loc[nodes_df['Type'] == 'Terminal', 'Coordinate_x_min'] = (
-        nodes_df['Coordinate_x_max'])
-
-    # print("\nDesign: \n")
-    # print("y_min = " + str(design_y_min))
-    # print("y_max = " + str(design_y_max))
-    # print("x_min = " + str(design_x_min))
-    # print("x_max = " + str(design_x_max))
-    #
-    # print("\nTerminals: \n")
-    # print("y_min = " + str(terminals_y_min))
-    # print("y_max = " + str(terminals_y_max))
-    # print("x_min = " + str(terminals_x_min))
-    # print("x_max = " + str(terminals_x_max))
-    # print("\nTerminals: \n")
-
-    return nodes_df

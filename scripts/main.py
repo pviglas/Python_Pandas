@@ -15,7 +15,7 @@ if __name__ == "__main__":
         # parser_lists[1] -> nets_list
         # parser_lists[2] -> row_list
 
-        # Nodes DataFrame Functions
+        # Nodes DataFrame
         nodet = datetime.datetime.now()
         nodes_df = create_nodes_df(parser_lists[0])
         nodetend = datetime.datetime.now() - nodet
@@ -24,24 +24,16 @@ if __name__ == "__main__":
         print(nodes_df)
         print("\n")
 
-
-        # nodes_df_lines = nodes_df_lines(parser_lists[0])
-        # print("\nDisplay Nodes Dataframe (with duplicates): \n")
-        print(nodes_df_lines)
-        # print("\n")
-
-
-        # Nets DataFrame Functions
+        # Nets DataFrame
         nett = datetime.datetime.now()
         nets_df = create_nets_df(parser_lists[1], nodes_df)
-        # nets_df = create_nets_df(parser_lists[1], nodes_df_lines)
         nettend = datetime.datetime.now() - nett
 
         print("\nDisplay Nets Dataframe: \n")
         print(nets_df)
         print("\n")
 
-        # Rows DataFrame Functions
+        # Rows DataFrame
         rowt = datetime.datetime.now()
         rows_df = create_rows_df(parser_lists[2], nodes_df)
         rowtend = datetime.datetime.now() - rowt
@@ -58,8 +50,7 @@ if __name__ == "__main__":
         print("\nDisplay Designs Dataframe: \n")
         print(design_df)
         print("\n")
-        
-        
+
         # Nodes Functions
         number_of_non_terminal_nodes(nodes_df)
         biggest_non_terminal_node(nodes_df)
@@ -104,20 +95,6 @@ if __name__ == "__main__":
         print("create design_df: ", dtend)
         print("Whole main runtime: ", main_end)
 
-
-        """
-        aa1 = datetime.datetime.now()
-        find_min_max_on_nets_df2(nodes_df, nets_df)
-        aa1end = datetime.datetime.now() - aa1
-
-        aa2 = datetime.datetime.now()
-        find_min_max_on_nets_df(nodes_df, nets_df)
-        aa2end = datetime.datetime.now() - aa2
-    
-        print("\nFind min/max of nets with DFs: ", aa2end)
-        print("\nFind min/max of nets with DFs(new way): ", aa1end)
-        """
-
         allocation_of_non_terminal_node_sizes(nodes_df)
 
         allocation_of_net_sizes(nets_df)
@@ -126,13 +103,6 @@ if __name__ == "__main__":
         allocation_of_cells_on_each_row(rows_df)
         allocation_of_row_densities(rows_df)
         allocation_of_row_spaces(rows_df)
-
-        #
-        # random_being = datetime.datetime.now()
-        # random_placement(nodes_df, rows_df, nets_df, design_df)
-        # random_end = datetime.datetime.now() - begin_time
-        #
-        # print("\n\n Random placement time: ", random_end)
 
 
         # Export to excel/csv
