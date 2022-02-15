@@ -104,16 +104,11 @@ if __name__ == "__main__":
         allocation_of_row_densities(rows_df)
         allocation_of_row_spaces(rows_df)
 
-
-        # Export to excel/csv
-        # nodes_df.to_csv('PythonExport.csv', sep=',')
-        # nodes_df.to_excel("output.xlsx")
-
-        # with pd.ExcelWriter('output.xlsx') as writer:
-          #  nodes_df_lines.to_excel(writer, sheet_name='nodes_df')
-            # nets_df.to_excel(writer, sheet_name='nets_df')
-        #     rows_df.to_excel(writer, sheet_name='rows_df')
-        #    design_df.to_excel(writer, sheet_name='design_df')
+        with pd.ExcelWriter('output.xlsx') as writer:
+            nodes_df.to_excel(writer, sheet_name='nodes_df')
+            nets_df.to_excel(writer, sheet_name='nets_df')
+            rows_df.to_excel(writer, sheet_name='rows_df')
+            design_df.to_excel(writer, sheet_name='design_df')
 
     else:
         pass
