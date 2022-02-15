@@ -1,3 +1,3 @@
-# Python_Pandas
+# Python_pandas
 
-Data Analysis on Bookshelf Formatted Designs mostly with the use of Pandas Library
+Data Analysis on Bookshelf Formatted Designs mostly with the use of pandas Library
