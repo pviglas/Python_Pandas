@@ -852,8 +852,19 @@ def create_nodes_df(node_list):
 def create_nets_df(net_list, nodes_df):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
+    calculate_net_hpw_time = datetime.datetime.now()
     calculate_net_hpw(nets_df)
+    calculate_net_hpw_time = datetime.datetime.now() - calculate_net_hpw_time
+
+    calculate_net_size_time = datetime.datetime.now()
     calculate_net_size(nets_df)
+    calculate_net_size_time = datetime.datetime.now() - calculate_net_size_time
+
+    print("\n***********\n")
+    print("calculate_net_hpw_time_WITH_DATAFRAME: ", calculate_net_hpw_time)
+    print("calculate_net_size_time_WITH_DATAFRAME: ", calculate_net_size_time)
+    print("\n***********")
+
     nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
 
     return nets_df

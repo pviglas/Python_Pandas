@@ -134,7 +134,38 @@ if __name__ == "__main__":
 
         main_end = datetime.datetime.now() - main_time
 
+        allocation_of_non_terminal_node_sizes_time = datetime.datetime.now()
+        allocation_of_non_terminal_node_sizes(nodes_df)
+        allocation_of_non_terminal_node_sizes_time = datetime.datetime.now() - allocation_of_non_terminal_node_sizes_time
+
+        allocation_of_net_sizes_time = datetime.datetime.now()
+        allocation_of_net_sizes(nets_df)
+        allocation_of_net_sizes_time = datetime.datetime.now()  - allocation_of_net_sizes_time
+
+        allocation_of_net_sizes_based_on_nodes_time = datetime.datetime.now()
+        allocation_of_net_sizes_based_on_nodes(nets_df)
+        allocation_of_net_sizes_based_on_nodes_time = datetime.datetime.now() - allocation_of_net_sizes_based_on_nodes_time
+
+        allocation_of_cells_on_each_row_time = datetime.datetime.now()
+        allocation_of_cells_on_each_row(rows_df)
+        allocation_of_cells_on_each_row_time = datetime.datetime.now() - allocation_of_cells_on_each_row_time
+
+        allocation_of_row_densities_time = datetime.datetime.now()
+        allocation_of_row_densities(rows_df)
+        allocation_of_row_densities_time = datetime.datetime.now() - allocation_of_row_densities_time
+
+        # allocation_of_row_spaces(rows_df)
+
+
+        # parser_lists[0] -> node_list
+        # parser_lists[1] -> nets_list
+        # parser_lists[2] -> row_list
+
+        print("\n******************************\n")
         print("Times: ")
+        calculate_times(parser_lists[0], parser_lists[1], parser_lists[2])
+
+        print("\n")
         lists_to_df_time = nodetend + nettend + rowtend + dtend
         print("Parser time: ", end_time)
         print("Convert Lists to DFs time: ", lists_to_df_time)
@@ -166,44 +197,12 @@ if __name__ == "__main__":
         print("smallest_row_time: ", smallest_row_time)
         print("mean_num_of_nodes_on_rows_time: ", mean_num_of_nodes_on_rows_time)
 
-
-
-
-        # parser_lists[0] -> node_list
-        # parser_lists[1] -> nets_list
-        # parser_lists[2] -> row_list
-
-        calculate_times(parser_lists[0], parser_lists[1], parser_lists[2])
-
-        allocation_of_non_terminal_node_sizes_time = datetime.datetime.now()
-        allocation_of_non_terminal_node_sizes(nodes_df)
-        allocation_of_non_terminal_node_sizes_time = datetime.datetime.now() - allocation_of_non_terminal_node_sizes_time
-
-        allocation_of_net_sizes_time = datetime.datetime.now()
-        allocation_of_net_sizes(nets_df)
-        allocation_of_net_sizes_time = datetime.datetime.now()  - allocation_of_net_sizes_time
-
-        allocation_of_net_sizes_based_on_nodes_time = datetime.datetime.now()
-        allocation_of_net_sizes_based_on_nodes(nets_df)
-        allocation_of_net_sizes_based_on_nodes_time = datetime.datetime.now() - allocation_of_net_sizes_based_on_nodes_time
-
-        allocation_of_cells_on_each_row_time = datetime.datetime.now()
-        allocation_of_cells_on_each_row(rows_df)
-        allocation_of_cells_on_each_row_time = datetime.datetime.now() - allocation_of_cells_on_each_row_time
-
-        allocation_of_row_densities_time = datetime.datetime.now()
-        allocation_of_row_densities(rows_df)
-        allocation_of_row_densities_time = datetime.datetime.now() - allocation_of_row_densities_time
-
         print("\nGRAPH TIMES: \n")
         print("allocation_of_non_terminal_node_sizes_time: ", allocation_of_non_terminal_node_sizes_time)
         print("allocation_of_net_sizes_time: ", allocation_of_net_sizes_time)
         print("allocation_of_net_sizes_based_on_nodes_time: ", allocation_of_net_sizes_based_on_nodes_time)
         print("allocation_of_cells_on_each_row_time: ", allocation_of_cells_on_each_row_time)
         print("allocation_of_row_densities_time: ", allocation_of_row_densities_time)
-
-
-        # allocation_of_row_spaces(rows_df)
 
         # with pd.ExcelWriter('output.xlsx') as writer:
         #     nodes_df.to_excel(writer, sheet_name='nodes_df')
