@@ -23,13 +23,13 @@ pd.set_option('display.max_columns', 20)
 #    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
 
 
-# path_to_designs = "../docs/{}"
-# folderName = "design"
-# fileName = "design"
+path_to_designs = "../docs/{}"
+folderName = "design"
+fileName = "design"
 
-path_to_designs = "../docs/ISPD/{}"
-folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-fileName = "ibm01"
+# path_to_designs = "../docs/ISPD/{}"
+# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+# fileName = "ibm01"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -761,19 +761,69 @@ def parser():  # parsing the whole circuit into lists of objects
         row.calculate_row_density()
 
     begin4_time = datetime.datetime.now() - begin3_time
-    print("\nRow Density list time: ", begin4_time + begin2_time)
+    print("\nCALCULATE ALL ROW DENSITIES - TOTAL LIST TIME: ", begin4_time + begin2_time)
 
+    design_creation_time = datetime.datetime.now()
     # Create Design
     current_design = Design(number_of_nodes, number_of_terminals, nets_number)
+
+    design_hpw_time = datetime.datetime.now()
     current_design.calculate_design_half_perimeter_wirelength(net_list)
+    design_hpw_time = datetime.datetime.now() - design_hpw_time
+
+    design_width_height_time = datetime.datetime.now()
     current_design.calculate_design_width_height(row_list)
+    design_width_height_time = datetime.datetime.now() - design_width_height_time
+
+    design_total_area_time = datetime.datetime.now()
     current_design.calculate_design_total_area()
+    design_total_area_time = datetime.datetime.now() - design_total_area_time
+
+    design_total_cell_area_time = datetime.datetime.now()
     current_design.calculate_design_total_cell_area(node_list)
+    design_total_cell_area_time = datetime.datetime.now() - design_total_cell_area_time
+
+    design_total_density_time = datetime.datetime.now()
     current_design.calculate_design_density()
+    design_total_density_time = datetime.datetime.now() - design_total_density_time
+
+    design_creation_time = datetime.datetime.now() - design_creation_time
+
+    print("\n DESIGN PRINTING LIST TIMES: \n")
+    print("- Design creation time: ", design_creation_time)
+    print("- Design hpw time: ", design_hpw_time)
+    print("- Design width_height time: ", design_width_height_time)
+    print("- Design total area time: ", design_total_area_time)
+    print("- Design total cell area time: ", design_total_cell_area_time)
+    print("- Design total density time: ", design_total_density_time)
 
     print("***\n\nCurrentDesign: ", current_design)
 
     return node_list, net_list, row_list
+
+
+def calculate_times(node_list, net_list, row_list):
+
+    print("\n PRINTING LIST FUNCTION TIMES: \n")
+
+    total_net_hpw_time = datetime.datetime.now()
+    # Total Net HPW time
+    for net in net_list:
+        net.calculate_net_wirelength()
+
+    total_net_hpw_time = datetime.datetime.now() - total_net_hpw_time
+    print("-Calculate Net HPW for each net, total time=  ", total_net_hpw_time)
+
+    total_net_size_time = datetime.datetime.now()
+    # Total Net HPW time
+    for net in net_list:
+        net.calculate_net_size()
+
+    total_net_size_time = datetime.datetime.now() - total_net_size_time
+    print("-Calculate Net Size for each net, total time=  ", total_net_size_time)
+
+
+
 
 
 """               DataFrame's Functions             """
@@ -922,21 +972,41 @@ def create_design_df(nodes_df, nets_df, rows_df):
     design_nets = nets_df.shape[0]
     design_rows = rows_df.shape[0]
     design_terminals = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
-    design_total_cell_area = nodes_df['Size'].sum()
 
+    design_total_cell_area_time = datetime.datetime.now()
+    design_total_cell_area = nodes_df['Size'].sum()
+    design_total_cell_area_time = datetime.datetime.now() - design_total_cell_area_time
+
+    design_height_width_time = datetime.datetime.now()
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
 
     design_width = (rows_df['Coordinate_x_max'].max()
                     - rows_df['Coordinate_x_min'].min())
+    design_height_width_time = datetime.datetime.now() - design_height_width_time
 
+    design_total_area_time = datetime.datetime.now()
     design_total_area = design_height * design_width
-    design_density = (design_total_cell_area / design_total_area) * 100
+    design_total_area_time = datetime.datetime.now() - design_total_area_time
 
-    # TODO CHECK how to calculate density, with function or like above?
+    design_density_time = datetime.datetime.now()
+    design_density = (design_total_cell_area / design_total_area) * 100
+    design_density_time = datetime.datetime.now() - design_density_time
+
     # density = design_df_density(nodes_df, rows_df)
 
+    design_hpw_time = datetime.datetime.now()
     design_hpw = design_df_half_perimeter_wirelength(nets_df)
+    design_hpw_time = datetime.datetime.now() - design_hpw_time
+
+    # Times
+    print("\nTimes of Design df: ")
+    print("design_total_cell_area_time: ", design_total_cell_area_time)
+    print("design_height_width_time: ", design_height_width_time)
+    print("design_total_area_time: ", design_total_area_time)
+    print("design_density_time: ", design_total_area_time)
+    print("design_hpw_time: ", design_hpw_time)
+
 
     design_dict = {
         'Number_of_cells': design_cells,
