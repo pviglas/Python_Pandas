@@ -8,7 +8,8 @@ if __name__ == "__main__":
         main_time = datetime.datetime.now()
 
         begin_time = datetime.datetime.now()
-        parser_lists = parser()
+        f = open("ibm18_times", "x")
+        parser_lists = parser(f)
         end_time = datetime.datetime.now() - begin_time
 
         # parser_lists[0] -> node_list
@@ -26,7 +27,7 @@ if __name__ == "__main__":
 
         # Nets DataFrame
         nett = datetime.datetime.now()
-        nets_df = create_nets_df(parser_lists[1], nodes_df)
+        nets_df = create_nets_df(parser_lists[1], nodes_df, f)
         nettend = datetime.datetime.now() - nett
 
         print("\nDisplay Nets Dataframe: \n")
@@ -35,7 +36,7 @@ if __name__ == "__main__":
 
         # Rows DataFrame
         rowt = datetime.datetime.now()
-        rows_df = create_rows_df(parser_lists[2], nodes_df)
+        rows_df = create_rows_df(parser_lists[2], nodes_df, f)
         rowtend = datetime.datetime.now() - rowt
 
         print("\nDisplay Rows Dataframe: \n")
@@ -44,7 +45,7 @@ if __name__ == "__main__":
 
         # Design DataFrame Functions
         dt = datetime.datetime.now()
-        design_df = create_design_df(nodes_df, nets_df, rows_df)
+        design_df = create_design_df(nodes_df, nets_df, rows_df, f)
         dtend = datetime.datetime.now() - dt
 
         print("\nDisplay Designs Dataframe: \n")
@@ -163,7 +164,6 @@ if __name__ == "__main__":
 
         print("\n******************************\n")
         print("Times: ")
-        calculate_times(parser_lists[0], parser_lists[1], parser_lists[2])
 
         print("\n")
         lists_to_df_time = nodetend + nettend + rowtend + dtend
@@ -204,6 +204,52 @@ if __name__ == "__main__":
         print("allocation_of_cells_on_each_row_time: ", allocation_of_cells_on_each_row_time)
         print("allocation_of_row_densities_time: ", allocation_of_row_densities_time)
 
+        # Save times to file
+
+
+        f.write("\n******************************\n")
+        f.write("Times: ")
+        f.write("\n")
+        f.write("\nParser time: " + str(end_time))
+        f.write("\nConvert Lists to DFs time: " + str(lists_to_df_time))
+        f.write("\nParser time + conversions to df: " + str(end_time + lists_to_df_time))
+        f.write("\ncreate node_df: " + str(nodetend))
+        f.write("\ncreate net_df: " + str(nettend))
+        f.write("\ncreate row_df: " + str(rowtend))
+        f.write("\ncreate design_df: " + str(dtend))
+
+        f.write("\n")
+        # Printing times
+        f.write("\nnumber_of_non_terminal_nodes_time: " + str(number_of_non_terminal_nodes_time))
+        f.write("\nbiggest_non_terminal_node_time: " + str(biggest_non_terminal_node_time))
+        f.write("\nsmallest_non_terminal_node_time: " + str(smallest_non_terminal_node_time))
+        f.write("\nmean_size_non_terminal_nodes_time: " + str(mean_size_non_terminal_nodes_time))
+        f.write("\nnumber_of_terminal_nodes_time: " + str(number_of_terminal_nodes_time))
+
+        f.write("\n\nnumber_of_nets_time: " + str(number_of_nets_time))
+        f.write("\nbiggest_net_based_on_nodes_time: " + str(biggest_net_based_on_nodes_time))
+        f.write("\nsmallest_net_based_on_nodes_time: " + str(smallest_net_based_on_nodes_time))
+        f.write("\nmean_size_of_nets_based_on_nodes_time: " + str(mean_size_of_nets_based_on_nodes_time))
+
+        f.write("\n\nbiggest_net_based_on_size_time: " + str(biggest_net_based_on_size_time))
+        f.write("\nsmallest_net_based_on_size_time: " + str(smallest_net_based_on_size_time))
+        f.write("\nmean_net_based_on_size_time: " + str(mean_net_based_on_size_time))
+
+        f.write("\n\nnumber_of_rows_time: " + str(number_of_rows_time))
+        f.write("\nbiggest_row_time: " + str(biggest_row_time))
+        f.write("\nsmallest_row_time: " + str(smallest_row_time))
+        f.write("\nmean_num_of_nodes_on_rows_time: " + str(mean_num_of_nodes_on_rows_time))
+
+        f.write("\n\nGRAPH TIMES: \n")
+        f.write("\nallocation_of_non_terminal_node_sizes_time: " + str(allocation_of_non_terminal_node_sizes_time))
+        f.write("\nallocation_of_net_sizes_time: " + str(allocation_of_net_sizes_time))
+        f.write("\nallocation_of_net_sizes_based_on_nodes_time: " + str(allocation_of_net_sizes_based_on_nodes_time))
+        f.write("\nallocation_of_cells_on_each_row_time: " + str(allocation_of_cells_on_each_row_time))
+        f.write("\nallocation_of_row_densities_time: " + str(allocation_of_row_densities_time))
+
+        calculate_times(parser_lists[0], parser_lists[1], parser_lists[2],f)
+
+        f.close()
         # with pd.ExcelWriter('output.xlsx') as writer:
         #     nodes_df.to_excel(writer, sheet_name='nodes_df')
         #     nets_df.to_excel(writer, sheet_name='nets_df')

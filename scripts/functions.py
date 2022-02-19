@@ -471,7 +471,7 @@ def verify_files():
     return flag
 
 
-def parser():  # parsing the whole circuit into lists of objects
+def parser(f):  # parsing the whole circuit into lists of objects
 
     """               Start of Parse .nodes               """
 
@@ -762,6 +762,7 @@ def parser():  # parsing the whole circuit into lists of objects
 
     begin4_time = datetime.datetime.now() - begin3_time
     print("\nCALCULATE ALL ROW DENSITIES - TOTAL LIST TIME: ", begin4_time + begin2_time)
+    f.write("\n\nCALCULATE ALL ROW DENSITIES - TOTAL LIST TIME: " + str(begin4_time + begin2_time))
 
     design_creation_time = datetime.datetime.now()
     # Create Design
@@ -797,12 +798,20 @@ def parser():  # parsing the whole circuit into lists of objects
     print("- Design total cell area time: ", design_total_cell_area_time)
     print("- Design total density time: ", design_total_density_time)
 
+    f.write("\n\nDESIGN PRINTING LIST TIMES: \n")
+    f.write("\nDesign creation time: " + str(design_creation_time))
+    f.write("\nDesign hpw time: " + str(design_hpw_time))
+    f.write("\nDesign width_height time: " + str(design_width_height_time))
+    f.write("\nDesign total area time: " + str(design_total_area_time))
+    f.write("\nDesign total cell area time: " + str(design_total_cell_area_time))
+    f.write("\nDesign total density time: " + str(design_total_density_time))
+
     print("***\n\nCurrentDesign: ", current_design)
 
     return node_list, net_list, row_list
 
 
-def calculate_times(node_list, net_list, row_list):
+def calculate_times(node_list, net_list, row_list, f):
 
     print("\n PRINTING LIST FUNCTION TIMES: \n")
 
@@ -822,7 +831,9 @@ def calculate_times(node_list, net_list, row_list):
     total_net_size_time = datetime.datetime.now() - total_net_size_time
     print("-Calculate Net Size for each net, total time=  ", total_net_size_time)
 
-
+    f.write("\n\nPRINTING LIST FUNCTION TIMES: \n")
+    f.write("\nCalculate Net HPW for each net, total time=  " + str(total_net_hpw_time))
+    f.write("\nCalculate Net Size for each net, total time=  " + str(total_net_size_time))
 
 
 
@@ -849,7 +860,7 @@ def create_nodes_df(node_list):
     return nodes_df
 
 
-def create_nets_df(net_list, nodes_df):
+def create_nets_df(net_list, nodes_df,f):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
     calculate_net_hpw_time = datetime.datetime.now()
@@ -860,12 +871,17 @@ def create_nets_df(net_list, nodes_df):
     calculate_net_size(nets_df)
     calculate_net_size_time = datetime.datetime.now() - calculate_net_size_time
 
+    nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
+
     print("\n***********\n")
     print("calculate_net_hpw_time_WITH_DATAFRAME: ", calculate_net_hpw_time)
     print("calculate_net_size_time_WITH_DATAFRAME: ", calculate_net_size_time)
     print("\n***********")
 
-    nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
+    f.write("\n\n***********\n")
+    f.write("\ncalculate_net_hpw_time_WITH_DATAFRAME: " + str(calculate_net_hpw_time))
+    f.write("\ncalculate_net_size_time_WITH_DATAFRAME: " + str(calculate_net_size_time))
+    f.write("\n***********")
 
     return nets_df
 
@@ -947,21 +963,21 @@ def calculate_net_size(nets_df):
                            * (nets_df['y_max'] - nets_df['y_min']))
 
 
-def create_rows_df(row_list, nodes_df):
+def create_rows_df(row_list, nodes_df, f):
     rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
 
     rows_df['Width'] = rows_df['Coordinate_x_max'] - rows_df['Coordinate_x_min']
     rows_df['Height'] = rows_df['Coordinate_y_max'] - rows_df['Coordinate_y_min']
     rows_df['Row_area'] = rows_df['Width'] * rows_df['Height']
 
-    row_density(nodes_df, rows_df)
+    row_density(nodes_df, rows_df, f)
     rows_df = rows_df.astype({"Nodes_area": int})
 
     return rows_df
 
 
 # Find each Row's all nodes_area and then Row density
-def row_density(nodes_df, rows_df):
+def row_density(nodes_df, rows_df, f):
     rowdftime = datetime.datetime.now()
     row_names_list = list(rows_df['Row_name'])
 
@@ -975,10 +991,12 @@ def row_density(nodes_df, rows_df):
     rows_df['Density(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
 
     rowdftime_end = datetime.datetime.now() - rowdftime
+
     print("\nRow Density df time: ", rowdftime_end)
+    f.write("\n\nRow Density DataFrame Time: " + str(rowdftime_end))
 
 
-def create_design_df(nodes_df, nets_df, rows_df):
+def create_design_df(nodes_df, nets_df, rows_df,f):
     design_cells = nodes_df.shape[0]
     design_nets = nets_df.shape[0]
     design_rows = rows_df.shape[0]
@@ -1010,15 +1028,6 @@ def create_design_df(nodes_df, nets_df, rows_df):
     design_hpw = design_df_half_perimeter_wirelength(nets_df)
     design_hpw_time = datetime.datetime.now() - design_hpw_time
 
-    # Times
-    print("\nTimes of Design df: ")
-    print("design_total_cell_area_time: ", design_total_cell_area_time)
-    print("design_height_width_time: ", design_height_width_time)
-    print("design_total_area_time: ", design_total_area_time)
-    print("design_density_time: ", design_total_area_time)
-    print("design_hpw_time: ", design_hpw_time)
-
-
     design_dict = {
         'Number_of_cells': design_cells,
         'Number_of_terminals': design_terminals,
@@ -1033,6 +1042,22 @@ def create_design_df(nodes_df, nets_df, rows_df):
     }
 
     design_df = pd.DataFrame.from_records([design_dict])
+
+    # Times
+    print("\nTimes of Design df: ")
+    print("design_total_cell_area_time: ", design_total_cell_area_time)
+    print("design_height_width_time: ", design_height_width_time)
+    print("design_total_area_time: ", design_total_area_time)
+    print("design_density_time: ", design_density_time)
+    print("design_hpw_time: ", design_hpw_time)
+
+    # Times
+    f.write("\n\nTimes of Design df: ")
+    f.write("\ndesign_total_cell_area_time: " + str(design_total_cell_area_time))
+    f.write("\ndesign_height_width_time: " + str(design_height_width_time))
+    f.write("\ndesign_total_area_time: " + str(design_total_area_time))
+    f.write("\ndesign_density_time: " + str(design_density_time))
+    f.write("\ndesign_hpw_time: " + str(design_hpw_time))
 
     return design_df
 
@@ -1202,6 +1227,7 @@ def design_df_density(nodes_df, rows_df):
 
 
 """              Matplotlib graphs               """
+
 
 def allocation_of_non_terminal_node_sizes(nodes_df):
     import math
