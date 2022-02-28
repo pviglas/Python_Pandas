@@ -12,16 +12,6 @@ import datetime
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
-# """
-# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-# fileName = "ibm01"
-# os.chdir('C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\ISPD\\{}'.format(
-#     folderName))
-#
-# """
-# os.chdir(
-#    'C:\\Users\\root\\Desktop\\Python_Pandas\\docs\\{}'.format(folderName))
-
 
 path_to_designs = "../docs/{}"
 folderName = "design"
@@ -305,8 +295,8 @@ class Row:
             'Coordinate_x_min': self.x_min,
             'Coordinate_x_max': self.x_max,
             'Coordinate_y_min': self.y_min,
-            'Coordinate_y_max': self.y_max,
-            'Density': self.density
+            'Coordinate_y_max': self.y_max
+            # 'Density': self.density
         }
 
     def __str__(self):
@@ -471,7 +461,7 @@ def verify_files():
     return flag
 
 
-def parser(f):  # parsing the whole circuit into lists of objects
+def parser():  # parsing the whole circuit into lists of objects
 
     """               Start of Parse .nodes               """
 
@@ -732,9 +722,6 @@ def parser(f):  # parsing the whole circuit into lists of objects
     """               End of Parse .scl              """
 
     # Find the row, each node is placed in
-
-    begin1_time = datetime.datetime.now()
-
     for row in row_list:
         for node in node_list:
             # check for both lower_y and upper_y to avoid Terminal nodes
@@ -742,8 +729,6 @@ def parser(f):  # parsing the whole circuit into lists of objects
                     (node.node_y + node.node_height) == row.y_max):
                 node.set_row(row)
                 row.append_node(node)
-
-    begin2_time = datetime.datetime.now() - begin1_time
 
     # Find the row(s), each Net belongs to and the opposite
     for net in net_list:
@@ -754,87 +739,21 @@ def parser(f):  # parsing the whole circuit into lists of objects
         net.net_rows = list(dict.fromkeys(net.net_rows))  # remove duplicates
 
     # Update each row, with its density
-
-    begin3_time = datetime.datetime.now()
-
     for row in row_list:
         row.calculate_row_density()
 
-    begin4_time = datetime.datetime.now() - begin3_time
-    print("\nCALCULATE ALL ROW DENSITIES - TOTAL LIST TIME: ", begin4_time + begin2_time)
-    f.write("\n\nCALCULATE ALL ROW DENSITIES - TOTAL LIST TIME: " + str(begin4_time + begin2_time))
-
-    design_creation_time = datetime.datetime.now()
     # Create Design
     current_design = Design(number_of_nodes, number_of_terminals, nets_number)
-
-    design_hpw_time = datetime.datetime.now()
     current_design.calculate_design_half_perimeter_wirelength(net_list)
-    design_hpw_time = datetime.datetime.now() - design_hpw_time
-
-    design_width_height_time = datetime.datetime.now()
     current_design.calculate_design_width_height(row_list)
-    design_width_height_time = datetime.datetime.now() - design_width_height_time
-
-    design_total_area_time = datetime.datetime.now()
     current_design.calculate_design_total_area()
-    design_total_area_time = datetime.datetime.now() - design_total_area_time
-
-    design_total_cell_area_time = datetime.datetime.now()
     current_design.calculate_design_total_cell_area(node_list)
-    design_total_cell_area_time = datetime.datetime.now() - design_total_cell_area_time
-
-    design_total_density_time = datetime.datetime.now()
     current_design.calculate_design_density()
-    design_total_density_time = datetime.datetime.now() - design_total_density_time
 
-    design_creation_time = datetime.datetime.now() - design_creation_time
 
-    print("\n DESIGN PRINTING LIST TIMES: \n")
-    print("- Design creation time: ", design_creation_time)
-    print("- Design hpw time: ", design_hpw_time)
-    print("- Design width_height time: ", design_width_height_time)
-    print("- Design total area time: ", design_total_area_time)
-    print("- Design total cell area time: ", design_total_cell_area_time)
-    print("- Design total density time: ", design_total_density_time)
-
-    f.write("\n\nDESIGN PRINTING LIST TIMES: \n")
-    f.write("\nDesign creation time: " + str(design_creation_time))
-    f.write("\nDesign hpw time: " + str(design_hpw_time))
-    f.write("\nDesign width_height time: " + str(design_width_height_time))
-    f.write("\nDesign total area time: " + str(design_total_area_time))
-    f.write("\nDesign total cell area time: " + str(design_total_cell_area_time))
-    f.write("\nDesign total density time: " + str(design_total_density_time))
-
-    print("***\n\nCurrentDesign: ", current_design)
+    # print("***\n\nCurrentDesign: ", current_design)
 
     return node_list, net_list, row_list
-
-
-def calculate_times(node_list, net_list, row_list, f):
-
-    print("\n PRINTING LIST FUNCTION TIMES: \n")
-
-    total_net_hpw_time = datetime.datetime.now()
-    # Total Net HPW time
-    for net in net_list:
-        net.calculate_net_wirelength()
-
-    total_net_hpw_time = datetime.datetime.now() - total_net_hpw_time
-    print("-Calculate Net HPW for each net, total time=  ", total_net_hpw_time)
-
-    total_net_size_time = datetime.datetime.now()
-    # Total Net HPW time
-    for net in net_list:
-        net.calculate_net_size()
-
-    total_net_size_time = datetime.datetime.now() - total_net_size_time
-    print("-Calculate Net Size for each net, total time=  ", total_net_size_time)
-
-    f.write("\n\nPRINTING LIST FUNCTION TIMES: \n")
-    f.write("\nCalculate Net HPW for each net, total time=  " + str(total_net_hpw_time))
-    f.write("\nCalculate Net Size for each net, total time=  " + str(total_net_size_time))
-
 
 
 """               DataFrame's Functions             """
@@ -860,28 +779,13 @@ def create_nodes_df(node_list):
     return nodes_df
 
 
-def create_nets_df(net_list, nodes_df,f):
+def create_nets_df(net_list):
     nets_df = pd.DataFrame.from_records([net.to_dict() for net in net_list])
 
-    calculate_net_hpw_time = datetime.datetime.now()
     calculate_net_hpw(nets_df)
-    calculate_net_hpw_time = datetime.datetime.now() - calculate_net_hpw_time
-
-    calculate_net_size_time = datetime.datetime.now()
     calculate_net_size(nets_df)
-    calculate_net_size_time = datetime.datetime.now() - calculate_net_size_time
 
     nets_df = nets_df.astype({"Half_Perimeter_Wirelength": int, "Net_Size": int})
-
-    print("\n***********\n")
-    print("calculate_net_hpw_time_WITH_DATAFRAME: ", calculate_net_hpw_time)
-    print("calculate_net_size_time_WITH_DATAFRAME: ", calculate_net_size_time)
-    print("\n***********")
-
-    f.write("\n\n***********\n")
-    f.write("\ncalculate_net_hpw_time_WITH_DATAFRAME: " + str(calculate_net_hpw_time))
-    f.write("\ncalculate_net_size_time_WITH_DATAFRAME: " + str(calculate_net_size_time))
-    f.write("\n***********")
 
     return nets_df
 
@@ -963,22 +867,21 @@ def calculate_net_size(nets_df):
                            * (nets_df['y_max'] - nets_df['y_min']))
 
 
-def create_rows_df(row_list, nodes_df, f):
+def create_rows_df(row_list, nodes_df):
     rows_df = pd.DataFrame.from_records([row.to_dict() for row in row_list])
 
     rows_df['Width'] = rows_df['Coordinate_x_max'] - rows_df['Coordinate_x_min']
     rows_df['Height'] = rows_df['Coordinate_y_max'] - rows_df['Coordinate_y_min']
     rows_df['Row_area'] = rows_df['Width'] * rows_df['Height']
 
-    row_density(nodes_df, rows_df, f)
+    row_density(nodes_df, rows_df)
     rows_df = rows_df.astype({"Nodes_area": int})
 
     return rows_df
 
 
 # Find each Row's all nodes_area and then Row density
-def row_density(nodes_df, rows_df, f):
-    rowdftime = datetime.datetime.now()
+def row_density(nodes_df, rows_df):
     row_names_list = list(rows_df['Row_name'])
 
     for row_name in row_names_list:
@@ -990,43 +893,29 @@ def row_density(nodes_df, rows_df, f):
 
     rows_df['Density(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
 
-    rowdftime_end = datetime.datetime.now() - rowdftime
-
-    print("\nRow Density df time: ", rowdftime_end)
-    f.write("\n\nRow Density DataFrame Time: " + str(rowdftime_end))
 
 
-def create_design_df(nodes_df, nets_df, rows_df,f):
+def create_design_df(nodes_df, nets_df, rows_df):
     design_cells = nodes_df.shape[0]
     design_nets = nets_df.shape[0]
     design_rows = rows_df.shape[0]
     design_terminals = len(nodes_df[nodes_df['Type'].str.match('Terminal')])
 
-    design_total_cell_area_time = datetime.datetime.now()
     design_total_cell_area = nodes_df['Size'].sum()
-    design_total_cell_area_time = datetime.datetime.now() - design_total_cell_area_time
 
-    design_height_width_time = datetime.datetime.now()
     design_height = (rows_df['Coordinate_y_max'].max()
                      - rows_df['Coordinate_y_min'].min())
 
     design_width = (rows_df['Coordinate_x_max'].max()
                     - rows_df['Coordinate_x_min'].min())
-    design_height_width_time = datetime.datetime.now() - design_height_width_time
 
-    design_total_area_time = datetime.datetime.now()
     design_total_area = design_height * design_width
-    design_total_area_time = datetime.datetime.now() - design_total_area_time
-
-    design_density_time = datetime.datetime.now()
     design_density = (design_total_cell_area / design_total_area) * 100
-    design_density_time = datetime.datetime.now() - design_density_time
+
 
     # density = design_df_density(nodes_df, rows_df)
-
-    design_hpw_time = datetime.datetime.now()
     design_hpw = design_df_half_perimeter_wirelength(nets_df)
-    design_hpw_time = datetime.datetime.now() - design_hpw_time
+
 
     design_dict = {
         'Number_of_cells': design_cells,
@@ -1042,22 +931,6 @@ def create_design_df(nodes_df, nets_df, rows_df,f):
     }
 
     design_df = pd.DataFrame.from_records([design_dict])
-
-    # Times
-    print("\nTimes of Design df: ")
-    print("design_total_cell_area_time: ", design_total_cell_area_time)
-    print("design_height_width_time: ", design_height_width_time)
-    print("design_total_area_time: ", design_total_area_time)
-    print("design_density_time: ", design_density_time)
-    print("design_hpw_time: ", design_hpw_time)
-
-    # Times
-    f.write("\n\nTimes of Design df: ")
-    f.write("\ndesign_total_cell_area_time: " + str(design_total_cell_area_time))
-    f.write("\ndesign_height_width_time: " + str(design_height_width_time))
-    f.write("\ndesign_total_area_time: " + str(design_total_area_time))
-    f.write("\ndesign_density_time: " + str(design_density_time))
-    f.write("\ndesign_hpw_time: " + str(design_hpw_time))
 
     return design_df
 
@@ -1075,7 +948,6 @@ def biggest_non_terminal_node(nodes_df):
     max_df = max_df[max_df.Size == max_node_size]
     max_nodes_list = list(max_df.Node_name)
 
-    # print(max_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Maximum Non Terminal Node size = ", max_node_size)
     print("- Non Terminal Node(s) with max size: ", max_nodes_list)
     print("\n")
@@ -1088,7 +960,6 @@ def smallest_non_terminal_node(nodes_df):
     min_df = min_df[min_df.Size == min_node_size]
     min_nodes_list = list(min_df.Node_name)
 
-    # print(min_df.get(["Node_name", "Size"]).to_string(index=False))
     print("Minimum Non Terminal Node size = ", min_node_size)
     print("- Non Terminal Node(s) with min size: ", min_nodes_list)
     print("\n")
@@ -1141,7 +1012,7 @@ def mean_size_of_nets_based_on_nodes(nets_df):
     print("\n")
 
 
-def biggest_net_based_on_size(nets_df, nodes_df):
+def biggest_net_based_on_size(nets_df):
     max_net_size = int(nets_df["Net_Size"].max())
     max_nets_df = nets_df[nets_df.Net_Size == max_net_size]
     max_nets_list = list(max_nets_df.Net_name)
@@ -1151,7 +1022,7 @@ def biggest_net_based_on_size(nets_df, nodes_df):
     print("\n")
 
 
-def smallest_net_based_on_size(nets_df, nodes_df):
+def smallest_net_based_on_size(nets_df):
     min_net_size = int(nets_df["Net_Size"].min())
     min_nets_df = nets_df[nets_df.Net_Size == min_net_size]
     min_nets_list = list(min_nets_df.Net_name)
@@ -1161,7 +1032,7 @@ def smallest_net_based_on_size(nets_df, nodes_df):
     print("\n")
 
 
-def mean_net_based_on_size(nets_df, nodes_df):
+def mean_net_based_on_size(nets_df):
     mean_net_size = float(nets_df["Net_Size"].mean())
 
     print("Mean Net Size: ", mean_net_size)
@@ -1179,7 +1050,6 @@ def biggest_row(rows_df):
     max_rows_df = rows_df[rows_df.Cells.str.len() == max_num_of_cells]
     max_rows_list = list(max_rows_df.Row_name)
 
-    # print(max_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Maximum number of cells in a row: ", max_num_of_cells)
     print("- Biggest row(s): ", max_rows_list)
     print("\n")
@@ -1221,8 +1091,6 @@ def design_df_density(nodes_df, rows_df):
     design_total_cell_area = nodes_df['Size'].sum()
     density = (design_total_cell_area / design_total_area) * 100
 
-    # print("Design Density: " + str(density) + "%")
-    # print("\n")
     return density
 
 
@@ -1235,28 +1103,17 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     num_of_nodes = nodes_df.shape[0]
     max_node_size = nodes_df['Size'].max()
 
-    print("max node size: " + str(max_node_size))
-
     max_size_len = len(str(max_node_size))
     first_digit = max_node_size // 10 ** (int(math.log(max_node_size, 10)))  # first digit of max_size
 
-    print("first digit= " + str(first_digit), type(first_digit))
-    print("len of max node size: " + str(max_size_len))
-
     rounded_up_max_size = (first_digit + 1) * (10 ** (max_size_len - 1))
-    print(rounded_up_max_size)
-
     array_size_labels = np.arange(0, rounded_up_max_size, 50)
-    print(array_size_labels)
-
     counter_of_sizes = [0] * len(array_size_labels)
-    print(counter_of_sizes)
 
     i = 0
     first_time = True
 
     for size in array_size_labels:
-        print("first size: ", size)
         if first_time:
             first_time = False
         elif i == 1:
@@ -1268,9 +1125,6 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
         i += 1
 
     fig, ax = plt.subplots(figsize=(20, 9))
-    print(counter_of_sizes)
-
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
     # Remove axes splines
     for s in ['top', 'right']:
@@ -1284,20 +1138,16 @@ def allocation_of_non_terminal_node_sizes(nodes_df):
     ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
 
     # Label values
-    # plt.xticks(np.arange(0, rounded_up_max_size, step=50))  # Set value step on x axis
     plt.xticks(array_size_labels)
-    # plt.yticks(np.arange(0, num_of_nodes + 1, 1))  # Set value step on y axis
 
     plt.title('Number of Nodes, with a current size.', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Size (measured in ranges)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of node(s)", fontsize=12, fontweight='bold')
 
-    # ax.plot(densities, counter_of_densities)
     ax.bar(array_size_labels, counter_of_sizes, width=10, color='#FF0055')
 
     size_labels = []
     for size in array_size_labels:
-        # size_labels.append("[" + str(size+1) + " - " + str(size+50) + "]")
         size_labels.append("[..-" + str(size + 50) + "]")
     size_labels.pop()
     size_labels.insert(0, "O")
@@ -1320,23 +1170,14 @@ def allocation_of_net_sizes(nets_df):
     max_size_len = len(str(max_net_size))
     first_digit = max_net_size // 10 ** (int(math.log(max_net_size, 10)))  # first digit of max_size
 
-    print("first digit= " + str(first_digit), type(first_digit))
-    print("len of net size: " + str(max_size_len))
-
     rounded_up_max_size = (first_digit + 1) * (10 ** (max_size_len - 1))
-    print(rounded_up_max_size)
-
     array_size_labels = np.arange(0, rounded_up_max_size + 1, int(rounded_up_max_size / 10))
-    print(array_size_labels)
-
     counter_of_sizes = [0] * len(array_size_labels)
-    print(counter_of_sizes)
 
     i = 0
     first_time = True
 
     for size in array_size_labels:
-        print("first size: ", size)
         if first_time:
             first_time = False
         else:
@@ -1344,8 +1185,6 @@ def allocation_of_net_sizes(nets_df):
                         nets_df['Net_Size'] > (size - int(rounded_up_max_size / 10)))])
 
         i += 1
-
-    print(counter_of_sizes)
 
     fig, ax = plt.subplots(figsize=(16, 9))
 
@@ -1360,22 +1199,13 @@ def allocation_of_net_sizes(nets_df):
     # Add x, y gridlines
     ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, alpha=1)
 
-    # Label values
-    # plt.xticks(array_size_labels)  # Set value step on x axis
-    # plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
-
-    # plt.title('Number of Nets, within a current size (range).', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Size", fontsize=12, fontweight='bold')
     plt.ylabel("Number of Net(s)", fontsize=12, fontweight='bold')
 
-    #ax.bar(array_size_labels, counter_of_sizes, width=500, edgecolor='white')
     plt.bar(array_size_labels, counter_of_sizes, width=20000)
-    # ax.plot(array_size_labels, counter_of_sizes)
-
 
     size_labels = []
     for size in array_size_labels:
-        # size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
         size_labels.append("[..-" + str(size + int(rounded_up_max_size / 10)) + "]")
     size_labels.pop()
     size_labels.insert(0, "O")
@@ -1383,7 +1213,7 @@ def allocation_of_net_sizes(nets_df):
     # Show 0-50, 50 - 100 instead of 0,50,100..
     ax.set_xticks(array_size_labels)                        # Set number of ticks for x-axis
     ax.set_xticklabels(size_labels, rotation='vertical')    # Set ticks labels for x-axis
-    ax.bar_label(ax.containers[0]) # Show number above of the bars
+    ax.bar_label(ax.containers[0])  # Show number above of the bars
     ax.autoscale_view()
 
     plt.tight_layout()
@@ -1395,12 +1225,9 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
 
     nets_df['Num_of_nodes'] = nets_df.Nodes.str.len()
     max_node_count = nets_df['Num_of_nodes'].max()
-    print(nets_df['Num_of_nodes'].max())
+    # print(nets_df['Num_of_nodes'].max())
     num_of_nets = nets_df.shape[0]
 
-    print("max node count: " + str(max_node_count))
-
-    # TODO Check in the previous allocation as well, if len < 10
     if len(str(max_node_count)) >= 2:
         max_count_len = len(str(max_node_count))
         first_digit = max_node_count // 10 ** (int(math.log(max_node_count, 10)))  # first digit of max_count_len
@@ -1412,20 +1239,12 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
         rounded_up_max_count = 10
         array_size_labels = np.arange(0, 11, 1)
 
-    print("first digit= " + str(first_digit), type(first_digit))
-    print("len of net count: " + str(max_count_len))
-    print(rounded_up_max_count)
-
-    print(array_size_labels)
-
     counter_of_nodes = [0] * len(array_size_labels)
-    print(counter_of_nodes)
 
     i = 0
     first_time = True
 
     for num_of_nodes in array_size_labels:
-        print("first size: ", num_of_nodes)
         if first_time:
             first_time = False
         else:
@@ -1435,9 +1254,6 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
         i += 1
 
     fig, ax = plt.subplots(figsize=(20, 11))
-    print(counter_of_nodes)
-
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
     # Remove axes splines
     for s in ['top', 'right']:
@@ -1452,20 +1268,15 @@ def allocation_of_net_sizes_based_on_nodes(nets_df):
 
     # Label values
     plt.xticks(array_size_labels)  # Set value step on x axis
-    # plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
 
-    # plt.title('Number of Nets, with a current size (range).', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Number of Node(s)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of Net(s)", fontsize=12, fontweight='bold')
 
-    # ax.plot(densities, counter_of_densities)
-    # ax.bar(array_size_labels, counter_of_nodes, width=0.8)
     ax.bar(array_size_labels, counter_of_nodes, width=2, edgecolor='white')
-    # ax.bar(counter_of_sizes, array_size_labels, color='#FF0055')
+
 
     size_labels = []
     for size in array_size_labels:
-        # size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
         size_labels.append("[..-" + str(size + int(rounded_up_max_count / 10)) + "]")
     size_labels.pop()
     size_labels.insert(0, "O")
@@ -1482,13 +1293,8 @@ def allocation_of_cells_on_each_row(rows_df):
     import math
 
     max_node_count = rows_df["Cells"].str.len().max()
-    print(max_node_count)
     num_of_rows = rows_df.shape[0]
 
-    print("max node count: " + str(max_node_count))
-    print('num of rows: ' + str(num_of_rows))
-
-    # TODO Check in the previous allocation as well, if len < 10
     if len(str(max_node_count)) >= 2:
         max_count_len = len(str(max_node_count))
         first_digit = max_node_count // 10 ** (int(math.log(max_node_count, 10)))  # first digit of max_count_len
@@ -1501,20 +1307,12 @@ def allocation_of_cells_on_each_row(rows_df):
         rounded_up_max_count = 10
         array_size_labels = np.arange(0, 11, 1)
 
-    print("first digit= " + str(first_digit), type(first_digit))
-    print("len of net count: " + str(max_count_len))
-    print(rounded_up_max_count)
-
-    print(array_size_labels)
-
     counter_of_nodes = [0] * len(array_size_labels)
-    print(counter_of_nodes)
 
     i = 0
     first_time = True
 
     for num_of_nodes in array_size_labels:
-        print("first size: ", num_of_nodes)
         if first_time:
             first_time = False
         else:
@@ -1524,9 +1322,6 @@ def allocation_of_cells_on_each_row(rows_df):
         i += 1
 
     fig, ax = plt.subplots(figsize=(20, 11))
-    print(counter_of_nodes)
-
-    # plt.xticks(rotation=90)  # avoid overlapping on x - axis
 
     # Remove axes splines
     for s in ['top', 'right']:
@@ -1541,19 +1336,14 @@ def allocation_of_cells_on_each_row(rows_df):
 
     # Label values
     plt.xticks(array_size_labels)  # Set value step on x axis
-    # plt.yticks(np.arange(0, num_of_nets + 1, 1))  # Set value step on y axis
 
-    # plt.title('Number of Nets, with a current size (range).', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Number of Node(s)", fontsize=12, fontweight='bold')
     plt.ylabel("Number of Rows(s)", fontsize=12, fontweight='bold')
 
-    # ax.plot(densities, counter_of_densities)
     ax.bar(array_size_labels, counter_of_nodes, width=2, edgecolor='white')
-    # ax.bar(counter_of_sizes, array_size_labels, color='#FF0055')
 
     size_labels = []
     for size in array_size_labels:
-        # size_labels.append("[" + str(size+1) + " - " + str(size+int(rounded_up_max_size / 10)) + "]")
         size_labels.append("[..-" + str(size + int(rounded_up_max_count / 10)) + "]")
     size_labels.pop()
     size_labels.insert(0, "O")
@@ -1577,7 +1367,6 @@ def allocation_of_row_densities(rows_df):
     first_time = True
 
     for density in densities:
-
         if first_time:
             counter_of_densities[i] = len(rows_df.loc[(rows_df['Density(%)'] <= density)])
             first_time = False
@@ -1606,7 +1395,6 @@ def allocation_of_row_densities(rows_df):
 
     # Label values
     plt.xticks(np.arange(0, 105, step=5))  # Set value step on x axis
-    # plt.yticks(np.arange(0, num_of_rows+1, 1))  # Set value step on y axis
 
     plt.title('Number of Rows, in a current density range.', loc='center', fontsize=15, fontweight='bold')
     plt.xlabel("Density (%)", fontsize=12, fontweight='bold')
@@ -1667,7 +1455,6 @@ def allocation_of_row_spaces(rows_df):
             ax.bar(labels, nodes_areas, width, label="Non_Free_Space", bottom=0, color='firebrick')
             ax.legend()
 
-
             # Remove axes splines
             for s in ['top', 'bottom', 'left', 'right']:
                 ax.spines[s].set_visible(False)
@@ -1688,6 +1475,7 @@ def allocation_of_row_spaces(rows_df):
             # Add Plot Title
             # ax.set_title('Row and their capacities.', loc='center', fontsize=14,
             #              fontweight='bold')
+
             ax.bar_label(ax.containers[0])
 
             plt.ylabel("Row Capacity", fontsize=12, fontweight='bold')
