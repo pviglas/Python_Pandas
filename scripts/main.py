@@ -1,4 +1,3 @@
-# Viglas Panagiotis
 
 from functions import *
 

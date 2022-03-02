@@ -1,4 +1,3 @@
-# Viglas Panagiotis
 # Parsing bookshelf formatted files
 
 """"   Set the current working dir infos   """
@@ -12,11 +11,14 @@ import matplotlib.pyplot as plt
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
+path_to_designs = "../docs/{}"
+folderName = "design"
+fileName = "design"
 
-# Availabme circuit names: ibm01, ibm02,.....,ibm18
-path_to_designs = "../docs/ISPD/{}"
-folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-fileName = "ibm01"
+# Available circuit names: ibm01, ibm02,.....,ibm18
+# path_to_designs = "../docs/ISPD/{}"
+# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+# fileName = "ibm01"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -1434,9 +1436,11 @@ def allocation_of_row_spaces(rows_df):
                 if (0 <= start < num_of_rows) and (0 < end <= num_of_rows) and start < end and end - start <= 15:
                     break
 
+            df_nodes_area = rows_df['Nodes_area']
+
             row_area = int(rows_df['Row_area'].max())
             labels = list(rows_df.iloc[start:end, 0])
-            nodes_areas = list(rows_df.iloc[start:end, 11])
+            nodes_areas = list(rows_df.iloc[start:end, 10])
             width = 0.35
 
             fig, ax = plt.subplots(figsize=(16, 9))
