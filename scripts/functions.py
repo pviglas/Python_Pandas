@@ -1,3 +1,4 @@
+# Viglas Panagiotis
 # Parsing bookshelf formatted files
 
 """"   Set the current working dir infos   """
@@ -5,21 +6,17 @@
 import os
 import pandas as pd
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
-import datetime
+
 
 pd.set_option('display.width', 800)
 pd.set_option('display.max_columns', 20)
 
 
-path_to_designs = "../docs/{}"
-folderName = "design"
-fileName = "design"
-
-# path_to_designs = "../docs/ISPD/{}"
-# folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
-# fileName = "ibm01"
+# Availabme circuit names: ibm01, ibm02,.....,ibm18
+path_to_designs = "../docs/ISPD/{}"
+folderName = "ibm01_mpl6_placed_and_nettetris_legalized"
+fileName = "ibm01"
 
 os.chdir(path_to_designs.format(folderName))
 
@@ -320,10 +317,6 @@ class Design:
         self.half_perimeter_wirelength = None
 
     def calculate_design_width_height(self, row_list):
-        # y_max = 0
-        # y_min = 0
-        # x_max = 0
-        # x_min = 0
         first_time = True
 
         for row in row_list:
@@ -790,7 +783,7 @@ def create_nets_df(net_list):
     return nets_df
 
 
-def find_min_max_on_nets_df(nodes_df, nets_df):
+def find_min_max_on_nets_df(nodes_df, nets_df):  # 1st way
     net_names_list = list(nets_df['Net_name'])
     net_externals_list = list(nets_df['External_nodes'])
     print("\n")
@@ -814,7 +807,7 @@ def find_min_max_on_nets_df(nodes_df, nets_df):
             test_node_df['Coordinate_y_max'].max())
 
 
-def find_min_max_on_nets_df2(nodes_df, nets_df):
+def find_min_max_on_nets_df2(nodes_df, nets_df):    # 2nd way
     net_names_list = list(nets_df['Net_name'])
     net_externals_list = list(nets_df['External_nodes'])
     print("\n")
@@ -894,7 +887,6 @@ def row_density(nodes_df, rows_df):
     rows_df['Density(%)'] = (rows_df['Nodes_area'] / rows_df['Row_area']) * 100
 
 
-
 def create_design_df(nodes_df, nets_df, rows_df):
     design_cells = nodes_df.shape[0]
     design_nets = nets_df.shape[0]
@@ -912,10 +904,8 @@ def create_design_df(nodes_df, nets_df, rows_df):
     design_total_area = design_height * design_width
     design_density = (design_total_cell_area / design_total_area) * 100
 
-
     # density = design_df_density(nodes_df, rows_df)
     design_hpw = design_df_half_perimeter_wirelength(nets_df)
-
 
     design_dict = {
         'Number_of_cells': design_cells,
@@ -1060,7 +1050,6 @@ def smallest_row(rows_df):
     min_rows_df = rows_df[rows_df.Cells.str.len() == min_num_of_cells]
     min_rows_list = list(min_rows_df.Row_name)
 
-    # print(min_rows_df.get(["Row_name", "Cells"]).to_string(index=False))
     print("Minimum number of cells in a row: ", min_num_of_cells)
     print("- Smallest row(s): ", min_rows_list)
     print("\n")
@@ -1445,7 +1434,7 @@ def allocation_of_row_spaces(rows_df):
                 if (0 <= start < num_of_rows) and (0 < end <= num_of_rows) and start < end and end - start <= 15:
                     break
 
-            row_area = int(rows_df.iloc[0, 10].max())
+            row_area = int(rows_df['Row_area'].max())
             labels = list(rows_df.iloc[start:end, 0])
             nodes_areas = list(rows_df.iloc[start:end, 11])
             width = 0.35

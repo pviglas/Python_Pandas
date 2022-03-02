@@ -1,6 +1,6 @@
+# Viglas Panagiotis
 
 from functions import *
-import datetime
 
 if __name__ == "__main__":
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         allocation_of_net_sizes_based_on_nodes(nets_df)
         allocation_of_cells_on_each_row(rows_df)
         allocation_of_row_densities(rows_df)
-        # allocation_of_row_spaces(rows_df)
+        allocation_of_row_spaces(rows_df)
 
         # Save to excel file
         # with pd.ExcelWriter('output.xlsx') as writer:
